@@ -13,8 +13,8 @@ const config: Phaser.Types.Core.GameConfig = {
     }
   },
   scale: {
-    width: 200,
-    height: 200,
+    width: 144,
+    height: 144,
     mode: Phaser.Scale.NONE,
     zoom: Zoom.ZOOM_4X,
     autoCenter: Phaser.Scale.CENTER_BOTH

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { aWall, emptySpot, Level } from "./Level";
+import { Level } from "./Level";
 
 export default class Demo extends Phaser.Scene {
   constructor() {
@@ -13,19 +13,17 @@ export default class Demo extends Phaser.Scene {
 
   create() {
 
-    const level = new Level([
-      [aWall(), emptySpot(), emptySpot(), aWall()],
-      [emptySpot(), emptySpot(), aWall(), aWall()],
-      [aWall(), emptySpot(), emptySpot(), aWall()],
-      [emptySpot(), emptySpot(), aWall(), emptySpot()],
-    ]);
+    const level = Level.random(7, 7);
 
     const platforms = this.physics.add.staticGroup();
 
-    level.tiles.forEach((row, y) => row.forEach((location, x) => {
+    level.locations.forEach((row, y) => row.forEach((location, x) => {
 
-      const xCoord = 100 + x * 16;
-      const yCoord = 100 + y * 16;
+      const tileWidth = 16;
+      const tileCenterOffset = 8;
+
+      const xCoord = tileWidth + tileCenterOffset + x * tileWidth;
+      const yCoord = tileWidth + tileCenterOffset + y * tileWidth;
 
       platforms.create(xCoord, yCoord, 'floor');
 
