@@ -18,8 +18,7 @@ export default class Demo extends Phaser.Scene {
   constructor() {
     super('GameScene');
 
-    this.level = Level.random(103, 103);
-
+    this.level = Level.random(7, 7);
   }
 
 
@@ -34,37 +33,27 @@ export default class Demo extends Phaser.Scene {
     this.floors = this.physics.add.staticGroup();
     this.walls = this.physics.add.staticGroup();
 
-
-    const center: Coords = { x: 4, y: 4 };
-
-    const levelOffset: Coords = {
-      x: center.x - this.level.start.x,
-      y: center.y - this.level.start.y,
-    };
-
-    const centerPixels = toPixels(center);
-
     this.level.locations.forEach((row, y) => row.forEach((location, x) => {
 
-      const locationCoords = toPixels({
-        x: levelOffset.x + x,
-        y: levelOffset.y + y
+      const locationPixelCoords = toPixelCoords({
+        x: x - this.level.start.x,
+        y: y - this.level.start.y
       });
 
-      this.floors.create(locationCoords.x, locationCoords.y, 'floor');
+      this.floors.create(locationPixelCoords.x, locationPixelCoords.y, 'floor');
 
       location.things.forEach(thing => {
         if (thing.isWall) {
-          this.walls.create(locationCoords.x, locationCoords.y, 'wall');
+          this.walls.create(locationPixelCoords.x, locationPixelCoords.y, 'wall');
         }
       });
     }));
 
-    this.player = this.physics.add.sprite(centerPixels.x, centerPixels.y, 'player');
+    const playerPixelCoords = toPixelCoords({ x: 0, y: 0 });
+
+    this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player');
 
     this.cameras.main.startFollow(this.player);
-
-    this.physics.add.collider(this.player, this.walls);
 
     this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -99,7 +88,7 @@ export default class Demo extends Phaser.Scene {
 const tileSize = 16;
 const tileCenterOffset = 8;
 
-function toPixels(coords: Coords): Coords {
+function toPixelCoords(coords: Coords): Coords {
   return {
     x: coords.x * tileSize + tileCenterOffset,
     y: coords.y * tileSize + tileCenterOffset

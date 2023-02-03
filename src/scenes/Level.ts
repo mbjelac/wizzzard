@@ -46,6 +46,7 @@ export class Level {
           if (Math.random() > 0.2) {
             if (Math.random() > 0.6 && !start) {
               start = { x: x, y: y };
+              console.log("Start: " + JSON.stringify(start));
             }
             return emptySpot();
           } else {
@@ -54,8 +55,6 @@ export class Level {
         }
       )
     );
-
-    // start = { x: 0, y: 0 }
 
     return new Level(locations, start!);
   }
