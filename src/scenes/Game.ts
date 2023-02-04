@@ -1,19 +1,13 @@
 import Phaser from 'phaser';
-import { Coords, Direction, Level } from "./Level";
-
+import { Coords, Direction, Level, Location, Thing } from "./Level";
+import Pointer = Phaser.Input.Pointer;
 
 export default class Demo extends Phaser.Scene {
 
-  private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
-
-  // @ts-ignore
-  private walls: Phaser.Physics.Arcade.StaticGroup;
-  // @ts-ignore
-  private floors: Phaser.Physics.Arcade.StaticGroup;
   // @ts-ignore
   private player: Phaser.Physics.Arcade.Sprite;
 
-  private level: Level;
+  private readonly level: Level;
 
   constructor() {
     super('GameScene');
@@ -30,32 +24,33 @@ export default class Demo extends Phaser.Scene {
 
   create() {
 
-    this.floors = this.physics.add.staticGroup();
-    this.walls = this.physics.add.staticGroup();
-
     this.level.locations.forEach((row, y) => row.forEach((location, x) => {
 
       const locationPixelCoords = toPixelCoords({
-        x: x - this.level.start.x,
-        y: y - this.level.start.y
+        x: x,
+        y: y
       });
 
-      this.floors.create(locationPixelCoords.x, locationPixelCoords.y, 'floor');
+
+      const floor = this.physics.add.sprite(locationPixelCoords.x, locationPixelCoords.y, 'floor').setInteractive();
+      floor.on('pointerup', (pointer: Pointer) => {
+        if (pointer.leftButtonReleased()) {
+          this.addWall(location, locationPixelCoords);
+        }
+      });
 
       location.things.forEach(thing => {
         if (thing.isWall) {
-          this.walls.create(locationPixelCoords.x, locationPixelCoords.y, 'wall');
+          this.addWallSprite(locationPixelCoords, location, thing);
         }
       });
     }));
 
-    const playerPixelCoords = toPixelCoords({ x: 0, y: 0 });
+    const playerPixelCoords = toPixelCoords({ x: this.level.start.x, y: this.level.start.y });
 
     this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player');
 
     this.cameras.main.startFollow(this.player);
-
-    this.cursors = this.input.keyboard.createCursorKeys();
 
     this.input.keyboard.on('keydown', (event: KeyboardEvent) => {
 
@@ -66,6 +61,8 @@ export default class Demo extends Phaser.Scene {
       }
 
     });
+
+    this.game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
   }
 
   private move(direction: Direction) {
@@ -80,7 +77,19 @@ export default class Demo extends Phaser.Scene {
     this.player.setY(this.player.y + tileSize * direction.deltaY);
   }
 
-  update() {
+  private addWall(location: Location, locationPixelCoords: Coords) {
+    const wall = this.level.addWall(location);
+    this.addWallSprite(locationPixelCoords, location, wall);
+  }
+
+  private addWallSprite(pixelCoords: Coords, location: Location, thing: Thing) {
+    const wall = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, 'wall').setInteractive();
+    wall.on('pointerup', (pointer: Pointer) => {
+      if (pointer.rightButtonReleased()) {
+        this.level.removeWall(location, thing);
+        wall.destroy(true);
+      }
+    });
 
   }
 }

@@ -26,13 +26,15 @@ export interface Location {
   things: Thing[]
 }
 
-export interface Thing {
+export class Thing {
 
-  isWall: boolean
-}
+  private static nextId = 0;
 
-const defaultThing: Thing = {
-  isWall: false
+  public readonly id = Thing.nextId++;
+
+  constructor(public isWall: boolean) {
+
+  }
 }
 
 export class Level {
@@ -92,12 +94,29 @@ export class Level {
 
     return row[coords.x];
   }
+
+  addWall(location: Location): Thing {
+    const wall = new Thing(true);
+    location.things.push(wall);
+    return wall;
+  }
+
+  removeWall(location: Location, wall: Thing) {
+
+    const index = location.things.findIndex(thing => thing.id === wall.id);
+
+    if (index === -1) {
+      throw Error(`Wall ${JSON.stringify(wall) }not found at location ${JSON.stringify(location)}.`);
+    }
+
+    location.things.splice(index, 1);
+  }
+
 }
 
 
-
 export function aWall(): Location {
-  return { things: [{ ...defaultThing, isWall: true }] };
+  return { things: [new Thing(true)] };
 }
 
 export function emptySpot(): Location {
