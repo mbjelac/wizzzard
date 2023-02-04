@@ -60,6 +60,10 @@ export default class Demo extends Phaser.Scene {
         this.move(direction);
       }
 
+      if (event.key === 'c') {
+        console.log("toggle collision enabled");
+        this.level.collisionEnabled = !this.level.collisionEnabled;
+      }
     });
 
     this.game.canvas.oncontextmenu = function (e) { e.preventDefault(); }

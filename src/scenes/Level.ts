@@ -63,6 +63,8 @@ export class Level {
 
   private playerLocation: Coords;
 
+  public collisionEnabled = true;
+
   constructor(
     public locations: Location[][],
     public start: Coords
@@ -76,7 +78,7 @@ export class Level {
 
     const nextLocation = this.getLocation(nextCoords);
 
-    const canMove = !!nextLocation && !nextLocation.things.some(thing => thing.isWall);
+    const canMove = !!nextLocation && (!nextLocation.things.some(thing => thing.isWall) || !this.collisionEnabled);
 
     if (canMove) {
       this.playerLocation = nextCoords;
