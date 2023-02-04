@@ -26,6 +26,13 @@ export default class Demo extends Phaser.Scene {
 
   create() {
 
+    this.anims.create({
+      key: 'burn',
+      frameRate: 7,
+      frames: this.anims.generateFrameNumbers('fire', { start: 0, end: 3 }),
+      repeat: -1,
+    });
+
     this.level.locations.forEach((row, y) => row.forEach((location, x) => {
 
       const locationPixelCoords = toPixelCoords({
@@ -48,20 +55,13 @@ export default class Demo extends Phaser.Scene {
       });
     }));
 
+    this.addFireSprite({x: 0, y: 0});
+    this.addFireSprite({x: 0, y: 1});
+    this.addFireSprite({x: 1, y: 0});
+    this.addFireSprite({x: 1, y: 1});
+
     const playerPixelCoords = toPixelCoords({ x: this.level.start.x, y: this.level.start.y });
-
     this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player');
-
-    const firePixelCoords = toPixelCoords({x: 0, y: 0});
-    const fire = this.physics.add.sprite(firePixelCoords.x, firePixelCoords.y, 'fire');
-    this.anims.create({
-      key: 'burn',
-      frameRate: 7,
-      frames: this.anims.generateFrameNumbers('fire', { start: 0, end: 3 }),
-      repeat: -1
-    });
-
-    fire.anims.play('burn');
 
 
     this.cameras.main.startFollow(this.player);
@@ -109,6 +109,16 @@ export default class Demo extends Phaser.Scene {
         this.level.removeWall(location, thing);
         wall.destroy(true);
       }
+    });
+
+  }
+
+  private addFireSprite(coords: Coords) {
+    const firePixelCoords = toPixelCoords(coords);
+    const fire = this.physics.add.sprite(firePixelCoords.x, firePixelCoords.y, 'fire');
+    fire.anims.play({
+      key: 'burn',
+      startFrame: Math.floor(Math.random() * 4)
     });
 
   }
