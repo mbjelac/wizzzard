@@ -20,6 +20,8 @@ export default class Demo extends Phaser.Scene {
     this.load.image('wall', 'assets/tiles/wall.png');
     this.load.image('floor', 'assets/tiles/floor.png');
     this.load.image('player', 'assets/tiles/wizard1.png');
+    this.load.spritesheet('fire', 'assets/tiles/fire.png', { frameWidth: 16, frameHeight: 16 });
+
   }
 
   create() {
@@ -50,6 +52,18 @@ export default class Demo extends Phaser.Scene {
 
     this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player');
 
+    const firePixelCoords = toPixelCoords({x: 0, y: 0});
+    const fire = this.physics.add.sprite(firePixelCoords.x, firePixelCoords.y, 'fire');
+    this.anims.create({
+      key: 'burn',
+      frameRate: 7,
+      frames: this.anims.generateFrameNumbers('fire', { start: 0, end: 3 }),
+      repeat: -1
+    });
+
+    fire.anims.play('burn');
+
+
     this.cameras.main.startFollow(this.player);
 
     this.input.keyboard.on('keydown', (event: KeyboardEvent) => {
@@ -66,7 +80,9 @@ export default class Demo extends Phaser.Scene {
       }
     });
 
-    this.game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
+    this.game.canvas.oncontextmenu = function (e) {
+      e.preventDefault();
+    }
   }
 
   private move(direction: Direction) {
