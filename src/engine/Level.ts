@@ -1,12 +1,22 @@
 export class Direction {
 
-  public static UP = new Direction(0, -1);
-  public static DOWN = new Direction(0, 1);
-  public static LEFT = new Direction(-1, 0);
-  public static RIGHT = new Direction(1, 0);
+  public static readonly UP = new Direction(0, -1, "up");
+  public static readonly DOWN = new Direction(0, 1, "down");
+  public static readonly LEFT = new Direction(-1, 0, "left");
+  public static readonly RIGHT = new Direction(1, 0, "right");
 
-  private constructor(public deltaX: number, public deltaY: number) {
+  public static getAllDirections(): Direction[] {
+    return [
+      Direction.UP,
+      Direction.DOWN,
+      Direction.LEFT,
+      Direction.RIGHT
+    ];
   }
+
+  private constructor(public readonly deltaX: number, public readonly deltaY: number, public readonly name: string) {
+  }
+
 
   public move(coords: Coords): Coords {
     return {
@@ -108,12 +118,38 @@ export class Level {
     const index = location.things.findIndex(thing => thing.id === wall.id);
 
     if (index === -1) {
-      throw Error(`Wall ${JSON.stringify(wall) }not found at location ${JSON.stringify(location)}.`);
+      throw Error(`Wall ${JSON.stringify(wall)}not found at location ${JSON.stringify(location)}.`);
     }
 
     location.things.splice(index, 1);
   }
 
+  public static fromMatrix(...rows: string[]): Level {
+
+    let start: Coords = { x: 0, y: 0 };
+
+    const locations: Location[][] = rows
+      .map((row, rowIndex) =>
+        [...row]
+          .map((char, columnIndex) => {
+              switch (char) {
+                case '#':
+                  return aWall();
+                case '@': {
+                  start = { x: columnIndex, y: rowIndex };
+                  return emptySpot();
+                }
+                case ' ':
+                  return emptySpot();
+                default:
+                  throw Error(`Illegal character on row/col ${rowIndex}/${columnIndex}: ${char}`);
+              }
+            }
+          )
+      );
+
+    return new Level(locations, start);
+  }
 }
 
 
