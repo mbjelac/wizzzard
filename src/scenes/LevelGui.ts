@@ -7,6 +7,9 @@ export default class LevelGui extends Phaser.Scene {
   // @ts-ignore
   private player: Phaser.Physics.Arcade.Sprite;
 
+  // @ts-ignore
+  private toolLabel: Phaser.GameObjects.Text;
+
   private readonly level: Level;
 
   constructor() {
@@ -44,7 +47,7 @@ export default class LevelGui extends Phaser.Scene {
       const floor = this.physics.add.sprite(locationPixelCoords.x, locationPixelCoords.y, 'floor').setInteractive();
       floor.on('pointerup', (pointer: Pointer) => {
         if (pointer.leftButtonReleased()) {
-          this.addWall(location, locationPixelCoords);
+          this.applyEditorTool(location, locationPixelCoords);
         }
       });
 
@@ -78,11 +81,28 @@ export default class LevelGui extends Phaser.Scene {
         console.log("toggle collision enabled");
         this.level.collisionEnabled = !this.level.collisionEnabled;
       }
+
+      if(event.key === 'e') {
+        this.level.changeEditorTool();
+      }
+
+
     });
 
     this.game.canvas.oncontextmenu = function (e) {
       e.preventDefault();
     }
+
+    this.toolLabel = this.add.text(0,0,"Hello!", {color: "#fff"});
+  }
+
+
+  update(time: number, delta: number) {
+
+    this.toolLabel.x = this.player.x - 70;
+    this.toolLabel.y = this.player.y - 70;
+    this.toolLabel.text = this.level.currentEditorTool;
+
   }
 
   private move(direction: Direction) {
@@ -97,16 +117,23 @@ export default class LevelGui extends Phaser.Scene {
     this.player.setY(this.player.y + tileSize * direction.deltaY);
   }
 
-  private addWall(location: Location, locationPixelCoords: Coords) {
-    const wall = this.level.addWall(location);
-    this.addWallSprite(locationPixelCoords, location, wall);
+  private applyEditorTool(location: Location, locationPixelCoords: Coords) {
+    const addedObject = this.level.applyEditorTool(location);
+
+    if (!addedObject){
+      return;
+    }
+
+    if(addedObject.isWall){
+      this.addWallSprite(locationPixelCoords, location, addedObject);
+    }
   }
 
   private addWallSprite(pixelCoords: Coords, location: Location, thing: Thing) {
     const wall = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, 'wall').setInteractive();
     wall.on('pointerup', (pointer: Pointer) => {
       if (pointer.rightButtonReleased()) {
-        this.level.removeWall(location, thing);
+        this.level.removeThing(location, thing);
         wall.destroy(true);
       }
     });

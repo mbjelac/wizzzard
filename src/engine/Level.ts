@@ -1,3 +1,5 @@
+import { EditorTools } from "./editor/EditorTools";
+
 export class Direction {
 
   public static readonly UP = new Direction(0, -1, "up");
@@ -75,6 +77,8 @@ export class Level {
 
   public collisionEnabled = true;
 
+  public currentEditorTool: EditorTools = EditorTools.NONE;
+
   constructor(
     public locations: Location[][],
     public start: Coords
@@ -107,13 +111,30 @@ export class Level {
     return row[coords.x];
   }
 
-  addWall(location: Location): Thing {
-    const wall = new Thing(true);
-    location.things.push(wall);
-    return wall;
+  applyEditorTool(location: Location): Thing | undefined {
+
+    const thingToAdd = this.createThingToAdd();
+
+    if (!thingToAdd) {
+      return undefined;
+    }
+
+    location.things.push(thingToAdd);
+    return thingToAdd;
   }
 
-  removeWall(location: Location, wall: Thing) {
+  private createThingToAdd(): Thing | undefined {
+    switch (this.currentEditorTool) {
+      case EditorTools.NONE:
+        return undefined;
+      case EditorTools.WALL:
+        return new Thing(true);
+      case EditorTools.FIRE:
+        return new Thing(true);
+    }
+  }
+
+  removeThing(location: Location, wall: Thing) {
 
     const index = location.things.findIndex(thing => thing.id === wall.id);
 
@@ -149,6 +170,17 @@ export class Level {
       );
 
     return new Level(locations, start);
+  }
+
+
+  private readonly editorTools: EditorTools[] = [EditorTools.NONE, EditorTools.WALL, EditorTools.FIRE]
+  private editorToolIndex = 0;
+  changeEditorTool() {
+    this.editorToolIndex++;
+    if (this.editorToolIndex == this.editorTools.length) {
+      this.editorToolIndex = 0;
+    }
+    this.currentEditorTool = this.editorTools[this.editorToolIndex];
   }
 }
 
