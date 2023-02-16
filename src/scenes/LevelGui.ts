@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { Coords, Direction, Level, Location, Thing } from "../engine/Level";
 import Pointer = Phaser.Input.Pointer;
 
-export default class Demo extends Phaser.Scene {
+export default class LevelGui extends Phaser.Scene {
 
   // @ts-ignore
   private player: Phaser.Physics.Arcade.Sprite;
