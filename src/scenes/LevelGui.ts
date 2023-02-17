@@ -37,7 +37,6 @@ export default class LevelGui extends Phaser.Scene {
     this.load.image('floor', 'assets/tiles/floor.png');
     this.load.image('player', 'assets/tiles/wizard1.png');
     this.load.spritesheet('fire', 'assets/tiles/fire.png', { frameWidth: 16, frameHeight: 16 });
-
   }
 
   create() {
@@ -47,6 +46,7 @@ export default class LevelGui extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers('fire', { start: 0, end: 3 }),
       repeat: -1,
     });
+
     this.level.locations.forEach((row, y) => row.forEach((location, x) => {
 
       const locationPixelCoords = toPixelCoords({
@@ -107,7 +107,7 @@ export default class LevelGui extends Phaser.Scene {
     this.toolLabel.y = this.player.y - 70;
     this.toolLabel.text = this.level.editor.getCurrentEditorTool();
 
-    this.spritesToAnimate.animate();
+    this.spritesToAnimate.animateAll();
   }
 
   private move(direction: Direction) {
@@ -138,7 +138,7 @@ export default class LevelGui extends Phaser.Scene {
 
     const thingSprite = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, thing.sprite).setDepth(depths.things).setInteractive();
 
-    this.spritesToAnimate.addAnimatedSprite(thing, thingSprite);
+    this.spritesToAnimate.addSprite(thing, thingSprite);
 
     thingSprite.on('pointerup', (pointer: Pointer) => {
       if (pointer.rightButtonReleased()) {

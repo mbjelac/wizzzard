@@ -1,16 +1,16 @@
 import { SpriteAnimationName, spriteAnimations } from "../engine/sprite-names";
 import { Thing } from "../engine/Level";
 
-interface ItemToAnimate {
+interface SpriteToAnimate {
 
   sprite: Phaser.Physics.Arcade.Sprite,
   animationName: SpriteAnimationName
 }
 export class SpritesToAnimate {
 
-  private readonly toAnimate: ItemToAnimate[] = [];
+  private readonly toAnimate: SpriteToAnimate[] = [];
 
-  public addAnimatedSprite(thing: Thing, sprite: Phaser.Physics.Arcade.Sprite) {
+  public addSprite(thing: Thing, sprite: Phaser.Physics.Arcade.Sprite) {
     const animationName = spriteAnimations.get(thing.sprite);
 
     if (!animationName) {
@@ -20,10 +20,10 @@ export class SpritesToAnimate {
     this.toAnimate.push({ sprite, animationName });
   }
 
-  public animate() {
-    this.toAnimate.forEach(item => {
-      item.sprite.anims.play({
-        key: item.animationName,
+  public animateAll() {
+    this.toAnimate.forEach(spriteToAnimate => {
+      spriteToAnimate.sprite.anims.play({
+        key: spriteToAnimate.animationName,
         startFrame: Math.floor(Math.random() * 4)
       });
     });
