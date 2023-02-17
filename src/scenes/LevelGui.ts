@@ -8,7 +8,8 @@ const depths = {
   things: 2,
   floors: 0,
   decorations: 1,
-  player: 10
+  player: 10,
+  info: 11
 };
 
 export default class LevelGui extends Phaser.Scene {
@@ -95,7 +96,7 @@ export default class LevelGui extends Phaser.Scene {
       e.preventDefault();
     }
 
-    this.toolLabel = this.add.text(0, 0, "Hello!", { color: "#fff" });
+    this.toolLabel = this.add.text(0, 0, "Hello!", { color: "#fff" }).setDepth(depths.info);
   }
 
 
