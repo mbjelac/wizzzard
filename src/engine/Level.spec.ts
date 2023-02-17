@@ -1,9 +1,10 @@
 import { Direction, Level } from "./Level";
+import { LevelFactory } from "./LevelFactory";
 
 let level: Level;
 
 beforeEach(() => {
-  level = Level.fromMatrix(
+  level = new LevelFactory().fromMatrix(
     "# #",
     " @ ",
     "# #"

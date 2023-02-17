@@ -48,6 +48,7 @@ export class Thing {
 
   constructor(
     public readonly isWall: boolean,
+    public readonly isDeath: boolean,
     public readonly sprite: SpriteName
   ) {
 
@@ -55,55 +56,6 @@ export class Thing {
 }
 
 export class Level {
-
-  public static random(width: number, height: number): Level {
-
-    let start: Coords;
-
-    const locations = Array(width).fill(0).map((_, y) =>
-      Array(height).fill(0).map((_, x) => {
-          if (Math.random() > 0.2) {
-            if (Math.random() > 0.6 && !start) {
-              start = { x: x, y: y };
-              console.log("Start: " + JSON.stringify(start));
-            }
-            return emptySpot();
-          } else {
-            return aWall();
-          }
-        }
-      )
-    );
-
-    return new Level(locations, start!);
-  }
-
-  public static fromMatrix(...rows: string[]): Level {
-
-    let start: Coords = { x: 0, y: 0 };
-
-    const locations: Location[][] = rows
-      .map((row, rowIndex) =>
-        [...row]
-          .map((char, columnIndex) => {
-              switch (char) {
-                case '#':
-                  return aWall();
-                case '@': {
-                  start = { x: columnIndex, y: rowIndex };
-                  return emptySpot();
-                }
-                case ' ':
-                  return emptySpot();
-                default:
-                  throw Error(`Illegal character on row/col ${rowIndex}/${columnIndex}: ${char}`);
-              }
-            }
-          )
-      );
-
-    return new Level(locations, start);
-  }
 
   public readonly editor = new LevelEditor();
 
@@ -145,13 +97,4 @@ export class Level {
   }
 
 
-}
-
-
-export function aWall(): Location {
-  return { things: [new Thing(true, "wall")] };
-}
-
-export function emptySpot(): Location {
-  return { things: [] };
 }

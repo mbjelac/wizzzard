@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { Coords, Direction, Level, Location, Thing } from "../engine/Level";
 import { SpritesToAnimate } from "./NewAnimatedSprites";
 import Pointer = Phaser.Input.Pointer;
+import { LevelFactory } from "../engine/LevelFactory";
 
 const depths = {
   things: 2,
@@ -25,7 +26,7 @@ export default class LevelGui extends Phaser.Scene {
   constructor() {
     super('GameScene');
 
-    this.level = Level.random(7, 7);
+    this.level = new LevelFactory().random(7, 7);
   }
 
 
