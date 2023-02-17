@@ -87,9 +87,15 @@ export class Level {
       this.playerLocation = nextCoords;
     }
 
+    const died = !!nextLocation && nextLocation.things.some(thing => thing.isDeath);
+
+    if (died) {
+      this.playerLocation = this.start;
+    }
+
     return {
       moved: canMove,
-      died: false
+      died: died
     };
   }
 
@@ -103,5 +109,7 @@ export class Level {
     return row[coords.x];
   }
 
-
+  getPlayerLocation(): Coords {
+    return this.playerLocation;
+  }
 }
