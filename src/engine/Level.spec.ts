@@ -1,7 +1,17 @@
-import { Direction, Level } from "./Level";
+import { Direction, Level, MoveResult } from "./Level";
 import { LevelFactory } from "./LevelFactory";
 
 let level: Level;
+
+const didMove: MoveResult = {
+  moved: true,
+  died: false
+}
+
+const didNotMove: MoveResult = {
+  moved: false,
+  died: false
+}
 
 beforeEach(() => {
   level = new LevelFactory().fromMatrix(
@@ -15,7 +25,7 @@ describe("can move ", () => {
   Direction.getAllDirections()
     .forEach(direction =>
       it(direction.name, () => {
-        expect(level.tryToMove(direction)).toBe(true);
+        expect(level.tryToMove(direction)).toStrictEqual(didMove);
       }));
 });
 
@@ -24,7 +34,7 @@ describe("can not move outside level", () => {
     .forEach(direction =>
       it(direction.name, () => {
         level.tryToMove(direction);
-        expect(level.tryToMove(direction)).toBe(false);
+        expect(level.tryToMove(direction)).toStrictEqual(didNotMove);
       }));
 });
 
@@ -41,6 +51,6 @@ describe("can not move into walls", () => {
   ]
     .forEach(directions =>
       it(directions.map(direction => direction.name).join(","), () => {
-        expect(directions.map(direction => level.tryToMove(direction))).toEqual([true, false]);
+        expect(directions.map(direction => level.tryToMove(direction))).toEqual([didMove, didNotMove]);
       }));
 });

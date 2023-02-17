@@ -1,4 +1,3 @@
-import { EditorTool } from "./editor/EditorTool";
 import { SpriteName } from "./sprite-names";
 import { LevelEditor } from "./editor/LevelEditor";
 
@@ -55,6 +54,11 @@ export class Thing {
   }
 }
 
+export interface MoveResult {
+  moved: boolean,
+  died: boolean
+}
+
 export class Level {
 
   public readonly editor = new LevelEditor();
@@ -71,7 +75,7 @@ export class Level {
     this.playerLocation = { ...start };
   }
 
-  public tryToMove(direction: Direction): boolean {
+  public tryToMove(direction: Direction): MoveResult {
 
     const nextCoords = direction.move(this.playerLocation);
 
@@ -83,7 +87,10 @@ export class Level {
       this.playerLocation = nextCoords;
     }
 
-    return canMove;
+    return {
+      moved: canMove,
+      died: false
+    };
   }
 
   private getLocation(coords: Coords): Location | undefined {
