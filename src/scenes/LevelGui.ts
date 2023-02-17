@@ -116,8 +116,10 @@ export default class LevelGui extends Phaser.Scene {
       return;
     }
 
-    this.player.setX(this.player.x + tileSize * direction.deltaX);
-    this.player.setY(this.player.y + tileSize * direction.deltaY);
+    const playerPixelCoords = toPixelCoords(this.level.getPlayerLocation());
+
+    this.player.setX(playerPixelCoords.x);
+    this.player.setY(playerPixelCoords.y);
   }
 
   private applyEditorTool(location: Location, locationPixelCoords: Coords) {
