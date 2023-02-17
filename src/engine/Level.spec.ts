@@ -1,5 +1,6 @@
-import { Direction, Level, MoveResult } from "./Level";
+import { Level, MoveResult } from "./Level";
 import { LevelFactory } from "./LevelFactory";
+import { Direction } from "./Direction";
 
 let level: Level;
 
@@ -105,7 +106,7 @@ describe("dying", () => {
       .forEach(direction =>
         it(direction.name, () => {
 
-          walkIntoFire();
+          moveIntoFire();
 
           expect([
             level.tryToMove(direction),
@@ -113,7 +114,7 @@ describe("dying", () => {
           ).toStrictEqual([moved, stayed]);
         }));
 
-    function walkIntoFire() {
+    function moveIntoFire() {
       level.tryToMove(Direction.UP);
       level.tryToMove(Direction.RIGHT);
     }

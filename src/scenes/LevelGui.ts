@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
-import { Coords, Direction, Level, Location, Thing } from "../engine/Level";
+import { Coords, Level, Location, Thing } from "../engine/Level";
 import { SpritesToAnimate } from "./NewAnimatedSprites";
 import Pointer = Phaser.Input.Pointer;
 import { LevelFactory } from "../engine/LevelFactory";
+import { Direction } from "../engine/Direction";
 
 const depths = {
   things: 2,
