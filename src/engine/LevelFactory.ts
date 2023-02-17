@@ -1,12 +1,16 @@
 import { Coords, Level, Location, Thing } from "./Level";
 
 export class LevelFactory {
-  private aWall(): Location {
+  private wall(): Location {
     return { things: [new Thing(true, false, "wall")] };
   }
 
-  private emptySpot(): Location {
+  private empty(): Location {
     return { things: [] };
+  }
+
+  private fire(): Location {
+    return { things: [new Thing(false, true, "fire")] };
   }
 
   public random(width: number, height: number): Level {
@@ -20,9 +24,9 @@ export class LevelFactory {
               start = { x: x, y: y };
               console.log("Start: " + JSON.stringify(start));
             }
-            return this.emptySpot();
+            return this.empty();
           } else {
-            return this.aWall();
+            return this.wall();
           }
         }
       )
@@ -41,13 +45,15 @@ export class LevelFactory {
           .map((char, columnIndex) => {
               switch (char) {
                 case '#':
-                  return this.aWall();
+                  return this.wall();
                 case '@': {
                   start = { x: columnIndex, y: rowIndex };
-                  return this.emptySpot();
+                  return this.empty();
                 }
                 case ' ':
-                  return this.emptySpot();
+                  return this.empty();
+                case '!':
+                  return this.fire();
                 default:
                   throw Error(`Illegal character on row/col ${rowIndex}/${columnIndex}: ${char}`);
               }
