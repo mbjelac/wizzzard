@@ -1,4 +1,5 @@
 import { EditorTools } from "./editor/EditorTools";
+import { SpriteName } from "./sprite-names";
 
 export class Direction {
 
@@ -44,7 +45,10 @@ export class Thing {
 
   public readonly id = Thing.nextId++;
 
-  constructor(public isWall: boolean) {
+  constructor(
+    public readonly isWall: boolean,
+    public readonly sprite: SpriteName
+  ) {
 
   }
 }
@@ -71,6 +75,33 @@ export class Level {
     );
 
     return new Level(locations, start!);
+  }
+
+  public static fromMatrix(...rows: string[]): Level {
+
+    let start: Coords = { x: 0, y: 0 };
+
+    const locations: Location[][] = rows
+      .map((row, rowIndex) =>
+        [...row]
+          .map((char, columnIndex) => {
+              switch (char) {
+                case '#':
+                  return aWall();
+                case '@': {
+                  start = { x: columnIndex, y: rowIndex };
+                  return emptySpot();
+                }
+                case ' ':
+                  return emptySpot();
+                default:
+                  throw Error(`Illegal character on row/col ${rowIndex}/${columnIndex}: ${char}`);
+              }
+            }
+          )
+      );
+
+    return new Level(locations, start);
   }
 
   private playerLocation: Coords;
@@ -128,9 +159,9 @@ export class Level {
       case EditorTools.NONE:
         return undefined;
       case EditorTools.WALL:
-        return new Thing(true);
+        return new Thing(true, "wall");
       case EditorTools.FIRE:
-        return new Thing(true);
+        return new Thing(false, "fire");
     }
   }
 
@@ -145,32 +176,7 @@ export class Level {
     location.things.splice(index, 1);
   }
 
-  public static fromMatrix(...rows: string[]): Level {
 
-    let start: Coords = { x: 0, y: 0 };
-
-    const locations: Location[][] = rows
-      .map((row, rowIndex) =>
-        [...row]
-          .map((char, columnIndex) => {
-              switch (char) {
-                case '#':
-                  return aWall();
-                case '@': {
-                  start = { x: columnIndex, y: rowIndex };
-                  return emptySpot();
-                }
-                case ' ':
-                  return emptySpot();
-                default:
-                  throw Error(`Illegal character on row/col ${rowIndex}/${columnIndex}: ${char}`);
-              }
-            }
-          )
-      );
-
-    return new Level(locations, start);
-  }
 
 
   private readonly editorTools: EditorTools[] = [EditorTools.NONE, EditorTools.WALL, EditorTools.FIRE]
@@ -186,7 +192,7 @@ export class Level {
 
 
 export function aWall(): Location {
-  return { things: [new Thing(true)] };
+  return { things: [new Thing(true, "wall")] };
 }
 
 export function emptySpot(): Location {

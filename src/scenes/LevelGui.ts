@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { Coords, Direction, Level, Location, Thing } from "../engine/Level";
+import { SpritesToAnimate } from "./NewAnimatedSprites";
 import Pointer = Phaser.Input.Pointer;
 
 export default class LevelGui extends Phaser.Scene {
@@ -11,6 +12,8 @@ export default class LevelGui extends Phaser.Scene {
   private toolLabel: Phaser.GameObjects.Text;
 
   private readonly level: Level;
+
+  private readonly spritesToAnimate = new SpritesToAnimate();
 
   constructor() {
     super('GameScene');
@@ -28,14 +31,12 @@ export default class LevelGui extends Phaser.Scene {
   }
 
   create() {
-
     this.anims.create({
       key: 'burn',
       frameRate: 7,
       frames: this.anims.generateFrameNumbers('fire', { start: 0, end: 3 }),
       repeat: -1,
     });
-
     this.level.locations.forEach((row, y) => row.forEach((location, x) => {
 
       const locationPixelCoords = toPixelCoords({
@@ -52,16 +53,9 @@ export default class LevelGui extends Phaser.Scene {
       });
 
       location.things.forEach(thing => {
-        if (thing.isWall) {
-          this.addWallSprite(locationPixelCoords, location, thing);
-        }
+        this.addThingSprite(locationPixelCoords, location, thing);
       });
     }));
-
-    this.addFireSprite({x: 0, y: 0});
-    this.addFireSprite({x: 0, y: 1});
-    this.addFireSprite({x: 1, y: 0});
-    this.addFireSprite({x: 1, y: 1});
 
     const playerPixelCoords = toPixelCoords({ x: this.level.start.x, y: this.level.start.y });
     this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player');
@@ -82,7 +76,7 @@ export default class LevelGui extends Phaser.Scene {
         this.level.collisionEnabled = !this.level.collisionEnabled;
       }
 
-      if(event.key === 'e') {
+      if (event.key === 'e') {
         this.level.changeEditorTool();
       }
 
@@ -93,7 +87,7 @@ export default class LevelGui extends Phaser.Scene {
       e.preventDefault();
     }
 
-    this.toolLabel = this.add.text(0,0,"Hello!", {color: "#fff"});
+    this.toolLabel = this.add.text(0, 0, "Hello!", { color: "#fff" });
   }
 
 
@@ -103,6 +97,7 @@ export default class LevelGui extends Phaser.Scene {
     this.toolLabel.y = this.player.y - 70;
     this.toolLabel.text = this.level.currentEditorTool;
 
+    this.spritesToAnimate.animate();
   }
 
   private move(direction: Direction) {
@@ -118,34 +113,26 @@ export default class LevelGui extends Phaser.Scene {
   }
 
   private applyEditorTool(location: Location, locationPixelCoords: Coords) {
-    const addedObject = this.level.applyEditorTool(location);
+    const addedThing = this.level.applyEditorTool(location);
 
-    if (!addedObject){
+    if (!addedThing) {
       return;
     }
 
-    if(addedObject.isWall){
-      this.addWallSprite(locationPixelCoords, location, addedObject);
-    }
+    this.addThingSprite(locationPixelCoords, location, addedThing);
   }
 
-  private addWallSprite(pixelCoords: Coords, location: Location, thing: Thing) {
-    const wall = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, 'wall').setInteractive();
-    wall.on('pointerup', (pointer: Pointer) => {
+  private addThingSprite(pixelCoords: Coords, location: Location, thing: Thing) {
+
+    const thingSprite = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, thing.sprite).setInteractive();
+
+    this.spritesToAnimate.addAnimatedSprite(thing, thingSprite);
+
+    thingSprite.on('pointerup', (pointer: Pointer) => {
       if (pointer.rightButtonReleased()) {
         this.level.removeThing(location, thing);
-        wall.destroy(true);
+        thingSprite.destroy(true);
       }
-    });
-
-  }
-
-  private addFireSprite(coords: Coords) {
-    const firePixelCoords = toPixelCoords(coords);
-    const fire = this.physics.add.sprite(firePixelCoords.x, firePixelCoords.y, 'fire');
-    fire.anims.play({
-      key: 'burn',
-      startFrame: Math.floor(Math.random() * 4)
     });
 
   }
