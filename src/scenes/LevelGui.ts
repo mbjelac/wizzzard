@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { Coords, Level, Location, Thing } from "../engine/Level";
-import { SpritesToAnimate } from "./NewAnimatedSprites";
+import { SpritesToAnimate } from "./SpritesToAnimate";
 import Pointer = Phaser.Input.Pointer;
 import { LevelFactory } from "../engine/LevelFactory";
 import { Direction } from "../engine/Direction";
