@@ -32,9 +32,9 @@ export class LevelEditor {
       case EditorTool.NONE:
         return undefined;
       case EditorTool.WALL:
-        return new Thing(true, "wall");
+        return new Thing(true, false, "wall");
       case EditorTool.FIRE:
-        return new Thing(false, "fire");
+        return new Thing(false, true, "fire");
     }
   }
 
