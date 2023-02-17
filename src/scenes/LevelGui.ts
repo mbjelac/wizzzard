@@ -3,6 +3,13 @@ import { Coords, Direction, Level, Location, Thing } from "../engine/Level";
 import { SpritesToAnimate } from "./NewAnimatedSprites";
 import Pointer = Phaser.Input.Pointer;
 
+const depths = {
+  things: 2,
+  floors: 0,
+  decorations: 1,
+  player: 10
+};
+
 export default class LevelGui extends Phaser.Scene {
 
   // @ts-ignore
@@ -45,7 +52,7 @@ export default class LevelGui extends Phaser.Scene {
       });
 
 
-      const floor = this.physics.add.sprite(locationPixelCoords.x, locationPixelCoords.y, 'floor').setInteractive();
+      const floor = this.physics.add.sprite(locationPixelCoords.x, locationPixelCoords.y, 'floor').setDepth(depths.floors).setInteractive();
       floor.on('pointerup', (pointer: Pointer) => {
         if (pointer.leftButtonReleased()) {
           this.applyEditorTool(location, locationPixelCoords);
@@ -58,7 +65,7 @@ export default class LevelGui extends Phaser.Scene {
     }));
 
     const playerPixelCoords = toPixelCoords({ x: this.level.start.x, y: this.level.start.y });
-    this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player');
+    this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player').setDepth(depths.player);
 
 
     this.cameras.main.startFollow(this.player);
@@ -77,7 +84,7 @@ export default class LevelGui extends Phaser.Scene {
       }
 
       if (event.key === 'e') {
-        this.level.changeEditorTool();
+        this.level.editor.changeEditorTool();
       }
 
 
@@ -95,7 +102,7 @@ export default class LevelGui extends Phaser.Scene {
 
     this.toolLabel.x = this.player.x - 70;
     this.toolLabel.y = this.player.y - 70;
-    this.toolLabel.text = this.level.currentEditorTool;
+    this.toolLabel.text = this.level.editor.getCurrentEditorTool();
 
     this.spritesToAnimate.animate();
   }
@@ -113,7 +120,7 @@ export default class LevelGui extends Phaser.Scene {
   }
 
   private applyEditorTool(location: Location, locationPixelCoords: Coords) {
-    const addedThing = this.level.applyEditorTool(location);
+    const addedThing = this.level.editor.applyEditorTool(location);
 
     if (!addedThing) {
       return;
@@ -124,13 +131,13 @@ export default class LevelGui extends Phaser.Scene {
 
   private addThingSprite(pixelCoords: Coords, location: Location, thing: Thing) {
 
-    const thingSprite = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, thing.sprite).setInteractive();
+    const thingSprite = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, thing.sprite).setDepth(depths.things).setInteractive();
 
     this.spritesToAnimate.addAnimatedSprite(thing, thingSprite);
 
     thingSprite.on('pointerup', (pointer: Pointer) => {
       if (pointer.rightButtonReleased()) {
-        this.level.removeThing(location, thing);
+        this.level.editor.removeThing(location, thing);
         thingSprite.destroy(true);
       }
     });

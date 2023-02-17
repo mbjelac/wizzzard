@@ -1,5 +1,6 @@
-import { EditorTools } from "./editor/EditorTools";
+import { EditorTool } from "./editor/EditorTool";
 import { SpriteName } from "./sprite-names";
+import { LevelEditor } from "./editor/LevelEditor";
 
 export class Direction {
 
@@ -104,11 +105,12 @@ export class Level {
     return new Level(locations, start);
   }
 
+  public readonly editor = new LevelEditor();
+
   private playerLocation: Coords;
 
   public collisionEnabled = true;
 
-  public currentEditorTool: EditorTools = EditorTools.NONE;
 
   constructor(
     public locations: Location[][],
@@ -142,52 +144,7 @@ export class Level {
     return row[coords.x];
   }
 
-  applyEditorTool(location: Location): Thing | undefined {
 
-    const thingToAdd = this.createThingToAdd();
-
-    if (!thingToAdd) {
-      return undefined;
-    }
-
-    location.things.push(thingToAdd);
-    return thingToAdd;
-  }
-
-  private createThingToAdd(): Thing | undefined {
-    switch (this.currentEditorTool) {
-      case EditorTools.NONE:
-        return undefined;
-      case EditorTools.WALL:
-        return new Thing(true, "wall");
-      case EditorTools.FIRE:
-        return new Thing(false, "fire");
-    }
-  }
-
-  removeThing(location: Location, wall: Thing) {
-
-    const index = location.things.findIndex(thing => thing.id === wall.id);
-
-    if (index === -1) {
-      throw Error(`Wall ${JSON.stringify(wall)}not found at location ${JSON.stringify(location)}.`);
-    }
-
-    location.things.splice(index, 1);
-  }
-
-
-
-
-  private readonly editorTools: EditorTools[] = [EditorTools.NONE, EditorTools.WALL, EditorTools.FIRE]
-  private editorToolIndex = 0;
-  changeEditorTool() {
-    this.editorToolIndex++;
-    if (this.editorToolIndex == this.editorTools.length) {
-      this.editorToolIndex = 0;
-    }
-    this.currentEditorTool = this.editorTools[this.editorToolIndex];
-  }
 }
 
 
