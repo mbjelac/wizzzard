@@ -1,9 +1,12 @@
 import Phaser from 'phaser';
 import { Coords, Level, Location, Thing } from "../engine/Level";
 import { SpritesToAnimate } from "./SpritesToAnimate";
-import Pointer = Phaser.Input.Pointer;
 import { LevelFactory } from "../engine/LevelFactory";
 import { Direction } from "../engine/Direction";
+import Pointer = Phaser.Input.Pointer;
+
+const tileSize = 16;
+const tileCenterOffset = tileSize / 2;
 
 const depths = {
   things: 2,
@@ -36,10 +39,11 @@ export default class LevelGui extends Phaser.Scene {
     this.load.image('wall', 'assets/tiles/wall.png');
     this.load.image('floor', 'assets/tiles/floor.png');
     this.load.image('player', 'assets/tiles/wizard1.png');
-    this.load.spritesheet('fire', 'assets/tiles/fire.png', { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('fire', 'assets/tiles/fire.png', { frameWidth: tileSize, frameHeight: tileSize });
   }
 
   create() {
+
     this.anims.create({
       key: 'burn',
       frameRate: 7,
@@ -67,11 +71,13 @@ export default class LevelGui extends Phaser.Scene {
       });
     }));
 
-    const playerPixelCoords = toPixelCoords({ x: this.level.start.x, y: this.level.start.y });
+    const startCoords: Coords = { x: this.level.start.x, y: this.level.start.y };
+    const playerPixelCoords = toPixelCoords(startCoords);
+
     this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player').setDepth(depths.player);
 
 
-    this.cameras.main.startFollow(this.player);
+    this.cameras.main.startFollow(this.player).setFollowOffset(-2 * tileSize + tileCenterOffset, 0);
 
     this.input.keyboard.on('keydown', (event: KeyboardEvent) => {
 
@@ -103,8 +109,9 @@ export default class LevelGui extends Phaser.Scene {
 
   update(time: number, delta: number) {
 
-    this.toolLabel.x = this.player.x - 70;
-    this.toolLabel.y = this.player.y - 70;
+
+    this.toolLabel.x = this.player.x - 4 * 16 - 8;
+    this.toolLabel.y = this.player.y - 4 * 16 - 8;
     this.toolLabel.text = this.level.editor.getCurrentEditorTool();
 
     this.spritesToAnimate.animateAll();
@@ -150,8 +157,6 @@ export default class LevelGui extends Phaser.Scene {
   }
 }
 
-const tileSize = 16;
-const tileCenterOffset = 8;
 
 function toPixelCoords(coords: Coords): Coords {
   return {
