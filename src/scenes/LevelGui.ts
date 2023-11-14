@@ -12,7 +12,8 @@ const depths = {
   things: 2,
   floors: 0,
   decorations: 1,
-  player: 10,
+  player: 9,
+  infoBackground: 8,
   info: 11
 };
 
@@ -23,6 +24,12 @@ export default class LevelGui extends Phaser.Scene {
 
   // @ts-ignore
   private toolLabel: Phaser.GameObjects.Text;
+
+  // @ts-ignore
+  private sidePanel: Phaser.GameObjects.Rectangle;
+
+  // @ts-ignore
+  private sideText: Phaser.GameObjects.Text;
 
   private readonly level: Level;
 
@@ -77,7 +84,7 @@ export default class LevelGui extends Phaser.Scene {
     this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player').setDepth(depths.player);
 
 
-    this.cameras.main.startFollow(this.player).setFollowOffset(-2 * tileSize + tileCenterOffset, 0);
+    this.cameras.main.startFollow(this.player).setFollowOffset(- 3 * tileSize + tileCenterOffset, 0);
 
     this.input.keyboard.on('keydown', (event: KeyboardEvent) => {
 
@@ -103,16 +110,42 @@ export default class LevelGui extends Phaser.Scene {
       e.preventDefault();
     }
 
-    this.toolLabel = this.add.text(0, 0, "Hello!", { color: "#fff" }).setDepth(depths.info);
+    this.toolLabel = this.add.text(0, 0, "Hello!", { color: "#fff", strokeThickness: 0 }).setDepth(depths.info).setFontSize(10);
+    this.sideText = this.add.text(0, 0, "Hello\nagain!", { color: "#000", strokeThickness: 0 }).setDepth(depths.info).setFontSize(9);
+
+    this.sidePanel = this.add.rectangle(0, 0, 5 * tileSize, 13 * tileSize, 0xffeeee, 1);
+    this.sidePanel.setDepth(depths.infoBackground)
   }
 
 
   update(time: number, delta: number) {
 
+    const playerLocation = this.level.getPlayerLocation();
 
-    this.toolLabel.x = this.player.x - 4 * 16 - 8;
-    this.toolLabel.y = this.player.y - 4 * 16 - 8;
-    this.toolLabel.text = this.level.editor.getCurrentEditorTool();
+    const sidePanelPixelCoords = toPixelCoords({
+      x: playerLocation.x + 9,
+      y: playerLocation.y
+    });
+
+    this.sidePanel.setX(sidePanelPixelCoords.x);
+    this.sidePanel.setY(sidePanelPixelCoords.y);
+
+    const toolLabelCoords: Coords = {
+      x: playerLocation.x - 6,
+      y: playerLocation.y - 6,
+    };
+    const toolLabelPixels = toPixelCoords(toolLabelCoords)
+    this.toolLabel.x = toolLabelPixels.x - tileCenterOffset;
+    this.toolLabel.y = toolLabelPixels.y - tileCenterOffset;
+    this.toolLabel.text = "HELLO " + this.level.editor.getCurrentEditorTool();
+
+    const sideTextCoords: Coords = {
+      x: playerLocation.x + 7,
+      y: playerLocation.y + 4,
+    };
+    const sideTextPixels = toPixelCoords(sideTextCoords)
+    this.sideText.x = sideTextPixels.x - tileCenterOffset;
+    this.sideText.y = sideTextPixels.y - tileCenterOffset;
 
     this.spritesToAnimate.animateAll();
   }
