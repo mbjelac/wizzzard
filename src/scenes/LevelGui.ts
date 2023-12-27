@@ -3,8 +3,8 @@ import { Coords, Level, Location, Thing } from "../engine/Level";
 import { SpritesToAnimate } from "./SpritesToAnimate";
 import { LevelFactory } from "../engine/LevelFactory";
 import { Direction } from "../engine/Direction";
-import Pointer = Phaser.Input.Pointer;
 import { TILE_SIZE } from "../config";
+import Pointer = Phaser.Input.Pointer;
 
 const tileCenterOffset = TILE_SIZE / 2;
 
@@ -84,7 +84,7 @@ export default class LevelGui extends Phaser.Scene {
     this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player').setDepth(depths.player);
 
 
-    this.cameras.main.startFollow(this.player).setFollowOffset(- 3 * TILE_SIZE + tileCenterOffset, 0);
+    this.cameras.main.startFollow(this.player).setFollowOffset(-3 * TILE_SIZE + tileCenterOffset, 0);
 
     this.input.keyboard.on('keydown', (event: KeyboardEvent) => {
 
@@ -111,9 +111,21 @@ export default class LevelGui extends Phaser.Scene {
     }
 
     this.toolLabel = this.add.text(0, 0, "Hello!", { color: "#fff", strokeThickness: 0 }).setDepth(depths.info).setFontSize(18);
-    this.sideText = this.add.text(0, 0, "Hello\nagain!", { color: "#000", strokeThickness: 0 }).setDepth(depths.info).setFontSize(18);
 
-    this.sidePanel = this.add.rectangle(0, 0, 5 * TILE_SIZE, 13 * TILE_SIZE, 0xffeeee, 1);
+    const sidePanelWidth = 5 * TILE_SIZE;
+
+    this.sideText = this.add
+      .text(0, 0, "Hello again! This is a very long message written to test text wrapping in Phazer.\n", {
+          color: "#000",
+          strokeThickness: 0,
+          font: "22px Georgia",
+          wordWrap: { width: sidePanelWidth - 20 },
+        padding: {x: 10}
+        }
+      )
+      .setDepth(depths.info);
+
+    this.sidePanel = this.add.rectangle(0, 0, sidePanelWidth, 13 * TILE_SIZE, 0xffeeee, 1);
     this.sidePanel.setDepth(depths.infoBackground)
   }
 
