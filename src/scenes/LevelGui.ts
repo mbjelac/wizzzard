@@ -4,9 +4,9 @@ import { SpritesToAnimate } from "./SpritesToAnimate";
 import { LevelFactory } from "../engine/LevelFactory";
 import { Direction } from "../engine/Direction";
 import Pointer = Phaser.Input.Pointer;
+import { TILE_SIZE } from "../config";
 
-const tileSize = 16;
-const tileCenterOffset = tileSize / 2;
+const tileCenterOffset = TILE_SIZE / 2;
 
 const depths = {
   things: 2,
@@ -46,7 +46,7 @@ export default class LevelGui extends Phaser.Scene {
     this.load.image('wall', 'assets/tiles/wall.png');
     this.load.image('floor', 'assets/tiles/floor.png');
     this.load.image('player', 'assets/tiles/wizard1.png');
-    this.load.spritesheet('fire', 'assets/tiles/fire.png', { frameWidth: tileSize, frameHeight: tileSize });
+    this.load.spritesheet('fire', 'assets/tiles/fire.png', { frameWidth: TILE_SIZE, frameHeight: TILE_SIZE });
   }
 
   create() {
@@ -84,7 +84,7 @@ export default class LevelGui extends Phaser.Scene {
     this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player').setDepth(depths.player);
 
 
-    this.cameras.main.startFollow(this.player).setFollowOffset(- 3 * tileSize + tileCenterOffset, 0);
+    this.cameras.main.startFollow(this.player).setFollowOffset(- 3 * TILE_SIZE + tileCenterOffset, 0);
 
     this.input.keyboard.on('keydown', (event: KeyboardEvent) => {
 
@@ -110,10 +110,10 @@ export default class LevelGui extends Phaser.Scene {
       e.preventDefault();
     }
 
-    this.toolLabel = this.add.text(0, 0, "Hello!", { color: "#fff", strokeThickness: 0 }).setDepth(depths.info).setFontSize(10);
-    this.sideText = this.add.text(0, 0, "Hello\nagain!", { color: "#000", strokeThickness: 0 }).setDepth(depths.info).setFontSize(9);
+    this.toolLabel = this.add.text(0, 0, "Hello!", { color: "#fff", strokeThickness: 0 }).setDepth(depths.info).setFontSize(18);
+    this.sideText = this.add.text(0, 0, "Hello\nagain!", { color: "#000", strokeThickness: 0 }).setDepth(depths.info).setFontSize(18);
 
-    this.sidePanel = this.add.rectangle(0, 0, 5 * tileSize, 13 * tileSize, 0xffeeee, 1);
+    this.sidePanel = this.add.rectangle(0, 0, 5 * TILE_SIZE, 13 * TILE_SIZE, 0xffeeee, 1);
     this.sidePanel.setDepth(depths.infoBackground)
   }
 
@@ -193,8 +193,8 @@ export default class LevelGui extends Phaser.Scene {
 
 function toPixelCoords(coords: Coords): Coords {
   return {
-    x: coords.x * tileSize + tileCenterOffset,
-    y: coords.y * tileSize + tileCenterOffset
+    x: coords.x * TILE_SIZE + tileCenterOffset,
+    y: coords.y * TILE_SIZE + tileCenterOffset
   }
 }
 

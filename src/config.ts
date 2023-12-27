@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import Zoom = Phaser.Scale.Zoom;
 
+export const TILE_SIZE = 64;
+
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: 'game',
@@ -13,10 +15,10 @@ const config: Phaser.Types.Core.GameConfig = {
     }
   },
   scale: {
-    width: 16 * 18,
-    height: 16 * 13,
-    mode: Phaser.Scale.FIT,
-    zoom: Zoom.ZOOM_4X,
+    width: TILE_SIZE * 18,
+    height: TILE_SIZE * 13,
+    // mode: Phaser.Scale.FIT,
+    // zoom: Zoom.NO_ZOOM,
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
   antialias: false
