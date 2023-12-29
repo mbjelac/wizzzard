@@ -36,7 +36,7 @@ export default class LevelGui extends Phaser.Scene {
   private readonly spritesToAnimate = new SpritesToAnimate();
 
   constructor() {
-    super('GameScene');
+    super('level');
 
     this.level = new LevelFactory().random(7, 7);
   }
@@ -103,8 +103,11 @@ export default class LevelGui extends Phaser.Scene {
         this.level.editor.changeEditorTool();
       }
 
-
+      if (event.code === "Escape") {
+        this.scene.switch("errands")
+      }
     });
+
 
     this.game.canvas.oncontextmenu = function (e) {
       e.preventDefault();
