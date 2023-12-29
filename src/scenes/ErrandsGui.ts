@@ -12,6 +12,7 @@ const maxErrandAmount = 8;
 interface ErrandSlot {
   title: Phaser.GameObjects.Text,
   description: Phaser.GameObjects.Text,
+  goButton: Phaser.GameObjects.Sprite
 }
 
 export default class ErrandsGui extends Phaser.Scene {
@@ -24,6 +25,9 @@ export default class ErrandsGui extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image('errandGo', 'assets/errand_go.png');
+
+
     this.events.on("create", () => this.sceneActive())
     this.events.on("wake", () => this.sceneActive())
   }
@@ -37,16 +41,24 @@ export default class ErrandsGui extends Phaser.Scene {
   }
 
   private setErrand(slot: ErrandSlot, errand?: Errand) {
+
+    slot.goButton.removeAllListeners();
+
     if (errand) {
       slot.title.setText(errand.title);
       slot.title.setVisible(true);
       slot.description.setText(errand.description);
       slot.description.setVisible(true);
+      slot.goButton.setVisible(true);
+      slot.goButton.on('pointerup', ()=> {
+        console.log("Go to errand: " + errand.id);
+      })
     } else {
       slot.title.setText("");
       slot.title.setVisible(false);
       slot.description.setText("");
       slot.description.setVisible(false);
+      slot.goButton.setVisible(false);
     }
   }
 
@@ -100,9 +112,18 @@ export default class ErrandsGui extends Phaser.Scene {
       .setDepth(depths.errandText)
       .setVisible(false);
 
+    const goButton = this.add.sprite(
+      xOffset + 550,
+      yOffset + errandIndex * errandHeight + 30,
+      'errandGo'
+    )
+      .setInteractive()
+      .setVisible(false);
+
     return {
       title,
-      description
+      description,
+      goButton
     };
   }
 
