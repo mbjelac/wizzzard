@@ -152,7 +152,7 @@ export default class LevelGui extends Phaser.Scene {
     const toolLabelPixels = toPixelCoords(toolLabelCoords)
     this.toolLabel.x = toolLabelPixels.x - tileCenterOffset;
     this.toolLabel.y = toolLabelPixels.y - tileCenterOffset;
-    this.toolLabel.text = "HELLO " + this.level.editor.getCurrentEditorTool();
+    this.toolLabel.text = "EDITOR: " + this.level.editor.getCurrentEditorTool();
 
     const sideTextCoords: Coords = {
       x: playerLocation.x + 7,
