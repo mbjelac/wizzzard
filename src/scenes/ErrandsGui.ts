@@ -52,6 +52,7 @@ export default class ErrandsGui extends Phaser.Scene {
       slot.goButton.setVisible(true);
       slot.goButton.on('pointerup', ()=> {
         console.log("Go to errand: " + errand.id);
+        this.scene.switch("level")
       })
     } else {
       slot.title.setText("");
@@ -63,15 +64,7 @@ export default class ErrandsGui extends Phaser.Scene {
   }
 
   create() {
-
     this.errandSlots = Array(maxErrandAmount).fill(null).map((_, index) => this.createErrandSlot(index));
-
-    this.input.keyboard.on('keydown', (event: KeyboardEvent) => {
-
-      if (event.code === "Escape") {
-        this.scene.switch("level")
-      }
-    });
   }
 
   private createErrandSlot(errandIndex: number): ErrandSlot {
