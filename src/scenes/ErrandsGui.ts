@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { Errand } from "../engine/Errand";
+import { ErrandDescription } from "../engine/ErrandDescription";
 import { GAME } from "../engine/game";
 
 
@@ -22,9 +22,13 @@ export default class ErrandsGui extends Phaser.Scene {
 
   constructor() {
     super('errands');
+    console.log("Errands constructor")
   }
 
   preload() {
+
+    console.log("Errands preload")
+
     this.load.image('errandGo', 'assets/errand_go.png');
 
 
@@ -33,14 +37,14 @@ export default class ErrandsGui extends Phaser.Scene {
   }
 
   private sceneActive() {
-    this.addErrands(GAME.getErrands())
+    this.addErrands(GAME.getErrandDescriptions())
   }
 
-  private addErrands(errands: Errand[]) {
+  private addErrands(errands: ErrandDescription[]) {
     this.errandSlots.forEach((slot, index) => this.setErrand(slot, errands[index]));
   }
 
-  private setErrand(slot: ErrandSlot, errand?: Errand) {
+  private setErrand(slot: ErrandSlot, errand?: ErrandDescription) {
 
     slot.goButton.removeAllListeners();
 
@@ -52,7 +56,7 @@ export default class ErrandsGui extends Phaser.Scene {
       slot.goButton.setVisible(true);
       slot.goButton.on('pointerup', ()=> {
         console.log("Go to errand: " + errand.id);
-        this.scene.switch("level")
+        this.scene.stop("errands").setVisible(false, "errands").launch("level");
       })
     } else {
       slot.title.setText("");
@@ -64,6 +68,8 @@ export default class ErrandsGui extends Phaser.Scene {
   }
 
   create() {
+    console.log("Errands create")
+
     this.errandSlots = Array(maxErrandAmount).fill(null).map((_, index) => this.createErrandSlot(index));
   }
 

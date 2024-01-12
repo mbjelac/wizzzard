@@ -1,4 +1,4 @@
-export interface Errand {
+export interface ErrandDescription {
   id: string,
 
   title: string,

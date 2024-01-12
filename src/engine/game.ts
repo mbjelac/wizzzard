@@ -1,8 +1,10 @@
-import { Errand } from "./Errand";
+import { ErrandDescription } from "./ErrandDescription";
+import { Level } from "./Level";
+import { LevelFactory } from "./LevelFactory";
 
 export class Game {
 
-  getErrands(): Errand[] {
+  getErrandDescriptions(): ErrandDescription[] {
     return [
       {
         id: "beorn1",
@@ -30,6 +32,14 @@ export class Game {
         description: "Upon Beorn's specific request, his funeral pyre boat has to be ignited by magical flames, so his soul can rest within Taysha's wizardly realm."
       },
     ];
+  }
+
+  goToErrand(errandId: string) {
+
+  }
+
+  getCurrentLevel(): Level {
+    return new LevelFactory().random(7, 7);
   }
 }
 

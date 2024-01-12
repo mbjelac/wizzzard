@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
 import { Coords, Level, Location, Thing } from "../engine/Level";
 import { SpritesToAnimate } from "./SpritesToAnimate";
-import { LevelFactory } from "../engine/LevelFactory";
 import { Direction } from "../engine/Direction";
 import { TILE_SIZE } from "../config";
 import Pointer = Phaser.Input.Pointer;
+import { GAME } from "../engine/game";
 
 const tileCenterOffset = TILE_SIZE / 2;
 
@@ -31,14 +31,12 @@ export default class LevelGui extends Phaser.Scene {
   // @ts-ignore
   private sideText: Phaser.GameObjects.Text;
 
-  private readonly level: Level;
+  private level: Level = new Level([], { x: 0, y: 0 });
 
   private readonly spritesToAnimate = new SpritesToAnimate();
 
   constructor() {
     super('level');
-
-    this.level = new LevelFactory().random(7, 7);
   }
 
 
@@ -50,6 +48,10 @@ export default class LevelGui extends Phaser.Scene {
   }
 
   create() {
+
+    console.log("Level create");
+
+    this.level = GAME.getCurrentLevel();
 
     this.anims.create({
       key: 'burn',
@@ -104,7 +106,7 @@ export default class LevelGui extends Phaser.Scene {
       }
 
       if (event.code === "Escape") {
-        this.scene.switch("errands")
+        this.scene.stop("level").setVisible(false, "level").launch("errands")
       }
     });
 
@@ -123,7 +125,7 @@ export default class LevelGui extends Phaser.Scene {
           strokeThickness: 0,
           font: "22px Georgia",
           wordWrap: { width: sidePanelWidth - 20 },
-        padding: {x: 10}
+          padding: { x: 10 }
         }
       )
       .setDepth(depths.info);
