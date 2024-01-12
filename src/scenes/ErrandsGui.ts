@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ErrandDescription } from "../engine/ErrandDescription";
+import { ErrandDescription } from "../engine/Errand";
 import { GAME } from "../engine/game";
 
 
@@ -56,6 +56,7 @@ export default class ErrandsGui extends Phaser.Scene {
       slot.goButton.setVisible(true);
       slot.goButton.on('pointerup', ()=> {
         console.log("Go to errand: " + errand.id);
+        GAME.goToErrand(errand.id);
         this.scene.stop("errands").setVisible(false, "errands").launch("level");
       })
     } else {

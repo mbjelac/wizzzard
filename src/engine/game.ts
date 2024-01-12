@@ -1,45 +1,34 @@
-import { ErrandDescription } from "./ErrandDescription";
+import { Errand, ErrandDescription } from "./Errand";
 import { Level } from "./Level";
 import { LevelFactory } from "./LevelFactory";
+import { errands } from "./errands";
 
 export class Game {
 
+  private currentErrand?: Errand;
+
   getErrandDescriptions(): ErrandDescription[] {
-    return [
-      {
-        id: "beorn1",
-        title: "Beorn's farewell",
-        description: "Upon Beorn's specific request, his funeral pyre boat has to be ignited by magical flames, so his soul can rest within Taysha's wizardly realm."
-      },
-      {
-        id: "beorn2",
-        title: "Beorn's farewell",
-        description: "Upon Beorn's specific request, his funeral pyre boat has to be ignited by magical flames, so his soul can rest within Taysha's wizardly realm."
-      },
-      {
-        id: "beorn3",
-        title: "Beorn's farewell",
-        description: "Upon Beorn's specific request, his funeral pyre boat has to be ignited by magical flames, so his soul can rest within Taysha's wizardly realm."
-      },
-      {
-        id: "beorn4",
-        title: "Beorn's farewell",
-        description: "Upon Beorn's specific request, his funeral pyre boat has to be ignited by magical flames, so his soul can rest within Taysha's wizardly realm."
-      },
-      {
-        id: "beorn5",
-        title: "Beorn's farewell",
-        description: "Upon Beorn's specific request, his funeral pyre boat has to be ignited by magical flames, so his soul can rest within Taysha's wizardly realm."
-      },
-    ];
+    return errands.map(errand => errand.description);
   }
 
   goToErrand(errandId: string) {
 
+    const errand = errands.find(errand => errand.description.id === errandId);
+
+    if (errand === undefined) {
+      throw Error("Errand not found: " + errandId);
+    }
+
+    this.currentErrand = errand;
   }
 
   getCurrentLevel(): Level {
-    return new LevelFactory().random(7, 7);
+
+    if (this.currentErrand === undefined) {
+      throw Error("Currently not on errand!");
+    }
+
+    return new LevelFactory().fromMatrix(...this.currentErrand.levelMatrix);
   }
 }
 
