@@ -45,13 +45,17 @@ export default class LevelGui extends Phaser.Scene {
     this.load.image('floor', 'assets/tiles/floor.png');
     this.load.image('player', 'assets/tiles/wizard1.png');
     this.load.spritesheet('fire', 'assets/tiles/fire.png', { frameWidth: TILE_SIZE, frameHeight: TILE_SIZE });
+
+    this.events.on("create", async () => this.populateLevel());
   }
 
   create() {
-
     console.log("Level create");
+  }
 
-    this.level = GAME.getCurrentLevel();
+  private async populateLevel() {
+
+    this.level = await GAME.getCurrentLevel();
 
     this.anims.create({
       key: 'burn',

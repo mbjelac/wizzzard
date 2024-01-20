@@ -1,7 +1,6 @@
-import { Errand } from "./Errand";
-import { LevelFactory } from "./LevelFactory";
+import { Errand, ErrandDescription } from "./Errand";
 
-export const errands: Errand[] = [
+const errands: Errand[] = [
   {
     description: {
       id: "empty",
@@ -49,3 +48,15 @@ export const errands: Errand[] = [
     ]
   },
 ];
+
+export async function getErrand(errandId: string): Promise<Errand> {
+  const errand = errands.find(errand => errand.description.id === errandId);
+
+  return errand === undefined
+    ? Promise.reject(`Errand not found for id: ${errandId}`)
+    : Promise.resolve(errand);
+}
+
+export async function getErrandDescriptions(): Promise<ErrandDescription[]> {
+  return Promise.resolve(errands.map(errand => errand.description));
+}

@@ -1,34 +1,29 @@
-import { Errand, ErrandDescription } from "./Errand";
+import { ErrandDescription } from "./Errand";
 import { Level } from "./Level";
 import { LevelFactory } from "./LevelFactory";
-import { errands } from "./errands";
+import { getErrand, getErrandDescriptions } from "./errands";
 
 export class Game {
 
-  private currentErrand?: Errand;
+  private currentErrandId?: string;
 
-  getErrandDescriptions(): ErrandDescription[] {
-    return errands.map(errand => errand.description);
+  async getErrandDescriptions(): Promise<ErrandDescription[]> {
+    return await getErrandDescriptions()
   }
 
   goToErrand(errandId: string) {
-
-    const errand = errands.find(errand => errand.description.id === errandId);
-
-    if (errand === undefined) {
-      throw Error("Errand not found: " + errandId);
-    }
-
-    this.currentErrand = errand;
+    this.currentErrandId = errandId;
   }
 
-  getCurrentLevel(): Level {
+  async getCurrentLevel(): Promise<Level> {
 
-    if (this.currentErrand === undefined) {
+    if (this.currentErrandId === undefined) {
       throw Error("Currently not on errand!");
     }
 
-    return new LevelFactory().fromMatrix(...this.currentErrand.levelMatrix);
+    const errand = await getErrand(this.currentErrandId);
+
+    return new LevelFactory().fromMatrix(...errand.levelMatrix);
   }
 }
 

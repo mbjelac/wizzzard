@@ -31,13 +31,15 @@ export default class ErrandsGui extends Phaser.Scene {
 
     this.load.image('errandGo', 'assets/errand_go.png');
 
-
-    this.events.on("create", () => this.sceneActive())
-    this.events.on("wake", () => this.sceneActive())
+    this.events.on("create", async () => this.sceneActive());
+    this.events.on("wake", async () => this.sceneActive());
   }
 
-  private sceneActive() {
-    this.addErrands(GAME.getErrandDescriptions())
+  private async sceneActive() {
+
+    const descriptions = await GAME.getErrandDescriptions();
+
+    this.addErrands(descriptions);
   }
 
   private addErrands(errands: ErrandDescription[]) {
