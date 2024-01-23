@@ -30,4 +30,8 @@ export class SpritesToAnimate {
 
     this.toAnimate.length = 0;
   }
+
+  public clearAll() {
+    this.toAnimate.length = 0;
+  }
 }

@@ -221,6 +221,7 @@ export default class LevelGui extends Phaser.Scene {
   }
 
   private clearLevel() {
+    this.spritesToAnimate.clearAll();
     this.createdObjects.forEach(createdObject => createdObject.destroy(true));
   }
 }
