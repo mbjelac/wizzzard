@@ -5,6 +5,7 @@ import { Direction } from "../engine/Direction";
 import { TILE_SIZE } from "../config";
 import Pointer = Phaser.Input.Pointer;
 import { GAME } from "../engine/game";
+import Sprite = Phaser.Physics.Arcade.Sprite;
 
 const tileCenterOffset = TILE_SIZE / 2;
 
@@ -35,6 +36,8 @@ export default class LevelGui extends Phaser.Scene {
 
   private readonly spritesToAnimate = new SpritesToAnimate();
 
+  private createdObjects: Sprite[] = [];
+
   constructor() {
     super('level');
   }
@@ -47,15 +50,11 @@ export default class LevelGui extends Phaser.Scene {
     this.load.spritesheet('fire', 'assets/tiles/fire.png', { frameWidth: TILE_SIZE, frameHeight: TILE_SIZE });
 
     this.events.on("create", async () => this.populateLevel());
+    this.events.on("wake", async () => this.populateLevel());
   }
 
   create() {
     console.log("Level create");
-  }
-
-  private async populateLevel() {
-
-    this.level = await GAME.getCurrentLevel();
 
     this.anims.create({
       key: 'burn',
@@ -63,34 +62,6 @@ export default class LevelGui extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers('fire', { start: 0, end: 3 }),
       repeat: -1,
     });
-
-    this.level.locations.forEach((row, y) => row.forEach((location, x) => {
-
-      const locationPixelCoords = toPixelCoords({
-        x: x,
-        y: y
-      });
-
-
-      const floor = this.physics.add.sprite(locationPixelCoords.x, locationPixelCoords.y, 'floor').setDepth(depths.floors).setInteractive();
-      floor.on('pointerup', (pointer: Pointer) => {
-        if (pointer.leftButtonReleased()) {
-          this.applyEditorTool(location, locationPixelCoords);
-        }
-      });
-
-      location.things.forEach(thing => {
-        this.addThingSprite(locationPixelCoords, location, thing);
-      });
-    }));
-
-    const startCoords: Coords = { x: this.level.start.x, y: this.level.start.y };
-    const playerPixelCoords = toPixelCoords(startCoords);
-
-    this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player').setDepth(depths.player);
-
-
-    this.cameras.main.startFollow(this.player).setFollowOffset(-3 * TILE_SIZE + tileCenterOffset, 0);
 
     this.input.keyboard.on('keydown', (event: KeyboardEvent) => {
 
@@ -110,7 +81,7 @@ export default class LevelGui extends Phaser.Scene {
       }
 
       if (event.code === "Escape") {
-        this.scene.stop("level").setVisible(false, "level").launch("errands")
+        this.scene.switch("errands");
       }
     });
 
@@ -136,6 +107,44 @@ export default class LevelGui extends Phaser.Scene {
 
     this.sidePanel = this.add.rectangle(0, 0, sidePanelWidth, 13 * TILE_SIZE, 0xffeeee, 1);
     this.sidePanel.setDepth(depths.infoBackground)
+  }
+
+  private async populateLevel() {
+
+    this.clearLevel();
+
+    this.level = await GAME.getCurrentLevel();
+
+    this.level.locations.forEach((row, y) => row.forEach((location, x) => {
+
+      const locationPixelCoords = toPixelCoords({
+        x: x,
+        y: y
+      });
+
+
+      const floor = this.physics.add.sprite(locationPixelCoords.x, locationPixelCoords.y, 'floor').setDepth(depths.floors).setInteractive();
+      floor.on('pointerup', (pointer: Pointer) => {
+        if (pointer.leftButtonReleased()) {
+          this.applyEditorTool(location, locationPixelCoords);
+        }
+      });
+
+      this.createdObjects.push(floor);
+
+      location.things.forEach(thing => {
+        this.addThingSprite(locationPixelCoords, location, thing);
+      });
+    }));
+
+    const startCoords: Coords = { x: this.level.start.x, y: this.level.start.y };
+    const playerPixelCoords = toPixelCoords(startCoords);
+
+    this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player').setDepth(depths.player);
+
+    this.createdObjects.push(this.player);
+
+    this.cameras.main.startFollow(this.player).setFollowOffset(-3 * TILE_SIZE + tileCenterOffset, 0);
   }
 
 
@@ -208,6 +217,11 @@ export default class LevelGui extends Phaser.Scene {
       }
     });
 
+    this.createdObjects.push(thingSprite);
+  }
+
+  private clearLevel() {
+    this.createdObjects.forEach(createdObject => createdObject.destroy(true));
   }
 }
 

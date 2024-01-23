@@ -59,7 +59,7 @@ export default class ErrandsGui extends Phaser.Scene {
       slot.goButton.on('pointerup', ()=> {
         console.log("Go to errand: " + errand.id);
         GAME.goToErrand(errand.id);
-        this.scene.stop("errands").setVisible(false, "errands").launch("level");
+        this.scene.switch("level");
       })
     } else {
       slot.title.setText("");
