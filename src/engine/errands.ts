@@ -3,8 +3,16 @@ import { Errand, ErrandDescription } from "./Errand";
 const errands: Errand[] = [
   {
     description: {
-      id: "empty",
-      title: "Empty",
+      id: "void",
+      title: "A void",
+      description: "An empty black void, suitable for trying out the level editor."
+    },
+    levelMatrix: ["@"]
+  },
+  {
+    description: {
+      id: "emptyRoom",
+      title: "Empty Room",
       description: "An empty room"
     },
     levelMatrix: [
