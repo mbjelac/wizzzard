@@ -223,6 +223,9 @@ export default class LevelGui extends Phaser.Scene {
         this.level.editor.removeThing(location, thing);
         thingSprite.destroy(true);
       }
+      if (pointer.leftButtonReleased()) {
+        this.applyEditorTool(location, pixelCoords);
+      }
     });
 
     this.createdObjects.push(thingSprite);
