@@ -85,6 +85,10 @@ export default class LevelGui extends Phaser.Scene {
       if (event.code === "Escape") {
         this.scene.switch("errands");
       }
+
+      if (event.key === "p") {
+        this.printLevel();
+      }
     });
 
 
@@ -117,11 +121,11 @@ export default class LevelGui extends Phaser.Scene {
 
     this.level = await GAME.getCurrentLevel();
 
-      for (const x of Array(this.level.errand.levelDimensions.width).keys()) {
-        for (const y of Array(this.level.errand.levelDimensions.height).keys()) {
-          this.addLocation(x, y);
-        }
+    for (const x of Array(this.level.errand.levelDimensions.width).keys()) {
+      for (const y of Array(this.level.errand.levelDimensions.height).keys()) {
+        this.addLocation(x, y);
       }
+    }
 
     const startCoords: Coords = { x: this.level.errand.startCoords.x, y: this.level.errand.startCoords.y };
     const playerPixelCoords = toPixelCoords(startCoords);
@@ -234,6 +238,10 @@ export default class LevelGui extends Phaser.Scene {
   private clearLevel() {
     this.spritesToAnimate.clearAll();
     this.createdObjects.forEach(createdObject => createdObject.destroy(true));
+  }
+
+  private printLevel() {
+    console.log(JSON.stringify(this.level.levelMatrix));
   }
 }
 
