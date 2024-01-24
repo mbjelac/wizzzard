@@ -69,8 +69,6 @@ export class Level {
       this.playerLocation = this.errand.startCoords;
     }
 
-    console.log("Tried to move ... canMove=" + canMove + " died=" + died);
-
     return {
       moved: canMove,
       died: died
