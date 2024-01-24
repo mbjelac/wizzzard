@@ -1,4 +1,4 @@
-import { Coords, Level, Location, Thing } from "./Level";
+import { LevelMatrix, Location, Thing } from "./Level";
 
 export class LevelFactory {
   private wall(): Location {
@@ -13,17 +13,11 @@ export class LevelFactory {
     return { things: [new Thing(false, true, "fire")] };
   }
 
-  public random(width: number, height: number): Level {
+  public random(width: number, height: number): LevelMatrix {
 
-    let start: Coords;
-
-    const locations = Array(width).fill(0).map((_, y) =>
-      Array(height).fill(0).map((_, x) => {
+    return Array(width).fill(0).map((_, _y) =>
+      Array(height).fill(0).map((_, _x) => {
           if (Math.random() > 0.2) {
-            if (Math.random() > 0.6 && !start) {
-              start = { x: x, y: y };
-              console.log("Start: " + JSON.stringify(start));
-            }
             return this.empty();
           } else {
             return this.wall();
@@ -31,25 +25,16 @@ export class LevelFactory {
         }
       )
     );
-
-    return new Level(locations, start!);
   }
 
-  public fromMatrix(...rows: string[]): Level {
-
-    let start: Coords = { x: 0, y: 0 };
-
-    const locations: Location[][] = rows
+  public fromMatrix(...rows: string[]): LevelMatrix {
+    return rows
       .map((row, rowIndex) =>
         [...row]
           .map((char, columnIndex) => {
               switch (char) {
                 case '#':
                   return this.wall();
-                case '@': {
-                  start = { x: columnIndex, y: rowIndex };
-                  return this.empty();
-                }
                 case ' ':
                   return this.empty();
                 case '!':
@@ -60,7 +45,5 @@ export class LevelFactory {
             }
           )
       );
-
-    return new Level(locations, start);
   }
 }

@@ -12,6 +12,8 @@ export interface Location {
   things: Thing[]
 }
 
+export type LevelMatrix = Location[][];
+
 export class Thing {
 
   private static nextId = 0;

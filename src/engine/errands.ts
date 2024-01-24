@@ -7,7 +7,9 @@ const errands: Errand[] = [
       title: "A void",
       description: "An empty black void, suitable for trying out the level editor."
     },
-    levelMatrix: ["@"]
+    levelDimensions: { width: 1, height: 1 },
+    startCoords: { x: 0, y: 0},
+    levelMatrix: []
   },
   {
     description: {
@@ -15,11 +17,13 @@ const errands: Errand[] = [
       title: "Empty Room",
       description: "An empty room"
     },
+    levelDimensions: { width: 3, height: 3 },
     levelMatrix: [
       "   ",
-      " @ ",
       "   ",
-    ]
+      "   ",
+    ],
+    startCoords: { x: 1, y: 1},
   },
   {
     description: {
@@ -27,15 +31,17 @@ const errands: Errand[] = [
       title: "Ring of fire",
       description: "A ring of fire is conjured around you. What do you do?"
     },
+    levelDimensions: { width: 7, height: 7 },
     levelMatrix: [
       "       ",
       "  !!!  ",
       " !   ! ",
-      " ! @ ! ",
+      " !   ! ",
       " !   ! ",
       "  !!!  ",
       "       ",
-    ]
+    ],
+    startCoords: { x: 3, y: 3},
   },
   {
     description: {
@@ -43,17 +49,19 @@ const errands: Errand[] = [
       title: "A dungeon",
       description: "Another dungeon. Boring."
     },
+    levelDimensions: { width: 12, height: 9 },
     levelMatrix: [
       "############",
       "#     ##   #",
       "### ##### ##",
-      "@      #   #",
+      "       #   #",
       "### ## # # #",
       "##   # # # #",
       "## ! # # # #",
       "##   #     #",
       "############",
-    ]
+    ],
+    startCoords: { x: 0, y: 3},
   },
 ];
 

@@ -1,15 +1,20 @@
-import { Level } from "./Level";
+import { Coords } from "./Level";
 
 export interface Errand {
 
-  description: ErrandDescription,
-  levelMatrix: string[]
-
+  readonly description: ErrandDescription,
+  readonly levelDimensions: LevelDimensions,
+  readonly levelMatrix: string[],
+  readonly startCoords: Coords
 }
 
+export interface LevelDimensions {
+  readonly width: number,
+  readonly height: number
+}
 export interface ErrandDescription {
-  id: string,
+  readonly id: string,
 
-  title: string,
-  description: string
+  readonly title: string,
+  readonly description: string
 }

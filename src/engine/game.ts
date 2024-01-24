@@ -23,7 +23,9 @@ export class Game {
 
     const errand = await getErrand(this.currentErrandId);
 
-    return new LevelFactory().fromMatrix(...errand.levelMatrix);
+    const matrix = new LevelFactory().fromMatrix(...errand.levelMatrix);
+
+    return new Level(matrix, errand.startCoords);
   }
 }
 
