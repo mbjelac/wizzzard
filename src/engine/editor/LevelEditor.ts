@@ -2,8 +2,7 @@ import { allEditorTools, EditorTool } from "./EditorTool";
 import { Location, Thing } from "../Level";
 
 export interface AddResult {
-  addedThing?: Thing,
-  matrixDimensionsChanged: boolean
+  addedThing?: Thing
 }
 export class LevelEditor {
 
@@ -27,16 +26,14 @@ export class LevelEditor {
 
     if (!thingToAdd) {
       return {
-        addedThing: undefined,
-        matrixDimensionsChanged: false
+        addedThing: undefined
       };
     }
 
     location.things.push(thingToAdd);
 
     return {
-      addedThing: thingToAdd,
-      matrixDimensionsChanged: false
+      addedThing: thingToAdd
     };
   }
 
