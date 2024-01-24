@@ -115,7 +115,7 @@ export default class LevelGui extends Phaser.Scene {
 
     this.level = await GAME.getCurrentLevel();
 
-    this.level.locations.forEach((row, y) => row.forEach((location, x) => {
+    this.level.levelMatrix.forEach((row, y) => row.forEach((location, x) => {
 
       const locationPixelCoords = toPixelCoords({
         x: x,
@@ -195,13 +195,13 @@ export default class LevelGui extends Phaser.Scene {
   }
 
   private applyEditorTool(location: Location, locationPixelCoords: Coords) {
-    const addedThing = this.level.editor.applyEditorTool(location);
+    const addResult = this.level.editor.applyEditorTool(location);
 
-    if (!addedThing) {
+    if (!addResult.addedThing) {
       return;
     }
 
-    this.addThingSprite(locationPixelCoords, location, addedThing);
+    this.addThingSprite(locationPixelCoords, location, addResult.addedThing);
   }
 
   private addThingSprite(pixelCoords: Coords, location: Location, thing: Thing) {

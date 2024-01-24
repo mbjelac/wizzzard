@@ -3,8 +3,8 @@ import { LevelEditor } from "./editor/LevelEditor";
 import { Direction } from "./Direction";
 
 export interface Coords {
-  x: number,
-  y: number
+  readonly x: number,
+  readonly y: number
 }
 
 export interface Location {
@@ -34,7 +34,7 @@ export interface MoveResult {
 
 export class Level {
 
-  public readonly editor = new LevelEditor();
+  public readonly editor: LevelEditor;
 
   private playerLocation: Coords;
 
@@ -42,10 +42,11 @@ export class Level {
 
 
   constructor(
-    public readonly locations: Location[][],
+    public readonly levelMatrix: Location[][],
     public readonly start: Coords
   ) {
     this.playerLocation = { ...start };
+    this.editor = new LevelEditor(this.levelMatrix);
   }
 
   public tryToMove(direction: Direction): MoveResult {
@@ -73,7 +74,7 @@ export class Level {
   }
 
   private getLocation(coords: Coords): Location | undefined {
-    const row = this.locations[coords.y];
+    const row = this.levelMatrix[coords.y];
 
     if (!row) {
       return undefined;

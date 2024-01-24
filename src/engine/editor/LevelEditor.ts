@@ -1,10 +1,16 @@
 import { allEditorTools, EditorTool } from "./EditorTool";
 import { Location, Thing } from "../Level";
 
+export interface AddResult {
+  addedThing?: Thing,
+  matrixDimensionsChanged: boolean
+}
 export class LevelEditor {
 
   private currentEditorTool: EditorTool = EditorTool.NONE;
   private editorToolIndex = 0;
+
+  constructor(private readonly levelMatrix: Location[][]) {}
 
   getCurrentEditorTool(): EditorTool {
     return this.currentEditorTool;
@@ -15,16 +21,23 @@ export class LevelEditor {
     this.currentEditorTool = allEditorTools[this.editorToolIndex];
   }
 
-  applyEditorTool(location: Location): Thing | undefined {
+  applyEditorTool(location: Location): AddResult {
 
     const thingToAdd = this.createThingToAdd();
 
     if (!thingToAdd) {
-      return undefined;
+      return {
+        addedThing: undefined,
+        matrixDimensionsChanged: false
+      };
     }
 
     location.things.push(thingToAdd);
-    return thingToAdd;
+
+    return {
+      addedThing: thingToAdd,
+      matrixDimensionsChanged: false
+    };
   }
 
   private createThingToAdd(): Thing | undefined {
