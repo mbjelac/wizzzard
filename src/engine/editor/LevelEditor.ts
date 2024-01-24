@@ -1,5 +1,5 @@
 import { allEditorTools, EditorTool } from "./EditorTool";
-import { Location, Thing } from "../Level";
+import { LevelLocation, Thing } from "../Level";
 
 export interface AddResult {
   addedThing?: Thing
@@ -9,7 +9,7 @@ export class LevelEditor {
   private currentEditorTool: EditorTool = EditorTool.NONE;
   private editorToolIndex = 0;
 
-  constructor(private readonly levelMatrix: Location[][]) {}
+  constructor() {}
 
   getCurrentEditorTool(): EditorTool {
     return this.currentEditorTool;
@@ -20,7 +20,7 @@ export class LevelEditor {
     this.currentEditorTool = allEditorTools[this.editorToolIndex];
   }
 
-  applyEditorTool(location: Location): AddResult {
+  applyEditorTool(location: LevelLocation): AddResult {
 
     const thingToAdd = this.createThingToAdd();
 
@@ -48,7 +48,7 @@ export class LevelEditor {
     }
   }
 
-  removeThing(location: Location, wall: Thing) {
+  removeThing(location: LevelLocation, wall: Thing) {
 
     const index = location.things.findIndex(thing => thing.id === wall.id);
 

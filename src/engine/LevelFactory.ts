@@ -1,15 +1,15 @@
-import { LevelMatrix, Location, Thing } from "./Level";
+import { LevelMatrix, LevelLocation, Thing } from "./Level";
 
 export class LevelFactory {
-  private wall(): Location {
+  private wall(): LevelLocation {
     return { things: [new Thing(true, false, "wall")] };
   }
 
-  private empty(): Location {
+  private empty(): LevelLocation {
     return { things: [] };
   }
 
-  private fire(): Location {
+  private fire(): LevelLocation {
     return { things: [new Thing(false, true, "fire")] };
   }
 

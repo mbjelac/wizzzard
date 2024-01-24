@@ -1,6 +1,7 @@
-import { Level, MoveResult } from "./Level";
+import { Coords, Level, MoveResult } from "./Level";
 import { LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
+import { Errand } from "./Errand";
 
 let level: Level;
 
@@ -19,12 +20,20 @@ const movedAndDied: MoveResult = {
   died: true
 }
 
+const startCoords: Coords = { x: 1, y: 1};
+
+const factory = new LevelFactory();
+
+function createLevel(...rows: string[]): Level {
+  return new Level(factory.fromMatrix(...rows), { startCoords } as Errand);
+}
+
 describe("moving", () => {
 
   beforeEach(() => {
-    level = new LevelFactory().fromMatrix(
+    level = createLevel(
       "# #",
-      " @ ",
+      "   ",
       "# #"
     );
   });
@@ -68,9 +77,9 @@ describe("moving", () => {
 describe("dying", () => {
 
   beforeEach(() => {
-    level = new LevelFactory().fromMatrix(
+    level = createLevel(
       "! !",
-      " @ ",
+      "   ",
       "! !"
     );
   });

@@ -7,8 +7,8 @@ const errands: Errand[] = [
       title: "A void",
       description: "An empty black void, suitable for trying out the level editor."
     },
-    levelDimensions: { width: 1, height: 1 },
-    startCoords: { x: 0, y: 0},
+    levelDimensions: { width: 10, height: 10 },
+    startCoords: { x: 5, y: 5},
     levelMatrix: []
   },
   {

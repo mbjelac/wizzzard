@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
-import { Coords, Level, Location, Thing } from "../engine/Level";
+import { Coords, Level, LevelLocation, Thing } from "../engine/Level";
 import { SpritesToAnimate } from "./SpritesToAnimate";
 import { Direction } from "../engine/Direction";
 import { TILE_SIZE } from "../config";
-import Pointer = Phaser.Input.Pointer;
 import { GAME } from "../engine/game";
+import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
 
 const tileCenterOffset = TILE_SIZE / 2;
@@ -32,7 +32,8 @@ export default class LevelGui extends Phaser.Scene {
   // @ts-ignore
   private sideText: Phaser.GameObjects.Text;
 
-  private level: Level = new Level([], { x: 0, y: 0 });
+  // @ts-ignore that it is undefined - has to be set before usage (fail fast)
+  private level: Level;
 
   private readonly spritesToAnimate = new SpritesToAnimate();
 
@@ -44,6 +45,7 @@ export default class LevelGui extends Phaser.Scene {
 
 
   preload() {
+    this.load.image('void', 'assets/tiles/void.png');
     this.load.image('wall', 'assets/tiles/wall.png');
     this.load.image('floor', 'assets/tiles/floor.png');
     this.load.image('player', 'assets/tiles/wizard1.png');
@@ -115,29 +117,13 @@ export default class LevelGui extends Phaser.Scene {
 
     this.level = await GAME.getCurrentLevel();
 
-    this.level.levelMatrix.forEach((row, y) => row.forEach((location, x) => {
-
-      const locationPixelCoords = toPixelCoords({
-        x: x,
-        y: y
-      });
-
-
-      const floor = this.physics.add.sprite(locationPixelCoords.x, locationPixelCoords.y, 'floor').setDepth(depths.floors).setInteractive();
-      floor.on('pointerup', (pointer: Pointer) => {
-        if (pointer.leftButtonReleased()) {
-          this.applyEditorTool(location, locationPixelCoords);
+      for (const x of Array(this.level.errand.levelDimensions.width).keys()) {
+        for (const y of Array(this.level.errand.levelDimensions.height).keys()) {
+          this.addLocation(x, y);
         }
-      });
+      }
 
-      this.createdObjects.push(floor);
-
-      location.things.forEach(thing => {
-        this.addThingSprite(locationPixelCoords, location, thing);
-      });
-    }));
-
-    const startCoords: Coords = { x: this.level.start.x, y: this.level.start.y };
+    const startCoords: Coords = { x: this.level.errand.startCoords.x, y: this.level.errand.startCoords.y };
     const playerPixelCoords = toPixelCoords(startCoords);
 
     this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player').setDepth(depths.player);
@@ -147,6 +133,28 @@ export default class LevelGui extends Phaser.Scene {
     this.cameras.main.startFollow(this.player).setFollowOffset(-3 * TILE_SIZE + tileCenterOffset, 0);
   }
 
+
+  private addLocation(x: number, y: number) {
+    const location = this.level.levelMatrix[y][x];
+
+    const locationPixelCoords = toPixelCoords({
+      x: x,
+      y: y
+    });
+
+    const voidTile = this.physics.add.sprite(locationPixelCoords.x, locationPixelCoords.y, 'void').setDepth(depths.floors).setInteractive();
+    voidTile.on('pointerup', (pointer: Pointer) => {
+      if (pointer.leftButtonReleased()) {
+        this.applyEditorTool(location, locationPixelCoords);
+      }
+    });
+
+    this.createdObjects.push(voidTile);
+
+    location.things.forEach(thing => {
+      this.addThingSprite(locationPixelCoords, location, thing);
+    });
+  }
 
   update(time: number, delta: number) {
 
@@ -194,7 +202,7 @@ export default class LevelGui extends Phaser.Scene {
     this.player.setY(playerPixelCoords.y);
   }
 
-  private applyEditorTool(location: Location, locationPixelCoords: Coords) {
+  private applyEditorTool(location: LevelLocation, locationPixelCoords: Coords) {
     const addResult = this.level.editor.applyEditorTool(location);
 
     if (!addResult.addedThing) {
@@ -204,7 +212,7 @@ export default class LevelGui extends Phaser.Scene {
     this.addThingSprite(locationPixelCoords, location, addResult.addedThing);
   }
 
-  private addThingSprite(pixelCoords: Coords, location: Location, thing: Thing) {
+  private addThingSprite(pixelCoords: Coords, location: LevelLocation, thing: Thing) {
 
     const thingSprite = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, thing.sprite).setDepth(depths.things).setInteractive();
 

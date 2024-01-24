@@ -1,18 +1,19 @@
 import { SpriteName } from "./sprite-names";
 import { LevelEditor } from "./editor/LevelEditor";
 import { Direction } from "./Direction";
+import { Errand } from "./Errand";
 
 export interface Coords {
   readonly x: number,
   readonly y: number
 }
 
-export interface Location {
+export interface LevelLocation {
 
   things: Thing[]
 }
 
-export type LevelMatrix = Location[][];
+export type LevelMatrix = LevelLocation[][];
 
 export class Thing {
 
@@ -36,7 +37,7 @@ export interface MoveResult {
 
 export class Level {
 
-  public readonly editor: LevelEditor;
+  public readonly editor = new LevelEditor();
 
   private playerLocation: Coords;
 
@@ -44,11 +45,10 @@ export class Level {
 
 
   constructor(
-    public readonly levelMatrix: Location[][],
-    public readonly start: Coords
+    public readonly levelMatrix: LevelMatrix,
+    public readonly errand: Errand,
   ) {
-    this.playerLocation = { ...start };
-    this.editor = new LevelEditor(this.levelMatrix);
+    this.playerLocation = { ...errand.startCoords };
   }
 
   public tryToMove(direction: Direction): MoveResult {
@@ -66,8 +66,10 @@ export class Level {
     const died = !!nextLocation && nextLocation.things.some(thing => thing.isDeath);
 
     if (died) {
-      this.playerLocation = this.start;
+      this.playerLocation = this.errand.startCoords;
     }
+
+    console.log("Tried to move ... canMove=" + canMove + " died=" + died);
 
     return {
       moved: canMove,
@@ -75,7 +77,7 @@ export class Level {
     };
   }
 
-  private getLocation(coords: Coords): Location | undefined {
+  private getLocation(coords: Coords): LevelLocation | undefined {
     const row = this.levelMatrix[coords.y];
 
     if (!row) {
@@ -87,5 +89,9 @@ export class Level {
 
   getPlayerLocation(): Coords {
     return this.playerLocation;
+  }
+
+  matrixNotEmpty() {
+    return this.levelMatrix.length >0  && this.levelMatrix.every(row => row.length > 0);
   }
 }
