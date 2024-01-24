@@ -41,6 +41,8 @@ export class LevelEditor {
     switch (this.currentEditorTool) {
       case EditorTool.NONE:
         return undefined;
+      case EditorTool.FLOOR:
+        return new Thing(false, false, "floor");
       case EditorTool.WALL:
         return new Thing(true, false, "wall");
       case EditorTool.FIRE:
