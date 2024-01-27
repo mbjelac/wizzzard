@@ -20,14 +20,20 @@ export class LevelEditor {
     this.currentEditorTool = allEditorTools[this.editorToolIndex];
   }
 
+  private readonly emptyAddResult: AddResult = {
+    addedThing: undefined
+  };
+
   applyEditorTool(location: LevelLocation): AddResult {
 
     const thingToAdd = this.createThingToAdd();
 
     if (!thingToAdd) {
-      return {
-        addedThing: undefined
-      };
+      return this.emptyAddResult;
+    }
+
+    if (location.things.find(thing => thing.equals(thingToAdd)) !== undefined) {
+      return this.emptyAddResult;
     }
 
     location.things.push(thingToAdd);

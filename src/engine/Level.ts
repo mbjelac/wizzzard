@@ -28,6 +28,12 @@ export class Thing {
   ) {
 
   }
+
+  equals(thing: Thing): boolean {
+    return this.isDeath === thing.isDeath
+    && this.isWall === thing.isWall
+    && this.sprite === thing.sprite;
+  }
 }
 
 export interface MoveResult {
