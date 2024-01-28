@@ -238,10 +238,6 @@ export default class LevelGui extends Phaser.Scene {
     this.spritesToAnimate.clearAll();
     this.createdObjects.forEach(createdObject => createdObject.destroy(true));
   }
-
-  private saveLevel() {
-    GAME.setErrand(this.level.errand);
-  }
 }
 
 
