@@ -74,8 +74,8 @@ export default class LevelGui extends Phaser.Scene {
       }
 
       if (event.key === 'c') {
-        console.log("toggle collision enabled");
         this.level.collisionEnabled = !this.level.collisionEnabled;
+        console.log(`collision ${this.level.collisionEnabled ? "en" : "dis"}abled`);
       }
 
       if (event.key === 'e') {
@@ -86,8 +86,8 @@ export default class LevelGui extends Phaser.Scene {
         this.scene.switch("errands");
       }
 
-      if (event.key === "p") {
-        this.printLevel();
+      if (event.key === "s") {
+        this.saveLevel();
       }
     });
 
@@ -139,7 +139,7 @@ export default class LevelGui extends Phaser.Scene {
 
 
   private addLocation(x: number, y: number) {
-    const location = this.level.levelMatrix[y][x];
+    const location = this.level.errand.levelMatrix[y][x];
 
     const locationPixelCoords = toPixelCoords({
       x: x,
@@ -240,8 +240,8 @@ export default class LevelGui extends Phaser.Scene {
     this.createdObjects.forEach(createdObject => createdObject.destroy(true));
   }
 
-  private printLevel() {
-    console.log(JSON.stringify(this.level.levelMatrix));
+  private saveLevel() {
+    GAME.setErrand(this.level.errand);
   }
 }
 

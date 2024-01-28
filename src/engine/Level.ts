@@ -51,7 +51,6 @@ export class Level {
 
 
   constructor(
-    public readonly levelMatrix: LevelMatrix,
     public readonly errand: Errand,
   ) {
     this.playerLocation = { ...errand.startCoords };
@@ -82,7 +81,7 @@ export class Level {
   }
 
   private getLocation(coords: Coords): LevelLocation | undefined {
-    const row = this.levelMatrix[coords.y];
+    const row = this.errand.levelMatrix[coords.y];
 
     if (!row) {
       return undefined;
@@ -96,6 +95,6 @@ export class Level {
   }
 
   matrixNotEmpty() {
-    return this.levelMatrix.length >0  && this.levelMatrix.every(row => row.length > 0);
+    return this.errand.levelMatrix.length >0  && this.errand.levelMatrix.every(row => row.length > 0);
   }
 }

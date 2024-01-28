@@ -1,7 +1,6 @@
-import { ErrandDescription, LevelDimensions } from "./Errand";
+import { Errand, ErrandDescription, LevelDimensions } from "./Errand";
 import { Level, LevelMatrix } from "./Level";
-import { LevelFactory } from "./LevelFactory";
-import { getErrand, getErrandDescriptions } from "./errands";
+import { getErrand, getErrandDescriptions, setErrand } from "./errands";
 
 export class Game {
 
@@ -23,14 +22,11 @@ export class Game {
 
     const errand = await getErrand(this.currentErrandId);
 
-    const matrix = new LevelFactory().fromMatrix(...errand.levelMatrix);
+    return new Level(errand);
+  }
 
-    return new Level(
-      matrix.length === 0
-        ? populateEmptyLevelMatrix(errand.levelDimensions)
-        : matrix,
-      errand
-    );
+  async setErrand(errand: Errand) {
+    await setErrand(errand);
   }
 }
 
