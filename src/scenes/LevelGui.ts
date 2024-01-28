@@ -85,10 +85,6 @@ export default class LevelGui extends Phaser.Scene {
       if (event.code === "Escape") {
         this.scene.switch("errands");
       }
-
-      if (event.key === "s") {
-        this.saveLevel();
-      }
     });
 
 
@@ -147,9 +143,9 @@ export default class LevelGui extends Phaser.Scene {
     });
 
     const voidTile = this.physics.add.sprite(locationPixelCoords.x, locationPixelCoords.y, 'void').setDepth(depths.floors).setInteractive();
-    voidTile.on('pointerup', (pointer: Pointer) => {
+    voidTile.on('pointerup', async (pointer: Pointer) => {
       if (pointer.leftButtonReleased()) {
-        this.applyEditorTool(location, locationPixelCoords);
+        await this.applyEditorTool(location, locationPixelCoords);
       }
     });
 
@@ -206,7 +202,7 @@ export default class LevelGui extends Phaser.Scene {
     this.player.setY(playerPixelCoords.y);
   }
 
-  private applyEditorTool(location: LevelLocation, locationPixelCoords: Coords) {
+  private async applyEditorTool(location: LevelLocation, locationPixelCoords: Coords) {
     const addResult = this.level.editor.applyEditorTool(location);
 
     if (!addResult.addedThing) {
@@ -214,6 +210,8 @@ export default class LevelGui extends Phaser.Scene {
     }
 
     this.addThingSprite(locationPixelCoords, location, addResult.addedThing);
+
+    await GAME.setErrand(this.level.errand);
   }
 
   private addThingSprite(pixelCoords: Coords, location: LevelLocation, thing: Thing) {
@@ -222,13 +220,14 @@ export default class LevelGui extends Phaser.Scene {
 
     this.spritesToAnimate.addSprite(thing, thingSprite);
 
-    thingSprite.on('pointerup', (pointer: Pointer) => {
+    thingSprite.on('pointerup', async (pointer: Pointer) => {
       if (pointer.rightButtonReleased()) {
         this.level.editor.removeThing(location, thing);
         thingSprite.destroy(true);
+        await GAME.setErrand(this.level.errand);
       }
       if (pointer.leftButtonReleased()) {
-        this.applyEditorTool(location, pixelCoords);
+        await this.applyEditorTool(location, pixelCoords);
       }
     });
 
