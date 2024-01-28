@@ -68,7 +68,7 @@ export class Level {
       this.playerLocation = nextCoords;
     }
 
-    const died = !!nextLocation && nextLocation.things.some(thing => thing.isDeath);
+    const died = !!nextLocation && nextLocation.things.some(thing => thing.isDeath) && this.collisionEnabled;
 
     if (died) {
       this.playerLocation = this.errand.startCoords;
