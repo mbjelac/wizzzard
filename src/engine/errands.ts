@@ -40,7 +40,7 @@ const errands: Errand[] = [
     },
     levelDimensions: { width: 12, height: 9 },
     levelMatrix: [],
-    startCoords: { x: 0, y: 3 },
+    startCoords: { x: 1, y: 3 },
   },
 ];
 
