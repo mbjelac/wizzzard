@@ -132,6 +132,8 @@ export default class LevelGui extends Phaser.Scene {
 
     this.createdNonThings.push(this.player);
 
+    this.displayInventory();
+
     this.cameras.main.startFollow(this.player).setFollowOffset(-3 * TILE_SIZE + tileCenterOffset, 0);
   }
 
@@ -158,6 +160,28 @@ export default class LevelGui extends Phaser.Scene {
     });
   }
 
+  private inventorySprites: Sprite[] = [];
+
+  private displayInventory() {
+
+    this.inventorySprites.forEach(sprite => sprite.destroy(true));
+    this.inventorySprites = [];
+
+    const inventory = this.level.getInventory();
+
+    Array(3).fill(0).forEach((_, index) => {
+
+      const inventoryItem = inventory[index];
+
+      if (inventoryItem === undefined) {
+        return;
+      }
+
+      const inventorySprite = this.physics.add.sprite(0, 0, inventoryItem.props.sprite).setDepth(depths.info);
+      this.inventorySprites.push(inventorySprite);
+    });
+  }
+
   update(time: number, delta: number) {
 
     const playerLocation = this.level.getPlayerLocation();
@@ -174,7 +198,7 @@ export default class LevelGui extends Phaser.Scene {
       x: playerLocation.x - 6,
       y: playerLocation.y - 6,
     };
-    const toolLabelPixels = toPixelCoords(toolLabelCoords)
+    const toolLabelPixels = toPixelCoords(toolLabelCoords);
     this.toolLabel.x = toolLabelPixels.x - tileCenterOffset;
     this.toolLabel.y = toolLabelPixels.y - tileCenterOffset;
     this.toolLabel.text = "EDITOR: " + this.level.editor.getCurrentEditorTool();
@@ -183,9 +207,19 @@ export default class LevelGui extends Phaser.Scene {
       x: playerLocation.x + 7,
       y: playerLocation.y + 4,
     };
-    const sideTextPixels = toPixelCoords(sideTextCoords)
+    const sideTextPixels = toPixelCoords(sideTextCoords);
     this.sideText.x = sideTextPixels.x - tileCenterOffset;
     this.sideText.y = sideTextPixels.y - tileCenterOffset;
+
+    const inventoryCoords: Coords = {
+      x: playerLocation.x + 8,
+      y: playerLocation.y - 1,
+    };
+    const inventoryPixels = toPixelCoords(inventoryCoords);
+    this.inventorySprites.forEach((inventorySprite, index) => {
+      inventorySprite.x = inventoryPixels.x - tileCenterOffset + index * (TILE_SIZE + 5);
+      inventorySprite.y = inventoryPixels.y - tileCenterOffset;
+    });
 
     this.spritesToAnimate.animateAll();
   }
@@ -199,6 +233,7 @@ export default class LevelGui extends Phaser.Scene {
     }
 
     this.removeSpritesPutInInventory();
+    this.displayInventory();
 
     const playerPixelCoords = toPixelCoords(this.level.getPlayerLocation());
 
