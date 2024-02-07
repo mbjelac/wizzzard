@@ -1,5 +1,5 @@
 import { LevelMatrix, Thing } from "./Level";
-import { createThing, LevelEditor } from "./editor/LevelEditor";
+import { createThing } from "./editor/LevelEditor";
 import { EditorTool } from "./editor/EditorTool";
 
 export class LevelFactory {
@@ -18,7 +18,10 @@ export class LevelFactory {
               );
 
               return {
-                things: thing ? [thing] : []
+                things: [
+                  createThing(EditorTool.FLOOR)!,
+                  ...(thing ? [thing] : [])
+                ]
               }
             }
           )

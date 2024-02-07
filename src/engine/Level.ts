@@ -45,14 +45,12 @@ export class Thing {
 
 export interface MoveResult {
   moved: boolean,
-  died: boolean,
-  pickedUp: boolean
+  died: boolean
 }
 
 const doNothing: MoveResult = {
   moved: false,
-  died: false,
-  pickedUp: false
+  died: false
 }
 
 export class Level {
@@ -63,6 +61,7 @@ export class Level {
 
   public collisionEnabled = true;
 
+  private inventory: Thing[] = [];
 
   constructor(
     public readonly errand: Errand,
@@ -92,12 +91,12 @@ export class Level {
       this.playerLocation = this.errand.startCoords;
     }
 
-    const pickedUp = nextLocation.things.some(thing => thing.props.isPickup) && this.collisionEnabled;
+    this.inventory.push(...nextLocation.things.filter(thing => thing.props.isPickup));
+    nextLocation.things = nextLocation.things.filter(thing => !thing.props.isPickup);
 
     return {
       moved: canMove,
-      died: died,
-      pickedUp: pickedUp
+      died: died
     };
   }
 
@@ -117,5 +116,9 @@ export class Level {
 
   matrixNotEmpty() {
     return this.errand.levelMatrix.length > 0 && this.errand.levelMatrix.every(row => row.length > 0);
+  }
+
+  getInventory(): Thing[] {
+    return this.inventory;
   }
 }

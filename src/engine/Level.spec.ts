@@ -1,13 +1,14 @@
-import { Coords, Level, MoveResult } from "./Level";
+import { Coords, Level, LevelLocation, MoveResult, Thing } from "./Level";
 import { LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
+import { createThing } from "./editor/LevelEditor";
+import { EditorTool } from "./editor/EditorTool";
 
 let level: Level;
 
 const stayed: MoveResult = {
   moved: false,
-  died: false,
-  pickedUp: false
+  died: false
 }
 
 const moved: MoveResult = {
@@ -18,11 +19,6 @@ const moved: MoveResult = {
 const movedAndDied: MoveResult = {
   ...moved,
   died: true
-}
-
-const movedAndPickedUp: MoveResult = {
-  ...moved,
-  pickedUp: true
 }
 
 const startCoords: Coords = { x: 1, y: 1 };
@@ -144,23 +140,70 @@ describe("dying", () => {
   });
 });
 
-describe("picking up things", ()=> {
+describe("picking up things", () => {
+
+  let pickupLocation: LevelLocation;
+  let pickupLocationFloor: Thing;
+  let pickupItem: Thing;
+
   beforeEach(() => {
     level = createLevel(
       "# #",
       "   ",
       "# ."
     );
+
+    pickupLocation = level.errand.levelMatrix[2][2];
+    pickupLocationFloor = pickupLocation.things[0];
+    pickupItem = pickupLocation.things[1];
   });
 
-  it("does not pickup if moves beside it", () => {
+
+  it("can move over item", () => {
+    level.tryToMove(Direction.RIGHT);
     const moveResult = level.tryToMove(Direction.DOWN);
     expect(moveResult).toEqual<typeof moveResult>(moved);
   });
 
-  it("picks up if moves on it", () => {
+  it("there is one item which can be picked up", () => {
+    expect(pickupLocation.things).toEqual([pickupLocationFloor, pickupItem]);
+  });
+
+  it("picked up item no longer in level if moves on it", () => {
+    level.tryToMove(Direction.RIGHT);
     level.tryToMove(Direction.DOWN);
-    const moveResult = level.tryToMove(Direction.RIGHT);
-    expect(moveResult).toEqual<typeof moveResult>(movedAndPickedUp);
+    expect(pickupLocation.things).toEqual([pickupLocationFloor])
+  });
+
+  it("initial inventory is empty", () => {
+    expect(level.getInventory()).toHaveLength(0);
+  });
+
+  it("picked up item in inventory if moves on it", () => {
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.DOWN);
+    expect(level.getInventory()).toEqual([pickupItem]);
+  });
+
+  describe("multiple items", ()=> {
+
+    let additionalItem: Thing;
+
+    beforeEach(()=> {
+      additionalItem = createThing(EditorTool.KEY)!;
+      pickupLocation.things.push(additionalItem);
+    });
+
+    it("picks up all items if moves on pickup location", () => {
+      level.tryToMove(Direction.RIGHT);
+      level.tryToMove(Direction.DOWN);
+      expect(pickupLocation.things).toEqual([pickupLocationFloor])
+    });
+
+    it("all picked up items in inventory if moves on pickup location", () => {
+      level.tryToMove(Direction.RIGHT);
+      level.tryToMove(Direction.DOWN);
+      expect(level.getInventory()).toEqual([pickupItem, additionalItem])
+    });
   });
 });
