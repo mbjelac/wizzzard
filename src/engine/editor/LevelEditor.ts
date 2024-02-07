@@ -48,11 +48,13 @@ export class LevelEditor {
       case EditorTool.NONE:
         return undefined;
       case EditorTool.FLOOR:
-        return new Thing(false, false, "floor");
+        return new Thing(Thing.defaultProps);
       case EditorTool.WALL:
-        return new Thing(true, false, "wall");
+        return new Thing({ ...Thing.defaultProps, isWall: true, sprite: "wall" });
       case EditorTool.FIRE:
-        return new Thing(false, true, "fire");
+        return new Thing({ ...Thing.defaultProps, isDeath: true, sprite: "fire" });
+      case EditorTool.KEY:
+        return new Thing({ ...Thing.defaultProps, isPickup: true, sprite: "key" });
     }
   }
 

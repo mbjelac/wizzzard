@@ -2,7 +2,7 @@ import { LevelMatrix, LevelLocation, Thing } from "./Level";
 
 export class LevelFactory {
   private wall(): LevelLocation {
-    return { things: [new Thing(true, false, "wall")] };
+    return { things: [new Thing({ ...Thing.defaultProps, isWall: true, sprite: "wall" })] };
   }
 
   private empty(): LevelLocation {
@@ -10,7 +10,7 @@ export class LevelFactory {
   }
 
   private fire(): LevelLocation {
-    return { things: [new Thing(false, true, "fire")] };
+    return { things: [new Thing({ ...Thing.defaultProps, isDeath: true, sprite: "fire" })] };
   }
 
   public random(width: number, height: number): LevelMatrix {

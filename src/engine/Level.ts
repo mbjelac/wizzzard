@@ -15,24 +15,31 @@ export interface LevelLocation {
 
 export type LevelMatrix = LevelLocation[][];
 
+export interface ThingProps {
+  readonly isWall: boolean,
+  readonly isDeath: boolean,
+  readonly sprite: SpriteName,
+  readonly isPickup: boolean
+}
+
 export class Thing {
 
   private static nextId = 0;
 
   public readonly id = Thing.nextId++;
 
-  constructor(
-    public readonly isWall: boolean,
-    public readonly isDeath: boolean,
-    public readonly sprite: SpriteName
-  ) {
+  public static defaultProps: ThingProps = {
+    isDeath: false,
+    isWall: false,
+    sprite: "floor",
+    isPickup: false,
+  };
 
+  constructor(public readonly props: ThingProps) {
   }
 
   equals(thing: Thing): boolean {
-    return this.isDeath === thing.isDeath
-    && this.isWall === thing.isWall
-    && this.sprite === thing.sprite;
+    return JSON.stringify(this.props) === JSON.stringify(thing.props);
   }
 }
 
@@ -62,13 +69,13 @@ export class Level {
 
     const nextLocation = this.getLocation(nextCoords);
 
-    const canMove = !!nextLocation && (!nextLocation.things.some(thing => thing.isWall) || !this.collisionEnabled);
+    const canMove = !!nextLocation && (!nextLocation.things.some(thing => thing.props.isWall) || !this.collisionEnabled);
 
     if (canMove) {
       this.playerLocation = nextCoords;
     }
 
-    const died = !!nextLocation && nextLocation.things.some(thing => thing.isDeath) && this.collisionEnabled;
+    const died = !!nextLocation && nextLocation.things.some(thing => thing.props.isDeath) && this.collisionEnabled;
 
     if (died) {
       this.playerLocation = this.errand.startCoords;
@@ -95,6 +102,6 @@ export class Level {
   }
 
   matrixNotEmpty() {
-    return this.errand.levelMatrix.length >0  && this.errand.levelMatrix.every(row => row.length > 0);
+    return this.errand.levelMatrix.length > 0 && this.errand.levelMatrix.every(row => row.length > 0);
   }
 }
