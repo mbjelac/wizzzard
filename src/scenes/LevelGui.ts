@@ -4,6 +4,7 @@ import { SpritesToAnimate } from "./SpritesToAnimate";
 import { Direction } from "../engine/Direction";
 import { TILE_SIZE } from "../config";
 import { GAME } from "../engine/game";
+import { Errand } from "../engine/Errand";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
 
@@ -261,7 +262,7 @@ export default class LevelGui extends Phaser.Scene {
 
     this.addThingSprite(locationPixelCoords, location, addResult.addedThing);
 
-    await GAME.setErrand(this.level.errand);
+    await this.saveLevel();
   }
 
   private addThingSprite(pixelCoords: Coords, location: LevelLocation, thing: Thing) {
@@ -274,7 +275,7 @@ export default class LevelGui extends Phaser.Scene {
       if (pointer.rightButtonReleased()) {
         this.level.editor.removeThing(location, thing);
         thingSprite.destroy(true);
-        await GAME.setErrand(this.level.errand);
+        await this.saveLevel();
       }
       if (pointer.leftButtonReleased()) {
         await this.applyEditorTool(location, pixelCoords);
@@ -294,6 +295,23 @@ export default class LevelGui extends Phaser.Scene {
       sprite.destroy(true)
     });
     this.createdSpritesByThingId.clear();
+  }
+
+  private async saveLevel() {
+
+    const errand: Errand = {
+      ...this.level.errand,
+      matrix: this.level.levelMatrix.map(row => row
+        .map(location => ({
+            things: location.things
+              .map(thing => thing.props)
+          })
+        )
+      )
+    }
+
+    await GAME.setErrand(errand);
+
   }
 }
 
