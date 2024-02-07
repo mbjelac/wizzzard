@@ -37,7 +37,8 @@ export default class LevelGui extends Phaser.Scene {
 
   private readonly spritesToAnimate = new SpritesToAnimate();
 
-  private createdObjects: Sprite[] = [];
+  private createdNonThings: Sprite[] = [];
+  private readonly createdSpritesByThingId: Map<number, Sprite> = new Map();
 
   constructor() {
     super('level');
@@ -49,6 +50,7 @@ export default class LevelGui extends Phaser.Scene {
     this.load.image('wall', 'assets/tiles/wall.png');
     this.load.image('floor', 'assets/tiles/floor.png');
     this.load.image('player', 'assets/tiles/wizard1.png');
+    this.load.image('key', 'assets/tiles/key1.png');
     this.load.spritesheet('fire', 'assets/tiles/fire.png', { frameWidth: TILE_SIZE, frameHeight: TILE_SIZE });
 
     this.events.on("create", async () => this.populateLevel());
@@ -128,14 +130,14 @@ export default class LevelGui extends Phaser.Scene {
 
     this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player').setDepth(depths.player);
 
-    this.createdObjects.push(this.player);
+    this.createdNonThings.push(this.player);
 
     this.cameras.main.startFollow(this.player).setFollowOffset(-3 * TILE_SIZE + tileCenterOffset, 0);
   }
 
 
   private addLocation(x: number, y: number) {
-    const location = this.level.errand.levelMatrix[y][x];
+    const location = this.level.levelMatrix[y][x];
 
     const locationPixelCoords = toPixelCoords({
       x: x,
@@ -149,7 +151,7 @@ export default class LevelGui extends Phaser.Scene {
       }
     });
 
-    this.createdObjects.push(voidTile);
+    this.createdNonThings.push(voidTile);
 
     location.things.forEach(thing => {
       this.addThingSprite(locationPixelCoords, location, thing);
@@ -196,10 +198,23 @@ export default class LevelGui extends Phaser.Scene {
       return;
     }
 
+    this.removeSpritesPutInInventory();
+
     const playerPixelCoords = toPixelCoords(this.level.getPlayerLocation());
 
     this.player.setX(playerPixelCoords.x);
     this.player.setY(playerPixelCoords.y);
+  }
+
+  private removeSpritesPutInInventory() {
+    this.level.getInventory().forEach(thing => {
+      const sprite = this.createdSpritesByThingId.get(thing.id);
+      if (sprite === undefined) {
+        return;
+      }
+      sprite.destroy(true);
+      this.createdSpritesByThingId.delete(thing.id);
+    });
   }
 
   private async applyEditorTool(location: LevelLocation, locationPixelCoords: Coords) {
@@ -216,7 +231,7 @@ export default class LevelGui extends Phaser.Scene {
 
   private addThingSprite(pixelCoords: Coords, location: LevelLocation, thing: Thing) {
 
-    const thingSprite = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, thing.sprite).setDepth(depths.things).setInteractive();
+    const thingSprite = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, thing.props.sprite).setDepth(depths.things).setInteractive();
 
     this.spritesToAnimate.addSprite(thing, thingSprite);
 
@@ -231,12 +246,19 @@ export default class LevelGui extends Phaser.Scene {
       }
     });
 
-    this.createdObjects.push(thingSprite);
+    this.createdSpritesByThingId.set(thing.id, thingSprite);
   }
 
   private clearLevel() {
     this.spritesToAnimate.clearAll();
-    this.createdObjects.forEach(createdObject => createdObject.destroy(true));
+
+    this.createdNonThings.forEach(createdObject => createdObject.destroy(true));
+    this.createdNonThings = [];
+
+    this.createdSpritesByThingId.forEach(sprite => {
+      sprite.destroy(true)
+    });
+    this.createdSpritesByThingId.clear();
   }
 }
 

@@ -1,12 +1,19 @@
-import { Coords, LevelMatrix } from "./Level";
+import { Coords, LevelMatrix, Thing, ThingProps } from "./Level";
 
 export interface Errand {
 
   readonly description: ErrandDescription,
   readonly levelDimensions: LevelDimensions,
-  readonly levelMatrix: LevelMatrix,
+  readonly matrix: ErrandMatrix,
   readonly startCoords: Coords
 }
+
+export interface ErrandLocation {
+
+  things: ThingProps[]
+}
+
+export type ErrandMatrix = ErrandLocation[][];
 
 export interface LevelDimensions {
   readonly width: number,

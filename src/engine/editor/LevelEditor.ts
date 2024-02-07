@@ -1,15 +1,17 @@
 import { allEditorTools, EditorTool } from "./EditorTool";
-import { LevelLocation, Thing } from "../Level";
+import { LevelLocation, Thing, ThingProps } from "../Level";
 
 export interface AddResult {
   addedThing?: Thing
 }
+
 export class LevelEditor {
 
   private currentEditorTool: EditorTool = EditorTool.NONE;
   private editorToolIndex = 0;
 
-  constructor() {}
+  constructor() {
+  }
 
   getCurrentEditorTool(): EditorTool {
     return this.currentEditorTool;
@@ -44,7 +46,8 @@ export class LevelEditor {
   }
 
   private createThingToAdd(): Thing | undefined {
-    return createThing(this.currentEditorTool);
+    const props = createThingProps(this.currentEditorTool);
+    return props ? new Thing(props) : undefined;
   }
 
   removeThing(location: LevelLocation, wall: Thing) {
@@ -59,17 +62,17 @@ export class LevelEditor {
   }
 }
 
-export function createThing(editorTool: EditorTool): Thing | undefined {
+export function createThingProps(editorTool: EditorTool): ThingProps | undefined {
   switch (editorTool) {
     case EditorTool.NONE:
       return undefined;
     case EditorTool.FLOOR:
-      return new Thing(Thing.defaultProps);
+      return Thing.defaultProps;
     case EditorTool.WALL:
-      return new Thing({ ...Thing.defaultProps, isWall: true, sprite: "wall" });
+      return { ...Thing.defaultProps, isWall: true, sprite: "wall" };
     case EditorTool.FIRE:
-      return new Thing({ ...Thing.defaultProps, isDeath: true, sprite: "fire" });
+      return { ...Thing.defaultProps, isDeath: true, sprite: "fire" };
     case EditorTool.KEY:
-      return new Thing({ ...Thing.defaultProps, isPickup: true, sprite: "key" });
+      return { ...Thing.defaultProps, isPickup: true, sprite: "key" };
   }
 }

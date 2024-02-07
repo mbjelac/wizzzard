@@ -1,16 +1,17 @@
-import { LevelMatrix, Thing } from "./Level";
-import { createThing } from "./editor/LevelEditor";
+import { LevelMatrix, Thing, ThingProps } from "./Level";
+import { createThingProps } from "./editor/LevelEditor";
 import { EditorTool } from "./editor/EditorTool";
+import { ErrandMatrix } from "./Errand";
 
 export class LevelFactory {
 
-  public fromMatrix(...rows: string[]): LevelMatrix {
+  public fromMatrix(...rows: string[]): ErrandMatrix {
     return rows
       .map((row, rowIndex) =>
         [...row]
           .map((char, columnIndex) => {
 
-              const thing = charToThing(
+              const thingProps = charToThingProps(
                 char,
                 () => {
                   throw Error(`Illegal character on row/col ${rowIndex}/${columnIndex}: ${char}`)
@@ -19,8 +20,8 @@ export class LevelFactory {
 
               return {
                 things: [
-                  createThing(EditorTool.FLOOR)!,
-                  ...(thing ? [thing] : [])
+                  createThingProps(EditorTool.FLOOR)!,
+                  ...(thingProps ? [thingProps] : [])
                 ]
               }
             }
@@ -29,16 +30,16 @@ export class LevelFactory {
   }
 }
 
-function charToThing(char: string, handleMissingCase: () => void): Thing | undefined {
+function charToThingProps(char: string, handleMissingCase: () => void): ThingProps | undefined {
   switch (char) {
     case '#':
-      return createThing(EditorTool.WALL);
+      return createThingProps(EditorTool.WALL);
     case ' ':
-      return createThing(EditorTool.NONE);
+      return createThingProps(EditorTool.NONE);
     case '!':
-      return createThing(EditorTool.FIRE);
+      return createThingProps(EditorTool.FIRE);
     case '.':
-      return createThing(EditorTool.KEY);
+      return createThingProps(EditorTool.KEY);
     default:
       handleMissingCase();
   }

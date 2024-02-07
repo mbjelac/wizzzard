@@ -63,10 +63,22 @@ export class Level {
 
   private inventory: Thing[] = [];
 
+  public readonly levelMatrix: LevelMatrix;
+
   constructor(
     public readonly errand: Errand,
   ) {
     this.playerLocation = { ...errand.startCoords };
+    this.levelMatrix = this
+      .errand
+      .matrix
+      .map(row => row
+        .map(location => ({
+            things: location.things
+              .map(thingProps => new Thing(thingProps))
+          })
+        )
+      );
   }
 
   public tryToMove(direction: Direction): MoveResult {
@@ -101,7 +113,7 @@ export class Level {
   }
 
   private getLocation(coords: Coords): LevelLocation | undefined {
-    const row = this.errand.levelMatrix[coords.y];
+    const row = this.levelMatrix[coords.y];
 
     if (!row) {
       return undefined;
@@ -115,7 +127,7 @@ export class Level {
   }
 
   matrixNotEmpty() {
-    return this.errand.levelMatrix.length > 0 && this.errand.levelMatrix.every(row => row.length > 0);
+    return this.levelMatrix.length > 0 && this.levelMatrix.every(row => row.length > 0);
   }
 
   getInventory(): Thing[] {

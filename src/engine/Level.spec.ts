@@ -1,7 +1,7 @@
 import { Coords, Level, LevelLocation, MoveResult, Thing } from "./Level";
 import { LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
-import { createThing } from "./editor/LevelEditor";
+import { createThingProps } from "./editor/LevelEditor";
 import { EditorTool } from "./editor/EditorTool";
 
 let level: Level;
@@ -33,7 +33,7 @@ function createLevel(...rows: string[]): Level {
       title: ""
     },
     levelDimensions: { width: 3, height: 3 },
-    levelMatrix: factory.fromMatrix(...rows),
+    matrix: factory.fromMatrix(...rows),
     startCoords: startCoords,
   });
 }
@@ -153,7 +153,7 @@ describe("picking up things", () => {
       "# ."
     );
 
-    pickupLocation = level.errand.levelMatrix[2][2];
+    pickupLocation = level.levelMatrix[2][2];
     pickupLocationFloor = pickupLocation.things[0];
     pickupItem = pickupLocation.things[1];
   });
@@ -190,7 +190,7 @@ describe("picking up things", () => {
     let additionalItem: Thing;
 
     beforeEach(()=> {
-      additionalItem = createThing(EditorTool.KEY)!;
+      additionalItem = new Thing(createThingProps(EditorTool.KEY)!);
       pickupLocation.things.push(additionalItem);
     });
 
