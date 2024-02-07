@@ -45,7 +45,14 @@ export class Thing {
 
 export interface MoveResult {
   moved: boolean,
-  died: boolean
+  died: boolean,
+  pickedUp: boolean
+}
+
+const doNothing: MoveResult = {
+  moved: false,
+  died: false,
+  pickedUp: false
 }
 
 export class Level {
@@ -69,21 +76,28 @@ export class Level {
 
     const nextLocation = this.getLocation(nextCoords);
 
-    const canMove = !!nextLocation && (!nextLocation.things.some(thing => thing.props.isWall) || !this.collisionEnabled);
+    if (nextLocation === undefined) {
+      return doNothing;
+    }
+
+    const canMove = !nextLocation.things.some(thing => thing.props.isWall) || !this.collisionEnabled;
 
     if (canMove) {
       this.playerLocation = nextCoords;
     }
 
-    const died = !!nextLocation && nextLocation.things.some(thing => thing.props.isDeath) && this.collisionEnabled;
+    const died = nextLocation.things.some(thing => thing.props.isDeath) && this.collisionEnabled;
 
     if (died) {
       this.playerLocation = this.errand.startCoords;
     }
 
+    const pickedUp = nextLocation.things.some(thing => thing.props.isPickup) && this.collisionEnabled;
+
     return {
       moved: canMove,
-      died: died
+      died: died,
+      pickedUp: pickedUp
     };
   }
 

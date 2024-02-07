@@ -4,19 +4,25 @@ import { Direction } from "./Direction";
 
 let level: Level;
 
-const moved: MoveResult = {
-  moved: true,
-  died: false
-}
-
 const stayed: MoveResult = {
   moved: false,
-  died: false
+  died: false,
+  pickedUp: false
+}
+
+const moved: MoveResult = {
+  ...stayed,
+  moved: true,
 }
 
 const movedAndDied: MoveResult = {
-  moved: true,
+  ...moved,
   died: true
+}
+
+const movedAndPickedUp: MoveResult = {
+  ...moved,
+  pickedUp: true
 }
 
 const startCoords: Coords = { x: 1, y: 1 };
@@ -135,5 +141,26 @@ describe("dying", () => {
       level.tryToMove(Direction.UP);
       level.tryToMove(Direction.RIGHT);
     }
+  });
+});
+
+describe("picking up things", ()=> {
+  beforeEach(() => {
+    level = createLevel(
+      "# #",
+      "   ",
+      "# ."
+    );
+  });
+
+  it("does not pickup if moves beside it", () => {
+    const moveResult = level.tryToMove(Direction.DOWN);
+    expect(moveResult).toEqual<typeof moveResult>(moved);
+  });
+
+  it("picks up if moves on it", () => {
+    level.tryToMove(Direction.DOWN);
+    const moveResult = level.tryToMove(Direction.RIGHT);
+    expect(moveResult).toEqual<typeof moveResult>(movedAndPickedUp);
   });
 });
