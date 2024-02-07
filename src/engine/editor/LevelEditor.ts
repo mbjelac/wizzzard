@@ -44,18 +44,7 @@ export class LevelEditor {
   }
 
   private createThingToAdd(): Thing | undefined {
-    switch (this.currentEditorTool) {
-      case EditorTool.NONE:
-        return undefined;
-      case EditorTool.FLOOR:
-        return new Thing(Thing.defaultProps);
-      case EditorTool.WALL:
-        return new Thing({ ...Thing.defaultProps, isWall: true, sprite: "wall" });
-      case EditorTool.FIRE:
-        return new Thing({ ...Thing.defaultProps, isDeath: true, sprite: "fire" });
-      case EditorTool.KEY:
-        return new Thing({ ...Thing.defaultProps, isPickup: true, sprite: "key" });
-    }
+    return createThing(this.currentEditorTool);
   }
 
   removeThing(location: LevelLocation, wall: Thing) {
@@ -67,5 +56,20 @@ export class LevelEditor {
     }
 
     location.things.splice(index, 1);
+  }
+}
+
+export function createThing(editorTool: EditorTool): Thing | undefined {
+  switch (editorTool) {
+    case EditorTool.NONE:
+      return undefined;
+    case EditorTool.FLOOR:
+      return new Thing(Thing.defaultProps);
+    case EditorTool.WALL:
+      return new Thing({ ...Thing.defaultProps, isWall: true, sprite: "wall" });
+    case EditorTool.FIRE:
+      return new Thing({ ...Thing.defaultProps, isDeath: true, sprite: "fire" });
+    case EditorTool.KEY:
+      return new Thing({ ...Thing.defaultProps, isPickup: true, sprite: "key" });
   }
 }

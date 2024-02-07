@@ -1,49 +1,42 @@
-import { LevelMatrix, LevelLocation, Thing } from "./Level";
+import { LevelMatrix, Thing } from "./Level";
+import { createThing, LevelEditor } from "./editor/LevelEditor";
+import { EditorTool } from "./editor/EditorTool";
 
 export class LevelFactory {
-  private wall(): LevelLocation {
-    return { things: [new Thing({ ...Thing.defaultProps, isWall: true, sprite: "wall" })] };
-  }
-
-  private empty(): LevelLocation {
-    return { things: [] };
-  }
-
-  private fire(): LevelLocation {
-    return { things: [new Thing({ ...Thing.defaultProps, isDeath: true, sprite: "fire" })] };
-  }
-
-  public random(width: number, height: number): LevelMatrix {
-
-    return Array(width).fill(0).map((_, _y) =>
-      Array(height).fill(0).map((_, _x) => {
-          if (Math.random() > 0.2) {
-            return this.empty();
-          } else {
-            return this.wall();
-          }
-        }
-      )
-    );
-  }
 
   public fromMatrix(...rows: string[]): LevelMatrix {
     return rows
       .map((row, rowIndex) =>
         [...row]
           .map((char, columnIndex) => {
-              switch (char) {
-                case '#':
-                  return this.wall();
-                case ' ':
-                  return this.empty();
-                case '!':
-                  return this.fire();
-                default:
-                  throw Error(`Illegal character on row/col ${rowIndex}/${columnIndex}: ${char}`);
+
+              const thing = charToThing(
+                char,
+                () => {
+                  throw Error(`Illegal character on row/col ${rowIndex}/${columnIndex}: ${char}`)
+                }
+              );
+
+              return {
+                things: thing ? [thing] : []
               }
             }
           )
       );
+  }
+}
+
+function charToThing(char: string, handleMissingCase: () => void): Thing | undefined {
+  switch (char) {
+    case '#':
+      return createThing(EditorTool.WALL);
+    case ' ':
+      return createThing(EditorTool.NONE);
+    case '!':
+      return createThing(EditorTool.FIRE);
+    case '.':
+      return createThing(EditorTool.KEY);
+    default:
+      handleMissingCase();
   }
 }
