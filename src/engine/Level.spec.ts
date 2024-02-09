@@ -207,3 +207,85 @@ describe("picking up things", () => {
     });
   });
 });
+
+describe("giving a picked up item to a receiver", () => {
+
+  let pickupLocation: LevelLocation;
+  let pickupItem: Thing;
+  let anotherPickupItem: Thing;
+  let anotherPickupLocation: LevelLocation;
+  let receiverLocation: LevelLocation;
+  let receiver: Thing;
+
+  beforeEach(() => {
+    level = createLevel(
+      "   ",
+      "   ",
+      "   "
+    );
+
+    pickupItem = new Thing(createThingProps(EditorTool.KEY_GREEN, "someLabel")!);
+    anotherPickupItem = new Thing(createThingProps(EditorTool.KEY, "someOtherLabel")!);
+    receiver = new Thing(createThingProps(EditorTool.RECEIVER, "someLabel")!);
+
+    pickupLocation = level.levelMatrix[2][2];
+    anotherPickupLocation = level.levelMatrix[0][2];
+    receiverLocation = level.levelMatrix[0][0];
+
+    pickupLocation.things.push(pickupItem);
+    anotherPickupLocation.things.push(anotherPickupItem);
+    receiverLocation.things.push(receiver);
+  });
+
+
+  it("item is no longer in inventory after giving to receiver", () => {
+
+    // move to pick up
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.DOWN);
+
+    // move to give
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.UP);
+
+    expect(level.getInventory()).toEqual([]);
+  });
+
+  it("item is not in level after giving to receiver", () => {
+
+    // move to pick up
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.DOWN);
+
+    // move to give
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.UP);
+
+    expect(getAllThings(level).every(thing => thing.id !== pickupItem.id)).toBe(true);
+  });
+
+  it("only the receiver's item is given", () => {
+
+    // move to pick up
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.DOWN);
+
+    // move to pick up another
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.UP);
+
+    // move to give
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.LEFT);
+
+    expect(level.getInventory()).toEqual([anotherPickupItem]);
+  });
+});
+
+function getAllThings(level: Level): Thing[] {
+  return level.levelMatrix.flatMap(row => row.flatMap(loc => loc.things));
+}
