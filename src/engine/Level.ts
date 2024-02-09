@@ -94,25 +94,33 @@ export class Level {
       return doNothing;
     }
 
-    const canMove = !nextLocation.things.some(thing => thing.is("wall")) || !this.collisionEnabled;
+    const canMove = !this.doesLocationHaveProperty(nextLocation, "wall");
 
     if (canMove) {
       this.playerLocation = nextCoords;
     }
 
-    const died = nextLocation.things.some(thing => thing.is("death")) && this.collisionEnabled;
+    const died = this.doesLocationHaveProperty(nextLocation, "death");
 
     if (died) {
       this.playerLocation = this.errand.startCoords;
     }
 
-    this.inventory.push(...nextLocation.things.filter(thing => thing.is("pickup")));
-    nextLocation.things = nextLocation.things.filter(thing => !thing.is("pickup"));
+    this.transferAllPickupsFromLevelToInventory(nextLocation);
 
     return {
       moved: canMove,
       died: died
     };
+  }
+
+  private doesLocationHaveProperty(location: LevelLocation, property: ThingProperty): boolean {
+    return location.things.some(thing => thing.is(property)) && this.collisionEnabled;
+  }
+
+  private transferAllPickupsFromLevelToInventory(location: LevelLocation) {
+    this.inventory.push(...location.things.filter(thing => thing.is("pickup")));
+    location.things = location.things.filter(thing => !thing.is("pickup"));
   }
 
   private getLocation(coords: Coords): LevelLocation | undefined {
