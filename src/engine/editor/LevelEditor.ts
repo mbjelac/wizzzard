@@ -76,11 +76,11 @@ export function createThingProps(editorTool: EditorTool, label?: string): ThingD
     case EditorTool.FLOOR:
       return Thing.defaultThingDescription;
     case EditorTool.WALL:
-      return { ...Thing.defaultThingDescription, properties: ["wall"], sprite: "wall" };
+      return { ...Thing.defaultThingDescription, properties: ["wall"], label: label, sprite: "wall" };
     case EditorTool.FIRE:
-      return { ...Thing.defaultThingDescription, properties: ["death"], sprite: "fire" };
+      return { ...Thing.defaultThingDescription, properties: ["death"], label: label, sprite: "fire" };
     case EditorTool.KEY:
-      return { ...Thing.defaultThingDescription, properties: ["pickup"], sprite: "key" };
+      return { ...Thing.defaultThingDescription, properties: ["pickup"], label: label, sprite: "key" };
     case EditorTool.KEY_GREEN:
       return { ...Thing.defaultThingDescription, properties: ["pickup"], label: label, sprite: "key_green" };
     case EditorTool.RECEIVER:

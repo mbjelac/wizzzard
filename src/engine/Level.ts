@@ -43,7 +43,19 @@ export class Thing {
 
   is(thingFunction: ThingProperty): boolean {
     return this.description.properties.find(tf => tf === thingFunction) !== undefined;
-}
+  }
+
+  removeProperty(propertyToRemove: ThingProperty) {
+    const properties = this.description.properties;
+
+    const index = properties.findIndex(property => property === propertyToRemove);
+
+    if (index === -1) {
+      return;
+    }
+
+    properties.splice(index, 1);
+  }
 }
 
 export interface MoveResult {
@@ -106,13 +118,14 @@ export class Level {
       this.playerLocation = this.errand.startCoords;
     }
 
-    this.transferAllPickupsFromLevelToInventory(nextLocation);
-
     const give = this.doesLocationHaveProperty(nextLocation, "receiver");
 
     if (give) {
-      this.removeItemsWithReceiverLabelFromInventory(nextLocation);
+      this.removeOneItemWithReceiverLabelFromInventory(nextLocation);
+      this.disableReceiver(nextLocation);
     }
+
+    this.transferAllPickupsFromLevelToInventory(nextLocation);
 
     return {
       moved: canMove,
@@ -127,6 +140,29 @@ export class Level {
   private transferAllPickupsFromLevelToInventory(location: LevelLocation) {
     this.inventory.push(...location.things.filter(thing => thing.is("pickup")));
     location.things = location.things.filter(thing => !thing.is("pickup"));
+  }
+
+  private removeOneItemWithReceiverLabelFromInventory(location: LevelLocation) {
+
+    const receiverLabel = location.things.find(thing => thing.is("receiver"))!.description.label;
+
+    if (receiverLabel === undefined) {
+      throw Error("Receiver has no label! " + JSON.stringify(location));
+    }
+
+    const index = this.inventory.findIndex(inventoryItem => inventoryItem.description.label === receiverLabel);
+
+    if (index === -1) {
+      return;
+    }
+
+    this.inventory.splice(index, 1);
+  }
+
+  private disableReceiver(location: LevelLocation) {
+    const receiver = location.things.find(thing => thing.is("receiver"))!;
+
+    receiver.removeProperty("receiver");
   }
 
   private getLocation(coords: Coords): LevelLocation | undefined {
@@ -149,16 +185,5 @@ export class Level {
 
   getInventory(): Thing[] {
     return this.inventory;
-  }
-
-  private removeItemsWithReceiverLabelFromInventory(location: LevelLocation) {
-
-    const receiverLabel = location.things.find(thing => thing.is("receiver"))!.description.label;
-
-    if (receiverLabel === undefined) {
-      throw Error("Receiver has no label! " + JSON.stringify(location));
-    }
-
-    this.inventory = this.inventory.filter(thing => thing.description.label !== receiverLabel);
   }
 }

@@ -210,11 +210,9 @@ describe("picking up things", () => {
 
 describe("giving a picked up item to a receiver", () => {
 
-  let pickupLocation: LevelLocation;
-  let pickupItem: Thing;
-  let anotherPickupItem: Thing;
-  let anotherPickupLocation: LevelLocation;
-  let receiverLocation: LevelLocation;
+  const receiverLabel = "someLabel";
+
+  let receivableItem: Thing;
   let receiver: Thing;
 
   beforeEach(() => {
@@ -224,17 +222,11 @@ describe("giving a picked up item to a receiver", () => {
       "   "
     );
 
-    pickupItem = new Thing(createThingProps(EditorTool.KEY_GREEN, "someLabel")!);
-    anotherPickupItem = new Thing(createThingProps(EditorTool.KEY, "someOtherLabel")!);
-    receiver = new Thing(createThingProps(EditorTool.RECEIVER, "someLabel")!);
+    receivableItem = new Thing(createThingProps(EditorTool.KEY_GREEN, receiverLabel)!);
+    receiver = new Thing(createThingProps(EditorTool.RECEIVER, receiverLabel)!);
 
-    pickupLocation = level.levelMatrix[2][2];
-    anotherPickupLocation = level.levelMatrix[0][2];
-    receiverLocation = level.levelMatrix[0][0];
-
-    pickupLocation.things.push(pickupItem);
-    anotherPickupLocation.things.push(anotherPickupItem);
-    receiverLocation.things.push(receiver);
+    level.levelMatrix[2][2].things.push(receivableItem);
+    level.levelMatrix[0][0].things.push(receiver);
   });
 
 
@@ -265,10 +257,14 @@ describe("giving a picked up item to a receiver", () => {
     level.tryToMove(Direction.LEFT);
     level.tryToMove(Direction.UP);
 
-    expect(getAllThings(level).every(thing => thing.id !== pickupItem.id)).toBe(true);
+    expect(getAllThings(level).every(thing => thing.id !== receivableItem.id)).toBe(true);
   });
 
   it("only the receiver's item is given", () => {
+
+    const anotherPickupItem = new Thing(createThingProps(EditorTool.KEY, "someOtherLabel")!);
+    const anotherPickupLocation = level.levelMatrix[0][2];
+    anotherPickupLocation.things.push(anotherPickupItem);
 
     // move to pick up
     level.tryToMove(Direction.RIGHT);
@@ -278,11 +274,38 @@ describe("giving a picked up item to a receiver", () => {
     level.tryToMove(Direction.UP);
     level.tryToMove(Direction.UP);
 
-    // move to give
+    // move to receiver
+    level.tryToMove(Direction.LEFT);
+
+    // give
+    level.tryToMove(Direction.LEFT);
+
+
+    expect(level.getInventory()).toEqual([anotherPickupItem]);
+  });
+
+  it("only one item can be given", () => {
+
+    const receivableItem2 = new Thing(createThingProps(EditorTool.KEY, receiverLabel)!);
+    level.levelMatrix[0][2].things.push(receivableItem2);
+
+    // move to pick up
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.DOWN);
+
+    // move to pick up another
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.UP);
+
+    // move to receiver
+    level.tryToMove(Direction.LEFT);
+
+    // give twice
     level.tryToMove(Direction.LEFT);
     level.tryToMove(Direction.LEFT);
 
-    expect(level.getInventory()).toEqual([anotherPickupItem]);
+
+    expect(level.getInventory()).toEqual([receivableItem2]);
   });
 });
 
