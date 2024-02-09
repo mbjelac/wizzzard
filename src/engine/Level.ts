@@ -108,6 +108,12 @@ export class Level {
 
     this.transferAllPickupsFromLevelToInventory(nextLocation);
 
+    const give = this.doesLocationHaveProperty(nextLocation, "receiver");
+
+    if (give) {
+      this.removeItemsWithReceiverLabelFromInventory(nextLocation);
+    }
+
     return {
       moved: canMove,
       died: died
@@ -143,5 +149,16 @@ export class Level {
 
   getInventory(): Thing[] {
     return this.inventory;
+  }
+
+  private removeItemsWithReceiverLabelFromInventory(location: LevelLocation) {
+
+    const receiverLabel = location.things.find(thing => thing.is("receiver"))!.props.label;
+
+    if (receiverLabel === undefined) {
+      throw Error("Receiver has no label! " + JSON.stringify(location));
+    }
+
+    this.inventory = this.inventory.filter(thing => thing.props.label !== receiverLabel);
   }
 }
