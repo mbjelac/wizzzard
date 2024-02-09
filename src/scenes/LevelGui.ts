@@ -52,6 +52,7 @@ export default class LevelGui extends Phaser.Scene {
     this.load.image('floor', 'assets/tiles/floor.png');
     this.load.image('player', 'assets/tiles/wizard1.png');
     this.load.image('key', 'assets/tiles/key1.png');
+    this.load.image('lock', 'assets/tiles/lock.png');
     this.load.spritesheet('fire', 'assets/tiles/fire.png', { frameWidth: TILE_SIZE, frameHeight: TILE_SIZE });
 
     this.events.on("create", async () => this.populateLevel());
@@ -258,7 +259,8 @@ export default class LevelGui extends Phaser.Scene {
   }
 
   private async applyEditorTool(location: LevelLocation, locationPixelCoords: Coords) {
-    const addResult = this.level.editor.applyEditorTool(location);
+
+    const addResult = this.level.editor.applyEditorTool(location, this.getLabel());
 
     if (!addResult.addedThing) {
       return;
@@ -267,6 +269,20 @@ export default class LevelGui extends Phaser.Scene {
     this.addThingSprite(locationPixelCoords, location, addResult.addedThing);
 
     await this.saveLevelMatrix();
+  }
+
+  private getLabel(): string | undefined {
+    if(!this.level.editor.isLabelRequired()){
+      return undefined;
+    }
+
+    const label = prompt("Enter label", "");
+
+    if (label != null) {
+      return label;
+    } else {
+      return undefined;
+    }
   }
 
   private addThingSprite(pixelCoords: Coords, location: LevelLocation, thing: Thing) {

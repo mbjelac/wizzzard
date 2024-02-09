@@ -19,7 +19,8 @@ export interface ThingProps {
   readonly isWall: boolean,
   readonly isDeath: boolean,
   readonly sprite: SpriteName,
-  readonly isPickup: boolean
+  readonly isPickup: boolean,
+  readonly label?: string,
 }
 
 export class Thing {

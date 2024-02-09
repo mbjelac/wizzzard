@@ -26,9 +26,9 @@ export class LevelEditor {
     addedThing: undefined
   };
 
-  applyEditorTool(location: LevelLocation): AddResult {
+  applyEditorTool(location: LevelLocation, label?: string): AddResult {
 
-    const thingToAdd = this.createThingToAdd();
+    const thingToAdd = this.createThingToAdd(label);
 
     if (!thingToAdd) {
       return this.emptyAddResult;
@@ -45,8 +45,8 @@ export class LevelEditor {
     };
   }
 
-  private createThingToAdd(): Thing | undefined {
-    const props = createThingProps(this.currentEditorTool);
+  private createThingToAdd(label?: string): Thing | undefined {
+    const props = createThingProps(this.currentEditorTool, label);
     return props ? new Thing(props) : undefined;
   }
 
@@ -60,9 +60,13 @@ export class LevelEditor {
 
     location.things.splice(index, 1);
   }
+
+  isLabelRequired(): boolean {
+    return this.currentEditorTool === EditorTool.RECEIVE;
+  }
 }
 
-export function createThingProps(editorTool: EditorTool): ThingProps | undefined {
+export function createThingProps(editorTool: EditorTool, label?: string): ThingProps | undefined {
   switch (editorTool) {
     case EditorTool.NONE:
       return undefined;
@@ -74,5 +78,7 @@ export function createThingProps(editorTool: EditorTool): ThingProps | undefined
       return { ...Thing.defaultProps, isDeath: true, sprite: "fire" };
     case EditorTool.KEY:
       return { ...Thing.defaultProps, isPickup: true, sprite: "key" };
+    case EditorTool.RECEIVE:
+      return { ...Thing.defaultProps, isWall: true, label: label, sprite: "lock"};
   }
 }
