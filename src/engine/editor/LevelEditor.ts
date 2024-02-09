@@ -62,7 +62,10 @@ export class LevelEditor {
   }
 
   isLabelRequired(): boolean {
-    return this.currentEditorTool === EditorTool.RECEIVE;
+    return [
+      EditorTool.RECEIVE,
+      EditorTool.KEY_GREEN
+    ].some(tool => tool === this.currentEditorTool);
   }
 }
 
@@ -78,7 +81,9 @@ export function createThingProps(editorTool: EditorTool, label?: string): ThingP
       return { ...Thing.defaultProps, functions: ["death"], sprite: "fire" };
     case EditorTool.KEY:
       return { ...Thing.defaultProps, functions: ["pickup"], sprite: "key" };
+    case EditorTool.KEY_GREEN:
+      return { ...Thing.defaultProps, functions: ["pickup"], label: label, sprite: "key_green" };
     case EditorTool.RECEIVE:
-      return { ...Thing.defaultProps, functions: ["wall", "receive"], label: label, sprite: "lock"};
+      return { ...Thing.defaultProps, functions: ["wall", "receive"], label: label, sprite: "lock" };
   }
 }

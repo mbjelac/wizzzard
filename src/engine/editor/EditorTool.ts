@@ -4,7 +4,8 @@ export enum EditorTool {
   FIRE = "fire",
   FLOOR = "floor",
   KEY = "key",
-  RECEIVE = "receive"
+  RECEIVE = "receive",
+  KEY_GREEN = "key_green",
 }
 
 export const allEditorTools: EditorTool[] = [
@@ -13,5 +14,6 @@ export const allEditorTools: EditorTool[] = [
   EditorTool.WALL,
   EditorTool.FIRE,
   EditorTool.KEY,
-  EditorTool.RECEIVE
+  EditorTool.RECEIVE,
+  EditorTool.KEY_GREEN,
 ];

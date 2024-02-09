@@ -52,6 +52,7 @@ export default class LevelGui extends Phaser.Scene {
     this.load.image('floor', 'assets/tiles/floor.png');
     this.load.image('player', 'assets/tiles/wizard1.png');
     this.load.image('key', 'assets/tiles/key1.png');
+    this.load.image('key_green', 'assets/tiles/key_green.png');
     this.load.image('lock', 'assets/tiles/lock.png');
     this.load.spritesheet('fire', 'assets/tiles/fire.png', { frameWidth: TILE_SIZE, frameHeight: TILE_SIZE });
 
