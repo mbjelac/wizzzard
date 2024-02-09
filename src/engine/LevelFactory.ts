@@ -1,4 +1,4 @@
-import { LevelMatrix, Thing, ThingProps } from "./Level";
+import { ThingDescription } from "./Level";
 import { createThingProps } from "./editor/LevelEditor";
 import { EditorTool } from "./editor/EditorTool";
 import { ErrandMatrix } from "./Errand";
@@ -30,7 +30,7 @@ export class LevelFactory {
   }
 }
 
-function charToThingProps(char: string, handleMissingCase: () => void): ThingProps | undefined {
+function charToThingProps(char: string, handleMissingCase: () => void): ThingDescription | undefined {
   switch (char) {
     case '#':
       return createThingProps(EditorTool.WALL);

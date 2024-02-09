@@ -1,4 +1,4 @@
-import { Coords, LevelMatrix, Thing, ThingProps } from "./Level";
+import { Coords, ThingDescription } from "./Level";
 
 export interface Errand {
 
@@ -10,7 +10,7 @@ export interface Errand {
 
 export interface ErrandLocation {
 
-  things: ThingProps[]
+  things: ThingDescription[]
 }
 
 export type ErrandMatrix = ErrandLocation[][];

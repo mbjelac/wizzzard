@@ -15,13 +15,13 @@ export interface LevelLocation {
 
 export type LevelMatrix = LevelLocation[][];
 
-export interface ThingProps {
-  readonly functions: ThingFunction[],
+export interface ThingDescription {
+  readonly properties: ThingProperty[],
   readonly sprite: SpriteName,
   readonly label?: string,
 }
 
-export type ThingFunction = "wall" | "death" | "pickup" | "receiver";
+export type ThingProperty = "wall" | "death" | "pickup" | "receiver";
 
 export class Thing {
 
@@ -29,20 +29,20 @@ export class Thing {
 
   public readonly id = Thing.nextId++;
 
-  public static defaultProps: ThingProps = {
-    functions: [],
+  public static defaultThingDescription: ThingDescription = {
+    properties: [],
     sprite: "floor",
   };
 
-  constructor(public readonly props: ThingProps) {
+  constructor(public readonly props: ThingDescription) {
   }
 
   equals(thing: Thing): boolean {
     return JSON.stringify(this.props) === JSON.stringify(thing.props);
   }
 
-  is(thingFunction: ThingFunction): boolean {
-    return this.props.functions.find(tf => tf === thingFunction) !== undefined;
+  is(thingFunction: ThingProperty): boolean {
+    return this.props.properties.find(tf => tf === thingFunction) !== undefined;
 }
 }
 

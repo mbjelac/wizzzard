@@ -1,5 +1,5 @@
 import { allEditorTools, EditorTool } from "./EditorTool";
-import { LevelLocation, Thing, ThingProps } from "../Level";
+import { LevelLocation, Thing, ThingDescription } from "../Level";
 
 export interface AddResult {
   addedThing?: Thing
@@ -69,21 +69,21 @@ export class LevelEditor {
   }
 }
 
-export function createThingProps(editorTool: EditorTool, label?: string): ThingProps | undefined {
+export function createThingProps(editorTool: EditorTool, label?: string): ThingDescription | undefined {
   switch (editorTool) {
     case EditorTool.NONE:
       return undefined;
     case EditorTool.FLOOR:
-      return Thing.defaultProps;
+      return Thing.defaultThingDescription;
     case EditorTool.WALL:
-      return { ...Thing.defaultProps, functions: ["wall"], sprite: "wall" };
+      return { ...Thing.defaultThingDescription, properties: ["wall"], sprite: "wall" };
     case EditorTool.FIRE:
-      return { ...Thing.defaultProps, functions: ["death"], sprite: "fire" };
+      return { ...Thing.defaultThingDescription, properties: ["death"], sprite: "fire" };
     case EditorTool.KEY:
-      return { ...Thing.defaultProps, functions: ["pickup"], sprite: "key" };
+      return { ...Thing.defaultThingDescription, properties: ["pickup"], sprite: "key" };
     case EditorTool.KEY_GREEN:
-      return { ...Thing.defaultProps, functions: ["pickup"], label: label, sprite: "key_green" };
+      return { ...Thing.defaultThingDescription, properties: ["pickup"], label: label, sprite: "key_green" };
     case EditorTool.RECEIVE:
-      return { ...Thing.defaultProps, functions: ["wall", "receiver"], label: label, sprite: "lock" };
+      return { ...Thing.defaultThingDescription, properties: ["wall", "receiver"], label: label, sprite: "lock" };
   }
 }
