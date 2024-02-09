@@ -63,7 +63,7 @@ export class LevelEditor {
 
   isLabelRequired(): boolean {
     return [
-      EditorTool.RECEIVE,
+      EditorTool.RECEIVER,
       EditorTool.KEY_GREEN
     ].some(tool => tool === this.currentEditorTool);
   }
@@ -83,7 +83,7 @@ export function createThingProps(editorTool: EditorTool, label?: string): ThingD
       return { ...Thing.defaultThingDescription, properties: ["pickup"], sprite: "key" };
     case EditorTool.KEY_GREEN:
       return { ...Thing.defaultThingDescription, properties: ["pickup"], label: label, sprite: "key_green" };
-    case EditorTool.RECEIVE:
+    case EditorTool.RECEIVER:
       return { ...Thing.defaultThingDescription, properties: ["wall", "receiver"], label: label, sprite: "lock" };
   }
 }
