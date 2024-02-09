@@ -262,7 +262,7 @@ export default class LevelGui extends Phaser.Scene {
 
     this.addThingSprite(locationPixelCoords, location, addResult.addedThing);
 
-    await this.saveLevel();
+    await this.saveLevelMatrix();
   }
 
   private addThingSprite(pixelCoords: Coords, location: LevelLocation, thing: Thing) {
@@ -275,7 +275,7 @@ export default class LevelGui extends Phaser.Scene {
       if (pointer.rightButtonReleased()) {
         this.level.editor.removeThing(location, thing);
         thingSprite.destroy(true);
-        await this.saveLevel();
+        await this.saveLevelMatrix();
       }
       if (pointer.leftButtonReleased()) {
         await this.applyEditorTool(location, pixelCoords);
@@ -297,7 +297,7 @@ export default class LevelGui extends Phaser.Scene {
     this.createdSpritesByThingId.clear();
   }
 
-  private async saveLevel() {
+  private async saveLevelMatrix() {
 
     const errand: Errand = {
       ...this.level.errand,
