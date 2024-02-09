@@ -180,7 +180,7 @@ export default class LevelGui extends Phaser.Scene {
         return;
       }
 
-      const inventorySprite = this.physics.add.sprite(0, 0, inventoryItem.props.sprite).setDepth(depths.info);
+      const inventorySprite = this.physics.add.sprite(0, 0, inventoryItem.description.sprite).setDepth(depths.info);
       this.inventorySprites.push(inventorySprite);
     });
   }
@@ -288,7 +288,7 @@ export default class LevelGui extends Phaser.Scene {
 
   private addThingSprite(pixelCoords: Coords, location: LevelLocation, thing: Thing) {
 
-    const thingSprite = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, thing.props.sprite).setDepth(depths.things).setInteractive();
+    const thingSprite = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, thing.description.sprite).setDepth(depths.things).setInteractive();
 
     this.spritesToAnimate.addSprite(thing, thingSprite);
 
@@ -325,7 +325,7 @@ export default class LevelGui extends Phaser.Scene {
       matrix: this.level.levelMatrix.map(row => row
         .map(location => ({
             things: location.things
-              .map(thing => thing.props)
+              .map(thing => thing.description)
           })
         )
       )

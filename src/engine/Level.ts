@@ -34,15 +34,15 @@ export class Thing {
     sprite: "floor",
   };
 
-  constructor(public readonly props: ThingDescription) {
+  constructor(public readonly description: ThingDescription) {
   }
 
   equals(thing: Thing): boolean {
-    return JSON.stringify(this.props) === JSON.stringify(thing.props);
+    return JSON.stringify(this.description) === JSON.stringify(thing.description);
   }
 
   is(thingFunction: ThingProperty): boolean {
-    return this.props.properties.find(tf => tf === thingFunction) !== undefined;
+    return this.description.properties.find(tf => tf === thingFunction) !== undefined;
 }
 }
 
@@ -153,12 +153,12 @@ export class Level {
 
   private removeItemsWithReceiverLabelFromInventory(location: LevelLocation) {
 
-    const receiverLabel = location.things.find(thing => thing.is("receiver"))!.props.label;
+    const receiverLabel = location.things.find(thing => thing.is("receiver"))!.description.label;
 
     if (receiverLabel === undefined) {
       throw Error("Receiver has no label! " + JSON.stringify(location));
     }
 
-    this.inventory = this.inventory.filter(thing => thing.props.label !== receiverLabel);
+    this.inventory = this.inventory.filter(thing => thing.description.label !== receiverLabel);
   }
 }

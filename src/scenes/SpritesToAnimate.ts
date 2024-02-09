@@ -11,7 +11,7 @@ export class SpritesToAnimate {
   private readonly toAnimate: SpriteToAnimate[] = [];
 
   public addSprite(thing: Thing, sprite: Phaser.Physics.Arcade.Sprite) {
-    const animationName = spriteAnimations.get(thing.props.sprite);
+    const animationName = spriteAnimations.get(thing.description.sprite);
 
     if (!animationName) {
       return;
