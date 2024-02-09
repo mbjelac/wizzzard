@@ -21,7 +21,7 @@ export interface ThingProps {
   readonly label?: string,
 }
 
-export type ThingFunction = "wall" | "death" | "pickup" | "receive";
+export type ThingFunction = "wall" | "death" | "pickup" | "receiver";
 
 export class Thing {
 

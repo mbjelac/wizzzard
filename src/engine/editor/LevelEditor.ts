@@ -84,6 +84,6 @@ export function createThingProps(editorTool: EditorTool, label?: string): ThingP
     case EditorTool.KEY_GREEN:
       return { ...Thing.defaultProps, functions: ["pickup"], label: label, sprite: "key_green" };
     case EditorTool.RECEIVE:
-      return { ...Thing.defaultProps, functions: ["wall", "receive"], label: label, sprite: "lock" };
+      return { ...Thing.defaultProps, functions: ["wall", "receiver"], label: label, sprite: "lock" };
   }
 }
