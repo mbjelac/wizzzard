@@ -16,12 +16,12 @@ export interface LevelLocation {
 export type LevelMatrix = LevelLocation[][];
 
 export interface ThingProps {
-  readonly isWall: boolean,
-  readonly isDeath: boolean,
+  readonly functions: ThingFunction[],
   readonly sprite: SpriteName,
-  readonly isPickup: boolean,
   readonly label?: string,
 }
+
+export type ThingFunction = "wall" | "death" | "pickup" | "receive";
 
 export class Thing {
 
@@ -30,10 +30,8 @@ export class Thing {
   public readonly id = Thing.nextId++;
 
   public static defaultProps: ThingProps = {
-    isDeath: false,
-    isWall: false,
+    functions: [],
     sprite: "floor",
-    isPickup: false,
   };
 
   constructor(public readonly props: ThingProps) {
@@ -42,6 +40,10 @@ export class Thing {
   equals(thing: Thing): boolean {
     return JSON.stringify(this.props) === JSON.stringify(thing.props);
   }
+
+  is(thingFunction: ThingFunction): boolean {
+    return this.props.functions.find(tf => tf === thingFunction) !== undefined;
+}
 }
 
 export interface MoveResult {
@@ -92,20 +94,20 @@ export class Level {
       return doNothing;
     }
 
-    const canMove = !nextLocation.things.some(thing => thing.props.isWall) || !this.collisionEnabled;
+    const canMove = !nextLocation.things.some(thing => thing.is("wall")) || !this.collisionEnabled;
 
     if (canMove) {
       this.playerLocation = nextCoords;
     }
 
-    const died = nextLocation.things.some(thing => thing.props.isDeath) && this.collisionEnabled;
+    const died = nextLocation.things.some(thing => thing.is("death")) && this.collisionEnabled;
 
     if (died) {
       this.playerLocation = this.errand.startCoords;
     }
 
-    this.inventory.push(...nextLocation.things.filter(thing => thing.props.isPickup));
-    nextLocation.things = nextLocation.things.filter(thing => !thing.props.isPickup);
+    this.inventory.push(...nextLocation.things.filter(thing => thing.is("pickup")));
+    nextLocation.things = nextLocation.things.filter(thing => !thing.is("pickup"));
 
     return {
       moved: canMove,

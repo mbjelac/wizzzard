@@ -73,12 +73,12 @@ export function createThingProps(editorTool: EditorTool, label?: string): ThingP
     case EditorTool.FLOOR:
       return Thing.defaultProps;
     case EditorTool.WALL:
-      return { ...Thing.defaultProps, isWall: true, sprite: "wall" };
+      return { ...Thing.defaultProps, functions: ["wall"], sprite: "wall" };
     case EditorTool.FIRE:
-      return { ...Thing.defaultProps, isDeath: true, sprite: "fire" };
+      return { ...Thing.defaultProps, functions: ["death"], sprite: "fire" };
     case EditorTool.KEY:
-      return { ...Thing.defaultProps, isPickup: true, sprite: "key" };
+      return { ...Thing.defaultProps, functions: ["pickup"], sprite: "key" };
     case EditorTool.RECEIVE:
-      return { ...Thing.defaultProps, isWall: true, label: label, sprite: "lock"};
+      return { ...Thing.defaultProps, functions: ["wall", "receive"], label: label, sprite: "lock"};
   }
 }
