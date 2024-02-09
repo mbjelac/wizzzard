@@ -1,4 +1,4 @@
-import { Errand, ErrandDescription, LevelDimensions } from "./Errand";
+import { Errand, ErrandDescription, ErrandMatrix, LevelDimensions } from "./Errand";
 import { Level, LevelMatrix } from "./Level";
 import { getErrand, getErrandDescriptions, setErrand } from "./errands";
 
@@ -32,7 +32,7 @@ export class Game {
 
 export const GAME = new Game();
 
-export function populateEmptyLevelMatrix(dimensions: LevelDimensions): LevelMatrix {
+export function populateEmptyLevelMatrix(dimensions: LevelDimensions): ErrandMatrix {
   if (dimensions.width === 0 || dimensions.height === 0) {
     return [];
   }

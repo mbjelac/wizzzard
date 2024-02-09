@@ -10,7 +10,7 @@ const errands: Errand[] = [
     },
     levelDimensions: { width: 10, height: 10 },
     startCoords: { x: 5, y: 5 },
-    levelMatrix: []
+    matrix: []
   },
   {
     description: {
@@ -19,7 +19,7 @@ const errands: Errand[] = [
       description: "An empty room"
     },
     levelDimensions: { width: 3, height: 3 },
-    levelMatrix: [],
+    matrix: [],
     startCoords: { x: 1, y: 1 },
   },
   {
@@ -29,7 +29,7 @@ const errands: Errand[] = [
       description: "A ring of fire is conjured around you. What do you do?"
     },
     levelDimensions: { width: 7, height: 7 },
-    levelMatrix: [],
+    matrix: [],
     startCoords: { x: 3, y: 3 },
   },
   {
@@ -39,7 +39,7 @@ const errands: Errand[] = [
       description: "Another dungeon. Boring."
     },
     levelDimensions: { width: 12, height: 9 },
-    levelMatrix: [],
+    matrix: [],
     startCoords: { x: 1, y: 3 },
   },
 ];
@@ -59,10 +59,10 @@ export async function getErrand(errandId: string): Promise<Errand> {
 
   let fixedErrand = errandFromCode;
 
-  if (fixedErrand.levelMatrix.length === 0) {
+  if (fixedErrand.matrix.length === 0) {
     fixedErrand = {
       ...fixedErrand,
-      levelMatrix: populateEmptyLevelMatrix(fixedErrand.levelDimensions)
+      matrix: populateEmptyLevelMatrix(fixedErrand.levelDimensions)
     }
   }
 
