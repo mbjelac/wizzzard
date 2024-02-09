@@ -68,12 +68,12 @@ export default class LevelGui extends Phaser.Scene {
       repeat: -1,
     });
 
-    this.input.keyboard.on('keydown', (event: KeyboardEvent) => {
+    this.input.keyboard.on('keydown', async (event: KeyboardEvent) => {
 
       const direction = keyToDirection(event.key);
 
       if (!!direction) {
-        this.move(direction);
+        await this.move(direction);
       }
 
       if (event.key === 'c') {
@@ -225,7 +225,7 @@ export default class LevelGui extends Phaser.Scene {
     this.spritesToAnimate.animateAll();
   }
 
-  private move(direction: Direction) {
+  private async move(direction: Direction) {
 
     const hasMoved = this.level.tryToMove(direction);
 
@@ -236,10 +236,14 @@ export default class LevelGui extends Phaser.Scene {
     this.removeSpritesPutInInventory();
     this.displayInventory();
 
-    const playerPixelCoords = toPixelCoords(this.level.getPlayerLocation());
+    if (hasMoved.died) {
+      await this.populateLevel();
+    } else {
+      const playerPixelCoords = toPixelCoords(this.level.getPlayerLocation());
 
-    this.player.setX(playerPixelCoords.x);
-    this.player.setY(playerPixelCoords.y);
+      this.player.setX(playerPixelCoords.x);
+      this.player.setY(playerPixelCoords.y);
+    }
   }
 
   private removeSpritesPutInInventory() {
