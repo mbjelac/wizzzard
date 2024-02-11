@@ -132,7 +132,7 @@ export class Level {
     return {
       moved: canMove,
       died: died,
-      levelComplete: false
+      levelComplete: this.isLevelComplete()
     };
   }
 
@@ -188,5 +188,19 @@ export class Level {
 
   getInventory(): Thing[] {
     return this.inventory;
+  }
+
+  private isLevelComplete(): boolean {
+    const requiredLabels = this.errand.completionCriteria.inventory;
+
+    if (requiredLabels.length === 0) {
+      return true;
+    }
+
+    const collectedLabels = this
+      .inventory
+      .map(thing => thing.description.label);
+
+    return requiredLabels.every(requiredLabel => collectedLabels.some(collectedLabel => collectedLabel === requiredLabel));
   }
 }

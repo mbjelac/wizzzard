@@ -36,7 +36,9 @@ function createLevel(...rows: string[]): Level {
     levelDimensions: { width: 3, height: 3 },
     matrix: factory.fromMatrix(...rows),
     startCoords: startCoords,
-    completionCriteria: {}
+    completionCriteria: {
+      inventory: ["any"]
+    }
   });
 }
 
@@ -313,8 +315,8 @@ describe("giving a picked up item to a receiver", () => {
 
 describe("completing level", () => {
 
-  beforeEach(() => {
-    level = new Level({
+  function createLevel(requiredInventory: string[]): Level {
+    return new Level({
       description: {
         id: "testLevel",
         description: "",
@@ -328,12 +330,14 @@ describe("completing level", () => {
       ),
       startCoords: { x: 1, y: 1 },
       completionCriteria: {
-        inventory: ["someLabel"]
+        inventory: requiredInventory
       }
     });
-  });
+  }
 
   it("complete when a required item is in inventory", () => {
+
+    level = createLevel(["someLabel"]);
 
     level.levelMatrix[0][0].things.push(new Thing({
       label: "someLabel",
@@ -341,13 +345,18 @@ describe("completing level", () => {
       sprite: "key",
     }));
 
-    level.tryToMove(Direction.UP);
-    const result = level.tryToMove(Direction.LEFT);
-
-    expect(result.levelComplete).toBe(true);
+    expect(movementToCompletedFlags(
+      Direction.UP,
+      Direction.LEFT
+    )).toEqual([
+      false,
+      true
+    ]);
   });
 
   it("not complete when a non-required item is in inventory", () => {
+
+    level = createLevel(["someLabel"]);
 
     level.levelMatrix[0][0].things.push(new Thing({
       label: "someOtherLabel",
@@ -355,11 +364,66 @@ describe("completing level", () => {
       sprite: "key",
     }));
 
-    level.tryToMove(Direction.UP);
-    const result = level.tryToMove(Direction.LEFT);
-
-    expect(result.levelComplete).toBe(false);
+    expect(movementToCompletedFlags(
+      Direction.UP,
+      Direction.LEFT
+    )).toEqual([
+      false,
+      false
+    ]);
   });
+
+  it("not complete when only some required items are in inventory", () => {
+
+    level = createLevel(["label1", "label2"]);
+
+    level.levelMatrix[0][0].things.push(new Thing({
+      label: "label1",
+      properties: ["pickup"],
+      sprite: "key",
+    }));
+
+    expect(movementToCompletedFlags(
+      Direction.UP,
+      Direction.LEFT
+    )).toEqual([
+      false,
+      false
+    ]);
+  });
+
+  it("complete when all required items are in inventory", () => {
+
+    level = createLevel(["label1", "label2"]);
+
+    level.levelMatrix[0][0].things.push(new Thing({
+      label: "label1",
+      properties: ["pickup"],
+      sprite: "key",
+    }));
+
+    level.levelMatrix[0][2].things.push(new Thing({
+      label: "label2",
+      properties: ["pickup"],
+      sprite: "key",
+    }));
+
+    expect(movementToCompletedFlags(
+      Direction.UP,
+      Direction.LEFT,
+      Direction.RIGHT,
+      Direction.RIGHT,
+    )).toEqual([
+      false,
+      false,
+      false,
+      true
+    ]);
+  });
+
+  function movementToCompletedFlags(...directions: Direction[]): boolean[] {
+    return directions.map(direction => level.tryToMove(direction).levelComplete);
+  }
 });
 
 function getAllThings(level: Level): Thing[] {
