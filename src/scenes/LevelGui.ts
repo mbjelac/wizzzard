@@ -156,8 +156,7 @@ export default class LevelGui extends Phaser.Scene {
       }
 
       if (event.code === "Escape") {
-
-        this.scene.switch("errands");
+        this.exitLevel();
       }
     });
 
@@ -183,6 +182,10 @@ export default class LevelGui extends Phaser.Scene {
 
     this.sidePanel = this.add.rectangle(0, 0, sidePanelWidth, 13 * TILE_SIZE, 0xffeeee, 1);
     this.sidePanel.setDepth(depths.infoBackground)
+  }
+
+  private exitLevel() {
+    this.scene.switch("errands");
   }
 
   update(time: number, delta: number) {
