@@ -61,11 +61,13 @@ export class Thing {
 export interface MoveResult {
   moved: boolean,
   died: boolean
+  levelComplete: boolean;
 }
 
 const doNothing: MoveResult = {
   moved: false,
-  died: false
+  died: false,
+  levelComplete: false
 }
 
 export class Level {
@@ -129,7 +131,8 @@ export class Level {
 
     return {
       moved: canMove,
-      died: died
+      died: died,
+      levelComplete: false
     };
   }
 

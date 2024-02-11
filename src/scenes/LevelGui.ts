@@ -250,23 +250,26 @@ export default class LevelGui extends Phaser.Scene {
 
   private async move(direction: Direction) {
 
-    const hasMoved = this.level.tryToMove(direction);
-
-    if (!hasMoved) {
-      return;
-    }
+    const moveResult = this.level.tryToMove(direction);
 
     this.removeSpritesPutInInventory();
     this.displayInventory();
 
-    if (hasMoved.died) {
+    if (moveResult.died) {
       await this.populateLevel();
-    } else {
-      const playerPixelCoords = toPixelCoords(this.level.getPlayerLocation());
-
-      this.player.setX(playerPixelCoords.x);
-      this.player.setY(playerPixelCoords.y);
+      return;
     }
+
+    if (moveResult.levelComplete) {
+      this.exitLevel();
+      return;
+    }
+
+    const playerPixelCoords = toPixelCoords(this.level.getPlayerLocation());
+
+    this.player.setX(playerPixelCoords.x);
+    this.player.setY(playerPixelCoords.y);
+
   }
 
   private removeSpritesPutInInventory() {
@@ -294,7 +297,7 @@ export default class LevelGui extends Phaser.Scene {
   }
 
   private getLabel(): string | undefined {
-    if(!this.level.editor.isLabelRequired()){
+    if (!this.level.editor.isLabelRequired()) {
       return undefined;
     }
 

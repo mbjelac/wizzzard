@@ -8,7 +8,8 @@ let level: Level;
 
 const stayed: MoveResult = {
   moved: false,
-  died: false
+  died: false,
+  levelComplete: false
 }
 
 const moved: MoveResult = {
