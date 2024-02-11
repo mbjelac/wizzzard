@@ -74,13 +74,13 @@ export class Level {
 
   public readonly editor = new LevelEditor();
 
+  public readonly levelMatrix: LevelMatrix;
   private playerLocation: Coords;
 
   public collisionEnabled = true;
 
   private inventory: Thing[] = [];
-
-  public readonly levelMatrix: LevelMatrix;
+  private doneReceivers: string[] = [];
 
   constructor(
     public readonly errand: Errand,
@@ -166,6 +166,7 @@ export class Level {
     const receiver = location.things.find(thing => thing.is("receiver"))!;
 
     receiver.removeProperty("receiver");
+    this.doneReceivers.push(receiver.description.label!);
   }
 
   private getLocation(coords: Coords): LevelLocation | undefined {
@@ -191,6 +192,10 @@ export class Level {
   }
 
   private isLevelComplete(): boolean {
+    return this.inventoryHasRequiredItems() && this.requiredReceivesDone();
+  }
+
+  private inventoryHasRequiredItems() {
     const requiredLabels = this.errand.completionCriteria.inventory;
 
     if (requiredLabels.length === 0) {
@@ -202,5 +207,16 @@ export class Level {
       .map(thing => thing.description.label);
 
     return requiredLabels.every(requiredLabel => collectedLabels.some(collectedLabel => collectedLabel === requiredLabel));
+  }
+
+  private requiredReceivesDone(): boolean {
+
+    const requiredReceives = this.errand.completionCriteria.receives;
+
+    if (requiredReceives.length === 0) {
+      return true;
+    }
+
+    return requiredReceives.every(requiredLabel => this.doneReceivers.some(doneReceiver => doneReceiver === requiredLabel));
   }
 }

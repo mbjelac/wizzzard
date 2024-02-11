@@ -405,6 +405,115 @@ describe("completing level", () => {
     });
   });
 
+  describe("by receive", ()=> {
+
+    function completionRequiresReceives(...requiredReceives: string[]) {
+      level = new Level({
+        description: {
+          id: "testLevel",
+          description: "",
+          title: ""
+        },
+        levelDimensions: { width: 3, height: 3 },
+        matrix: factory.fromMatrix(
+          "   ",
+          "   ",
+          "   "
+        ),
+        startCoords: { x: 1, y: 1 },
+        completionCriteria: {
+          inventory: [],
+          receives: requiredReceives
+        }
+      });
+    }
+
+    it("complete when required receiver receives", () => {
+
+      completionRequiresReceives("label1");
+      addThing(0, 0, "label1", "pickup");
+      addThing(2, 2, "label1", "receiver");
+
+      expect(movementToCompletedFlags(
+        Direction.UP,
+        Direction.LEFT,
+        Direction.RIGHT,
+        Direction.DOWN,
+        Direction.RIGHT,
+        Direction.DOWN,
+      )).toEqual([
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+      ]);
+    });
+
+    it("not complete when only some required receivers receive", () => {
+
+      completionRequiresReceives("label1", "label2");
+      addThing(0, 0, "label1", "pickup");
+      addThing(2, 0, "label2", "pickup");
+      addThing(0, 2, "label1", "receiver");
+      addThing(2, 2, "label2", "receiver");
+
+      expect(movementToCompletedFlags(
+        Direction.UP,
+        Direction.LEFT,
+        Direction.RIGHT,
+        Direction.RIGHT,
+        Direction.LEFT,
+        Direction.DOWN,
+        Direction.DOWN,
+        Direction.LEFT
+      )).toEqual([
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+      ]);
+    });
+
+    it("complete when all required receivers receive", () => {
+
+      completionRequiresReceives("label1", "label2");
+      addThing(0, 0, "label1", "pickup");
+      addThing(2, 0, "label2", "pickup");
+      addThing(0, 2, "label1", "receiver");
+      addThing(2, 2, "label2", "receiver");
+
+      expect(movementToCompletedFlags(
+        Direction.UP,
+        Direction.LEFT,
+        Direction.RIGHT,
+        Direction.RIGHT,
+        Direction.LEFT,
+        Direction.DOWN,
+        Direction.DOWN,
+        Direction.LEFT,
+        Direction.RIGHT,
+        Direction.RIGHT,
+      )).toEqual([
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+      ]);
+    });
+  });
+
   function addThing(x: number, y: number, label: string | undefined, ...properties: ThingProperty[]) {
     level.levelMatrix[y][x].things.push(new Thing({
       label: label,
