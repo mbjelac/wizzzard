@@ -40,6 +40,7 @@ export default class LevelGui extends Phaser.Scene {
 
   private createdNonThings: Sprite[] = [];
   private readonly createdSpritesByThingId: Map<number, Sprite> = new Map();
+  private inventorySprites: Sprite[] = [];
 
   constructor() {
     super('level');
@@ -59,6 +60,73 @@ export default class LevelGui extends Phaser.Scene {
     this.events.on("create", async () => this.populateLevel());
     this.events.on("wake", async () => this.populateLevel());
   }
+
+  private async populateLevel() {
+
+    this.clearLevel();
+
+    this.level = await GAME.getCurrentLevel();
+
+    for (const x of Array(this.level.errand.levelDimensions.width).keys()) {
+      for (const y of Array(this.level.errand.levelDimensions.height).keys()) {
+        this.addLocation(x, y);
+      }
+    }
+
+    const startCoords: Coords = { x: this.level.errand.startCoords.x, y: this.level.errand.startCoords.y };
+    const playerPixelCoords = toPixelCoords(startCoords);
+
+    this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player').setDepth(depths.player);
+
+    this.createdNonThings.push(this.player);
+
+    this.displayInventory();
+
+    this.cameras.main.startFollow(this.player).setFollowOffset(-3 * TILE_SIZE + tileCenterOffset, 0);
+  }
+
+  private addLocation(x: number, y: number) {
+    const location = this.level.levelMatrix[y][x];
+
+    const locationPixelCoords = toPixelCoords({
+      x: x,
+      y: y
+    });
+
+    const voidTile = this.physics.add.sprite(locationPixelCoords.x, locationPixelCoords.y, 'void').setDepth(depths.floors).setInteractive();
+    voidTile.on('pointerup', async (pointer: Pointer) => {
+      if (pointer.leftButtonReleased()) {
+        await this.applyEditorTool(location, locationPixelCoords);
+      }
+    });
+
+    this.createdNonThings.push(voidTile);
+
+    location.things.forEach(thing => {
+      this.addThingSprite(locationPixelCoords, location, thing);
+    });
+  }
+
+  private displayInventory() {
+
+    this.inventorySprites.forEach(sprite => sprite.destroy(true));
+    this.inventorySprites = [];
+
+    const inventory = this.level.getInventory();
+
+    Array(3).fill(0).forEach((_, index) => {
+
+      const inventoryItem = inventory[index];
+
+      if (inventoryItem === undefined) {
+        return;
+      }
+
+      const inventorySprite = this.physics.add.sprite(0, 0, inventoryItem.description.sprite).setDepth(depths.info);
+      this.inventorySprites.push(inventorySprite);
+    });
+  }
+
 
   create() {
     console.log("Level create");
@@ -88,6 +156,7 @@ export default class LevelGui extends Phaser.Scene {
       }
 
       if (event.code === "Escape") {
+
         this.scene.switch("errands");
       }
     });
@@ -116,79 +185,19 @@ export default class LevelGui extends Phaser.Scene {
     this.sidePanel.setDepth(depths.infoBackground)
   }
 
-  private async populateLevel() {
-
-    this.clearLevel();
-
-    this.level = await GAME.getCurrentLevel();
-
-    for (const x of Array(this.level.errand.levelDimensions.width).keys()) {
-      for (const y of Array(this.level.errand.levelDimensions.height).keys()) {
-        this.addLocation(x, y);
-      }
-    }
-
-    const startCoords: Coords = { x: this.level.errand.startCoords.x, y: this.level.errand.startCoords.y };
-    const playerPixelCoords = toPixelCoords(startCoords);
-
-    this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player').setDepth(depths.player);
-
-    this.createdNonThings.push(this.player);
-
-    this.displayInventory();
-
-    this.cameras.main.startFollow(this.player).setFollowOffset(-3 * TILE_SIZE + tileCenterOffset, 0);
-  }
-
-
-  private addLocation(x: number, y: number) {
-    const location = this.level.levelMatrix[y][x];
-
-    const locationPixelCoords = toPixelCoords({
-      x: x,
-      y: y
-    });
-
-    const voidTile = this.physics.add.sprite(locationPixelCoords.x, locationPixelCoords.y, 'void').setDepth(depths.floors).setInteractive();
-    voidTile.on('pointerup', async (pointer: Pointer) => {
-      if (pointer.leftButtonReleased()) {
-        await this.applyEditorTool(location, locationPixelCoords);
-      }
-    });
-
-    this.createdNonThings.push(voidTile);
-
-    location.things.forEach(thing => {
-      this.addThingSprite(locationPixelCoords, location, thing);
-    });
-  }
-
-  private inventorySprites: Sprite[] = [];
-
-  private displayInventory() {
-
-    this.inventorySprites.forEach(sprite => sprite.destroy(true));
-    this.inventorySprites = [];
-
-    const inventory = this.level.getInventory();
-
-    Array(3).fill(0).forEach((_, index) => {
-
-      const inventoryItem = inventory[index];
-
-      if (inventoryItem === undefined) {
-        return;
-      }
-
-      const inventorySprite = this.physics.add.sprite(0, 0, inventoryItem.description.sprite).setDepth(depths.info);
-      this.inventorySprites.push(inventorySprite);
-    });
-  }
-
   update(time: number, delta: number) {
 
     const playerLocation = this.level.getPlayerLocation();
 
+    this.updateToolLabel(playerLocation);
+    this.updateSidePanel(playerLocation);
+    this.updateSideText(playerLocation);
+    this.updateInventory(playerLocation);
+
+    this.spritesToAnimate.animateAll();
+  }
+
+  private updateSidePanel(playerLocation: Coords) {
     const sidePanelPixelCoords = toPixelCoords({
       x: playerLocation.x + 9,
       y: playerLocation.y
@@ -196,7 +205,9 @@ export default class LevelGui extends Phaser.Scene {
 
     this.sidePanel.setX(sidePanelPixelCoords.x);
     this.sidePanel.setY(sidePanelPixelCoords.y);
+  }
 
+  private updateToolLabel(playerLocation: Coords) {
     const toolLabelCoords: Coords = {
       x: playerLocation.x - 6,
       y: playerLocation.y - 6,
@@ -205,26 +216,33 @@ export default class LevelGui extends Phaser.Scene {
     this.toolLabel.x = toolLabelPixels.x - tileCenterOffset;
     this.toolLabel.y = toolLabelPixels.y - tileCenterOffset;
     this.toolLabel.text = "EDITOR: " + this.level.editor.getCurrentEditorTool();
+  }
+
+  private updateSideText(playerLocation: Coords) {
 
     const sideTextCoords: Coords = {
       x: playerLocation.x + 7,
       y: playerLocation.y + 4,
     };
+
     const sideTextPixels = toPixelCoords(sideTextCoords);
     this.sideText.x = sideTextPixels.x - tileCenterOffset;
     this.sideText.y = sideTextPixels.y - tileCenterOffset;
+  }
+
+  private updateInventory(playerLocation: Coords) {
 
     const inventoryCoords: Coords = {
       x: playerLocation.x + 8,
       y: playerLocation.y - 1,
     };
+
     const inventoryPixels = toPixelCoords(inventoryCoords);
+
     this.inventorySprites.forEach((inventorySprite, index) => {
       inventorySprite.x = inventoryPixels.x - tileCenterOffset + index * (TILE_SIZE + 5);
       inventorySprite.y = inventoryPixels.y - tileCenterOffset;
     });
-
-    this.spritesToAnimate.animateAll();
   }
 
   private async move(direction: Direction) {
