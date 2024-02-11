@@ -318,26 +318,6 @@ describe("completing level", () => {
 
   describe("by pickup", () => {
 
-    function completionRequiresInventory(...requiredInventory: string[]) {
-      level = new Level({
-        description: {
-          id: "testLevel",
-          description: "",
-          title: ""
-        },
-        levelDimensions: { width: 3, height: 3 },
-        matrix: factory.fromMatrix(
-          "   ",
-          "   ",
-          "   "
-        ),
-        startCoords: { x: 1, y: 1 },
-        completionCriteria: {
-          inventory: requiredInventory,
-          receives: []
-        }
-      });
-    }
 
     it("complete when a required item is in inventory", () => {
 
@@ -406,27 +386,6 @@ describe("completing level", () => {
   });
 
   describe("by receive", ()=> {
-
-    function completionRequiresReceives(...requiredReceives: string[]) {
-      level = new Level({
-        description: {
-          id: "testLevel",
-          description: "",
-          title: ""
-        },
-        levelDimensions: { width: 3, height: 3 },
-        matrix: factory.fromMatrix(
-          "   ",
-          "   ",
-          "   "
-        ),
-        startCoords: { x: 1, y: 1 },
-        completionCriteria: {
-          inventory: [],
-          receives: requiredReceives
-        }
-      });
-    }
 
     it("complete when required receiver receives", () => {
 
@@ -513,6 +472,94 @@ describe("completing level", () => {
       ]);
     });
   });
+
+  it("complete when both required pickups & receivers done", () => {
+
+    level = new Level({
+      description: {
+        id: "testLevel",
+        description: "",
+        title: ""
+      },
+      levelDimensions: { width: 3, height: 3 },
+      matrix: factory.fromMatrix(
+        "   ",
+        "   ",
+        "   "
+      ),
+      startCoords: { x: 1, y: 1 },
+      completionCriteria: {
+        inventory: ["label1"],
+        receives: ["label2"]
+      }
+    });
+
+    addThing(0, 0, "label1", "pickup");
+    addThing(2, 0, "label2", "pickup");
+    addThing(0, 2, "label2", "receiver");
+
+    expect(movementToCompletedFlags(
+      Direction.UP,
+      Direction.LEFT,
+      Direction.RIGHT,
+      Direction.RIGHT,
+      Direction.LEFT,
+      Direction.DOWN,
+      Direction.DOWN,
+      Direction.LEFT,
+    )).toEqual([
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+    ]);
+  });
+
+  function completionRequiresInventory(...requiredInventory: string[]) {
+    level = new Level({
+      description: {
+        id: "testLevel",
+        description: "",
+        title: ""
+      },
+      levelDimensions: { width: 3, height: 3 },
+      matrix: factory.fromMatrix(
+        "   ",
+        "   ",
+        "   "
+      ),
+      startCoords: { x: 1, y: 1 },
+      completionCriteria: {
+        inventory: requiredInventory,
+        receives: []
+      }
+    });
+  }
+
+  function completionRequiresReceives(...requiredReceives: string[]) {
+    level = new Level({
+      description: {
+        id: "testLevel",
+        description: "",
+        title: ""
+      },
+      levelDimensions: { width: 3, height: 3 },
+      matrix: factory.fromMatrix(
+        "   ",
+        "   ",
+        "   "
+      ),
+      startCoords: { x: 1, y: 1 },
+      completionCriteria: {
+        inventory: [],
+        receives: requiredReceives
+      }
+    });
+  }
 
   function addThing(x: number, y: number, label: string | undefined, ...properties: ThingProperty[]) {
     level.levelMatrix[y][x].things.push(new Thing({
