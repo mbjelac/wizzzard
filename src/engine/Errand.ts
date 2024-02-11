@@ -1,11 +1,16 @@
 import { Coords, ThingDescription } from "./Level";
 
+export interface CompletionCriteria {
+  inventory: string[]
+}
+
 export interface Errand {
 
   readonly description: ErrandDescription,
   readonly levelDimensions: LevelDimensions,
   readonly matrix: ErrandMatrix,
   readonly startCoords: Coords
+  readonly completionCriteria: CompletionCriteria
 }
 
 export interface ErrandLocation {

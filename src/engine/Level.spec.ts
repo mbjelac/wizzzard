@@ -36,6 +36,7 @@ function createLevel(...rows: string[]): Level {
     levelDimensions: { width: 3, height: 3 },
     matrix: factory.fromMatrix(...rows),
     startCoords: startCoords,
+    completionCriteria: {}
   });
 }
 
@@ -186,11 +187,11 @@ describe("picking up things", () => {
     expect(level.getInventory()).toEqual([pickupItem]);
   });
 
-  describe("multiple items", ()=> {
+  describe("multiple items", () => {
 
     let additionalItem: Thing;
 
-    beforeEach(()=> {
+    beforeEach(() => {
       additionalItem = new Thing(createThingProps(EditorTool.KEY)!);
       pickupLocation.things.push(additionalItem);
     });
@@ -307,6 +308,57 @@ describe("giving a picked up item to a receiver", () => {
 
 
     expect(level.getInventory()).toEqual([receivableItem2]);
+  });
+});
+
+describe("completing level", () => {
+
+  beforeEach(() => {
+    level = new Level({
+      description: {
+        id: "testLevel",
+        description: "",
+        title: ""
+      },
+      levelDimensions: { width: 3, height: 3 },
+      matrix: factory.fromMatrix(
+        "   ",
+        "   ",
+        "   "
+      ),
+      startCoords: { x: 1, y: 1 },
+      completionCriteria: {
+        inventory: ["someLabel"]
+      }
+    });
+  });
+
+  it("complete when a required item is in inventory", () => {
+
+    level.levelMatrix[0][0].things.push(new Thing({
+      label: "someLabel",
+      properties: ["pickup"],
+      sprite: "key",
+    }));
+
+    level.tryToMove(Direction.UP);
+    const result = level.tryToMove(Direction.LEFT);
+
+    expect(result.levelComplete).toBe(true);
+  });
+
+  it("not complete when a non-required item is in inventory", () => {
+
+    level.levelMatrix[0][0].things.push(new Thing({
+      label: "someOtherLabel",
+      properties: ["pickup"],
+      sprite: "key",
+    }));
+
+    level.tryToMove(Direction.UP);
+    const result = level.tryToMove(Direction.LEFT);
+
+    expect(result.levelComplete).toBe(false);
   });
 });
 
