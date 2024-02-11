@@ -313,7 +313,7 @@ describe("giving a picked up item to a receiver", () => {
   });
 });
 
-describe("completing level", () => {
+describe("completing level by pickup", () => {
 
   function createLevel(requiredInventory: string[]): Level {
     return new Level({
