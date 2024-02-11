@@ -10,7 +10,10 @@ const errands: Errand[] = [
     },
     levelDimensions: { width: 10, height: 10 },
     startCoords: { x: 5, y: 5 },
-    matrix: []
+    matrix: [],
+    completionCriteria: {
+      inventory: ["someLabel"]
+    }
   },
   {
     description: {
@@ -21,6 +24,9 @@ const errands: Errand[] = [
     levelDimensions: { width: 3, height: 3 },
     matrix: [],
     startCoords: { x: 1, y: 1 },
+    completionCriteria: {
+      inventory: ["someLabel"]
+    },
   },
   {
     description: {
@@ -31,6 +37,9 @@ const errands: Errand[] = [
     levelDimensions: { width: 7, height: 7 },
     matrix: [],
     startCoords: { x: 3, y: 3 },
+    completionCriteria: {
+      inventory: ["someLabel"]
+    },
   },
   {
     description: {
@@ -41,6 +50,9 @@ const errands: Errand[] = [
     levelDimensions: { width: 12, height: 9 },
     matrix: [],
     startCoords: { x: 1, y: 3 },
+    completionCriteria: {
+      inventory: ["someLabel"]
+    },
   },
 ];
 
