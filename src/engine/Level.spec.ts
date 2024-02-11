@@ -1,4 +1,4 @@
-import { Coords, Level, LevelLocation, MoveResult, Thing } from "./Level";
+import { Coords, Level, LevelLocation, MoveResult, Thing, ThingProperty } from "./Level";
 import { LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
 import { createThingProps } from "./editor/LevelEditor";
@@ -37,7 +37,8 @@ function createLevel(...rows: string[]): Level {
     matrix: factory.fromMatrix(...rows),
     startCoords: startCoords,
     completionCriteria: {
-      inventory: ["any"]
+      inventory: ["any"],
+      receives: []
     }
   });
 }
@@ -313,113 +314,104 @@ describe("giving a picked up item to a receiver", () => {
   });
 });
 
-describe("completing level by pickup", () => {
+describe("completing level", () => {
 
-  function createLevel(requiredInventory: string[]): Level {
-    return new Level({
-      description: {
-        id: "testLevel",
-        description: "",
-        title: ""
-      },
-      levelDimensions: { width: 3, height: 3 },
-      matrix: factory.fromMatrix(
-        "   ",
-        "   ",
-        "   "
-      ),
-      startCoords: { x: 1, y: 1 },
-      completionCriteria: {
-        inventory: requiredInventory
-      }
+  describe("by pickup", () => {
+
+    function completionRequiresInventory(...requiredInventory: string[]) {
+      level = new Level({
+        description: {
+          id: "testLevel",
+          description: "",
+          title: ""
+        },
+        levelDimensions: { width: 3, height: 3 },
+        matrix: factory.fromMatrix(
+          "   ",
+          "   ",
+          "   "
+        ),
+        startCoords: { x: 1, y: 1 },
+        completionCriteria: {
+          inventory: requiredInventory,
+          receives: []
+        }
+      });
+    }
+
+    it("complete when a required item is in inventory", () => {
+
+      completionRequiresInventory("someLabel");
+
+      addThing(0, 0, "someLabel", "pickup");
+
+      expect(movementToCompletedFlags(
+        Direction.UP,
+        Direction.LEFT
+      )).toEqual([
+        false,
+        true
+      ]);
     });
+
+    it("not complete when a non-required item is in inventory", () => {
+
+      completionRequiresInventory("someLabel");
+
+      addThing(0, 0, "someOtherLabel", "pickup");
+
+      expect(movementToCompletedFlags(
+        Direction.UP,
+        Direction.LEFT
+      )).toEqual([
+        false,
+        false
+      ]);
+    });
+
+    it("not complete when only some required items are in inventory", () => {
+
+      completionRequiresInventory("label1", "label2");
+
+      addThing(0, 0, "label1", "pickup");
+
+      expect(movementToCompletedFlags(
+        Direction.UP,
+        Direction.LEFT
+      )).toEqual([
+        false,
+        false
+      ]);
+    });
+
+    it("complete when all required items are in inventory", () => {
+
+      completionRequiresInventory("label1", "label2");
+
+      addThing(0, 0, "label1", "pickup");
+      addThing(2, 0, "label2", "pickup");
+
+      expect(movementToCompletedFlags(
+        Direction.UP,
+        Direction.LEFT,
+        Direction.RIGHT,
+        Direction.RIGHT,
+      )).toEqual([
+        false,
+        false,
+        false,
+        true
+      ]);
+    });
+  });
+
+  function addThing(x: number, y: number, label: string | undefined, ...properties: ThingProperty[]) {
+    level.levelMatrix[y][x].things.push(new Thing({
+      label: label,
+      properties: properties,
+      sprite: "fire",
+    }));
   }
-
-  it("complete when a required item is in inventory", () => {
-
-    level = createLevel(["someLabel"]);
-
-    level.levelMatrix[0][0].things.push(new Thing({
-      label: "someLabel",
-      properties: ["pickup"],
-      sprite: "key",
-    }));
-
-    expect(movementToCompletedFlags(
-      Direction.UP,
-      Direction.LEFT
-    )).toEqual([
-      false,
-      true
-    ]);
-  });
-
-  it("not complete when a non-required item is in inventory", () => {
-
-    level = createLevel(["someLabel"]);
-
-    level.levelMatrix[0][0].things.push(new Thing({
-      label: "someOtherLabel",
-      properties: ["pickup"],
-      sprite: "key",
-    }));
-
-    expect(movementToCompletedFlags(
-      Direction.UP,
-      Direction.LEFT
-    )).toEqual([
-      false,
-      false
-    ]);
-  });
-
-  it("not complete when only some required items are in inventory", () => {
-
-    level = createLevel(["label1", "label2"]);
-
-    level.levelMatrix[0][0].things.push(new Thing({
-      label: "label1",
-      properties: ["pickup"],
-      sprite: "key",
-    }));
-
-    expect(movementToCompletedFlags(
-      Direction.UP,
-      Direction.LEFT
-    )).toEqual([
-      false,
-      false
-    ]);
-  });
-
-  it("complete when all required items are in inventory", () => {
-
-    level = createLevel(["label1", "label2"]);
-
-    level.levelMatrix[0][0].things.push(new Thing({
-      label: "label1",
-      properties: ["pickup"],
-      sprite: "key",
-    }));
-
-    level.levelMatrix[0][2].things.push(new Thing({
-      label: "label2",
-      properties: ["pickup"],
-      sprite: "key",
-    }));
-
-    expect(movementToCompletedFlags(
-      Direction.UP,
-      Direction.LEFT,
-      Direction.RIGHT,
-      Direction.RIGHT,
-    )).toEqual([
-      false,
-      false,
-      false,
-      true
-    ]);
-  });
 
   function movementToCompletedFlags(...directions: Direction[]): boolean[] {
     return directions.map(direction => level.tryToMove(direction).levelComplete);
