@@ -1,16 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>Phaser 3 TypeScript Starter</title>
-        <meta charset="utf-8"/>
-        <style>
-            body {
-                margin: 0;
-            }
-        </style>
-        <script type="module" src="/src/index.ts"></script>
-    </head>
-    <body style="background-color:#444">
-        <div id="game"></div>
-    </body>
+<head>
+    <title>Phaser 3 TypeScript Starter</title>
+    <meta charset="utf-8"/>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        .flex-container {
+            display: flex;
+        }
+
+        .flex-child {
+            flex: 1;
+        }
+
+        #game {
+            flex: auto;
+        }
+
+        #editor-sprites img {
+            width: 15%;
+            height: auto;
+        }
+    </style>
+    <script type="module" src="/src/index.ts"></script>
+</head>
+<body style="background-color:#444">
+
+<div class="flex-container">
+    <div id="game"></div>
+    <div>
+        <div
+                style="background: lightgray"
+        >
+            <label for="editor-label">Label:</label>
+            <input
+                    id="editor-label"
+                    type="text"
+                    name="nameField"
+                    placeholder="Enter a label"
+            >
+
+            <fieldset>
+                <legend>Properties</legend>
+                <div>
+                    <input type="checkbox" id="editor-property-wall" name="wall"/>
+                    <label for="editor-property-wall">Wall</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="editor-property-death" name="death"/>
+                    <label for="editor-property-death">Death</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="editor-property-pickup" name="pickup"/>
+                    <label for="editor-property-pickup">Pickup</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="editor-property-receiver" name="receiver"/>
+                    <label for="editor-property-receiver">Receiver</label>
+                </div>
+            </fieldset>
+
+            <fieldset id="editor-sprites">
+                <legend>Sprite:</legend>
+                <div><input type="radio" id="editor-sprite-wall" name="editor-sprites" value="wall"><img src="assets/tiles/wall.png"/></div>
+                <div><input type="radio" id="editor-sprite-floor" name="editor-sprites" value="floor" checked><img src="assets/tiles/floor.png"/></div>
+                <div><input type="radio" id="editor-sprite-key" name="editor-sprites" value="key"><img src="assets/tiles/key1.png"/></div>
+                <div><input type="radio" id="editor-sprite-key_green" name="editor-sprites" value="key_green"><img src="assets/tiles/key_green.png"/></div>
+                <div><input type="radio" id="editor-sprite-lock" name="editor-sprites" value="lock"><img src="assets/tiles/lock.png"/></div>
+                <div><input type="radio" id="editor-sprite-fire" name="editor-sprites" value="fire"><img src="assets/tiles/fire.png"/></div>
+            </fieldset>
+        </div>
+
+    </div>
+</div>
+</body>
 </html>

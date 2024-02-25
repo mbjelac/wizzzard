@@ -1,42 +1,36 @@
-import { allEditorTools, EditorTool } from "./EditorTool";
 import { LevelLocation, Thing, ThingDescription } from "../Level";
 
 export interface AddResult {
   addedThing?: Thing
 }
 
+function validateThingDescription(description: ThingDescription) {
+  return validateLabel(description);
+}
+
+function validateLabel(description: ThingDescription): boolean {
+  const hasToHaveLabel = description.properties.some(property => property === "receiver" || property === "pickup");
+  const hasLabel = description.label !== undefined && description.label.length > 0;
+  return !hasToHaveLabel || hasLabel;
+}
+
 export class LevelEditor {
-
-  private currentEditorTool: EditorTool = EditorTool.NONE;
-  private editorToolIndex = 0;
-
-  constructor() {
-  }
-
-  getCurrentEditorTool(): EditorTool {
-    return this.currentEditorTool;
-  }
-
-  changeEditorTool() {
-    this.editorToolIndex = (this.editorToolIndex + 1) % allEditorTools.length
-    this.currentEditorTool = allEditorTools[this.editorToolIndex];
-  }
 
   private readonly emptyAddResult: AddResult = {
     addedThing: undefined
   };
 
-  applyEditorTool(location: LevelLocation, label?: string): AddResult {
+  addThing(location: LevelLocation, description: ThingDescription): AddResult {
 
-    const thingToAdd = this.createThingToAdd(label);
-
-    if (!thingToAdd) {
+    if (!validateThingDescription(description)) {
       return this.emptyAddResult;
     }
 
-    if (location.things.find(thing => thing.equals(thingToAdd)) !== undefined) {
+    if (location.things.find(thing => thing.descriptionEquals(description)) !== undefined) {
       return this.emptyAddResult;
     }
+
+    const thingToAdd = new Thing(description);
 
     location.things.push(thingToAdd);
 
@@ -45,45 +39,14 @@ export class LevelEditor {
     };
   }
 
-  private createThingToAdd(label?: string): Thing | undefined {
-    const props = createThingProps(this.currentEditorTool, label);
-    return props ? new Thing(props) : undefined;
-  }
+  removeThing(location: LevelLocation, thing: Thing) {
 
-  removeThing(location: LevelLocation, wall: Thing) {
-
-    const index = location.things.findIndex(thing => thing.id === wall.id);
+    const index = location.things.findIndex(thing => thing.id === thing.id);
 
     if (index === -1) {
-      throw Error(`Wall ${JSON.stringify(wall)}not found at location ${JSON.stringify(location)}.`);
+      throw Error(`Thing ${JSON.stringify(thing)} not found at location ${JSON.stringify(location)}.`);
     }
 
     location.things.splice(index, 1);
-  }
-
-  isLabelRequired(): boolean {
-    return [
-      EditorTool.RECEIVER,
-      EditorTool.KEY_GREEN
-    ].some(tool => tool === this.currentEditorTool);
-  }
-}
-
-export function createThingProps(editorTool: EditorTool, label?: string): ThingDescription | undefined {
-  switch (editorTool) {
-    case EditorTool.NONE:
-      return undefined;
-    case EditorTool.FLOOR:
-      return Thing.defaultThingDescription;
-    case EditorTool.WALL:
-      return { ...Thing.defaultThingDescription, properties: ["wall"], label: label, sprite: "wall" };
-    case EditorTool.FIRE:
-      return { ...Thing.defaultThingDescription, properties: ["death"], label: label, sprite: "fire" };
-    case EditorTool.KEY:
-      return { ...Thing.defaultThingDescription, properties: ["pickup"], label: label, sprite: "key" };
-    case EditorTool.KEY_GREEN:
-      return { ...Thing.defaultThingDescription, properties: ["pickup"], label: label, sprite: "key_green" };
-    case EditorTool.RECEIVER:
-      return { ...Thing.defaultThingDescription, properties: ["wall", "receiver"], label: label, sprite: "lock" };
   }
 }

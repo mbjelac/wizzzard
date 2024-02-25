@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { Coords, Level, LevelLocation, Thing } from "../engine/Level";
+import { ALL_THING_PROPERTIES, Coords, Level, LevelLocation, Thing, ThingDescription } from "../engine/Level";
 import { SpritesToAnimate } from "./SpritesToAnimate";
 import { Direction } from "../engine/Direction";
 import { TILE_SIZE } from "../config";
@@ -16,7 +16,8 @@ const depths = {
   decorations: 1,
   player: 9,
   infoBackground: 8,
-  info: 11
+  info: 11,
+  editor: 20
 };
 
 export default class LevelGui extends Phaser.Scene {
@@ -25,15 +26,12 @@ export default class LevelGui extends Phaser.Scene {
   private player: Phaser.Physics.Arcade.Sprite;
 
   // @ts-ignore
-  private toolLabel: Phaser.GameObjects.Text;
-
-  // @ts-ignore
   private sidePanel: Phaser.GameObjects.Rectangle;
 
   // @ts-ignore
   private sideText: Phaser.GameObjects.Text;
 
-  // @ts-ignore that it is undefined - has to be set before usage (fail fast)
+  // @ts-ignore undefined - has to be set before usage (fail fast)
   private level: Level;
 
   private readonly spritesToAnimate = new SpritesToAnimate();
@@ -151,10 +149,6 @@ export default class LevelGui extends Phaser.Scene {
         console.log(`collision ${this.level.collisionEnabled ? "en" : "dis"}abled`);
       }
 
-      if (event.key === 'e') {
-        this.level.editor.changeEditorTool();
-      }
-
       if (event.code === "Escape") {
         this.exitLevel();
       }
@@ -164,8 +158,6 @@ export default class LevelGui extends Phaser.Scene {
     this.game.canvas.oncontextmenu = function (e) {
       e.preventDefault();
     }
-
-    this.toolLabel = this.add.text(0, 0, "Hello!", { color: "#fff", strokeThickness: 0 }).setDepth(depths.info).setFontSize(18);
 
     const sidePanelWidth = 5 * TILE_SIZE;
 
@@ -192,7 +184,6 @@ export default class LevelGui extends Phaser.Scene {
 
     const playerLocation = this.level.getPlayerLocation();
 
-    this.updateToolLabel(playerLocation);
     this.updateSidePanel(playerLocation);
     this.updateSideText(playerLocation);
     this.updateInventory(playerLocation);
@@ -208,17 +199,6 @@ export default class LevelGui extends Phaser.Scene {
 
     this.sidePanel.setX(sidePanelPixelCoords.x);
     this.sidePanel.setY(sidePanelPixelCoords.y);
-  }
-
-  private updateToolLabel(playerLocation: Coords) {
-    const toolLabelCoords: Coords = {
-      x: playerLocation.x - 6,
-      y: playerLocation.y - 6,
-    };
-    const toolLabelPixels = toPixelCoords(toolLabelCoords);
-    this.toolLabel.x = toolLabelPixels.x - tileCenterOffset;
-    this.toolLabel.y = toolLabelPixels.y - tileCenterOffset;
-    this.toolLabel.text = "EDITOR: " + this.level.editor.getCurrentEditorTool();
   }
 
   private updateSideText(playerLocation: Coords) {
@@ -285,7 +265,7 @@ export default class LevelGui extends Phaser.Scene {
 
   private async applyEditorTool(location: LevelLocation, locationPixelCoords: Coords) {
 
-    const addResult = this.level.editor.applyEditorTool(location, this.getLabel());
+    const addResult = this.level.editor.addThing(location, this.getThingDescription());
 
     if (!addResult.addedThing) {
       return;
@@ -296,17 +276,11 @@ export default class LevelGui extends Phaser.Scene {
     await this.saveLevelMatrix();
   }
 
-  private getLabel(): string | undefined {
-    if (!this.level.editor.isLabelRequired()) {
-      return undefined;
-    }
-
-    const label = prompt("Enter label", "");
-
-    if (label != null) {
-      return label;
-    } else {
-      return undefined;
+  private getThingDescription(): ThingDescription {
+    return {
+      label: (document.getElementById("editor-label")! as HTMLInputElement).value,
+      sprite: (document.querySelector('input[name="editor-sprites"]:checked') as HTMLInputElement)?.value,
+      properties: ALL_THING_PROPERTIES.filter(property => (document.getElementById(`editor-property-${property}`)! as HTMLInputElement).checked)
     }
   }
 

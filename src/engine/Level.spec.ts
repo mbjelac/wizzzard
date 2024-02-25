@@ -1,7 +1,6 @@
 import { Coords, Level, LevelLocation, MoveResult, Thing, ThingProperty } from "./Level";
-import { LevelFactory } from "./LevelFactory";
+import { createThingProps, LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
-import { createThingProps } from "./editor/LevelEditor";
 import { EditorTool } from "./editor/EditorTool";
 
 let level: Level;

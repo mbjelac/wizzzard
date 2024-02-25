@@ -1,4 +1,3 @@
-import { SpriteName } from "./sprite-names";
 import { LevelEditor } from "./editor/LevelEditor";
 import { Direction } from "./Direction";
 import { Errand } from "./Errand";
@@ -17,11 +16,18 @@ export type LevelMatrix = LevelLocation[][];
 
 export interface ThingDescription {
   readonly properties: ThingProperty[],
-  readonly sprite: SpriteName,
+  readonly sprite: string,
   readonly label?: string,
 }
 
-export type ThingProperty = "wall" | "death" | "pickup" | "receiver";
+export const ALL_THING_PROPERTIES = [
+  "wall",
+  "death",
+  "pickup",
+  "receiver"
+] as const;
+type ThingPropertyTuple = typeof ALL_THING_PROPERTIES;
+export type ThingProperty = ThingPropertyTuple[number];
 
 export class Thing {
 
@@ -38,7 +44,11 @@ export class Thing {
   }
 
   equals(thing: Thing): boolean {
-    return JSON.stringify(this.description) === JSON.stringify(thing.description);
+    return this.descriptionEquals(thing.description);
+  }
+
+  descriptionEquals(description: ThingDescription): boolean {
+    return JSON.stringify(this.description) === JSON.stringify(description);
   }
 
   is(thingFunction: ThingProperty): boolean {
