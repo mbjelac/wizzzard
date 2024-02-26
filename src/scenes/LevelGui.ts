@@ -189,6 +189,8 @@ export default class LevelGui extends Phaser.Scene {
     this.updateInventory(playerLocation);
 
     this.spritesToAnimate.animateAll();
+
+    disableKeyEventsOnEditorWidgets();
   }
 
   private updateSidePanel(playerLocation: Coords) {
@@ -249,7 +251,6 @@ export default class LevelGui extends Phaser.Scene {
 
     this.player.setX(playerPixelCoords.x);
     this.player.setY(playerPixelCoords.y);
-
   }
 
   private removeSpritesPutInInventory() {
@@ -332,6 +333,16 @@ export default class LevelGui extends Phaser.Scene {
     await GAME.setErrand(errand);
 
   }
+}
+
+function disableKeyEventsOnEditorWidgets() {
+  const editorWidgets = document.querySelectorAll('input[id*="editor"]');
+
+  editorWidgets.forEach(widget => {
+    if (widget instanceof HTMLInputElement && widget.type !== "text") {
+      widget.blur();
+    }
+  });
 }
 
 
