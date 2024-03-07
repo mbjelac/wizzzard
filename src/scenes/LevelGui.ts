@@ -53,6 +53,8 @@ export default class LevelGui extends Phaser.Scene {
     this.load.image('key', 'assets/tiles/key1.png');
     this.load.image('key_green', 'assets/tiles/key_green.png');
     this.load.image('lock', 'assets/tiles/lock.png');
+    this.load.image('grass-pale', 'assets/tiles/grass_pale.png');
+    this.load.image('tree_dark_green', 'assets/tiles/tree_dark_green.png');
     this.load.spritesheet('fire', 'assets/tiles/fire.png', { frameWidth: TILE_SIZE, frameHeight: TILE_SIZE });
 
     this.events.on("create", async () => this.populateLevel());
@@ -300,6 +302,11 @@ export default class LevelGui extends Phaser.Scene {
       if (pointer.leftButtonReleased()) {
         await this.applyEditorTool(location, pixelCoords);
       }
+    });
+
+    thingSprite.on('pointerover', async () => {
+      const text = location.things.map(thing => JSON.stringify(thing)).join("\n");
+      (document.getElementById("editor-info-panel")! as HTMLInputElement).textContent = text;
     });
 
     this.createdSpritesByThingId.set(thing.id, thingSprite);

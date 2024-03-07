@@ -24,6 +24,11 @@
             width: 15%;
             height: auto;
         }
+
+        #editor-info-panel{
+            color: white;
+            font-family: "Courier New";
+        }
     </style>
     <script type="module" src="/src/index.ts"></script>
 </head>
@@ -71,10 +76,13 @@
                 <div><input type="radio" id="editor-sprite-key_green" name="editor-sprites" value="key_green"><img src="assets/tiles/key_green.png"/></div>
                 <div><input type="radio" id="editor-sprite-lock" name="editor-sprites" value="lock"><img src="assets/tiles/lock.png"/></div>
                 <div><input type="radio" id="editor-sprite-fire" name="editor-sprites" value="fire"><img src="assets/tiles/fire.png"/></div>
+                <div><input type="radio" id="editor-sprite-grass-pale" name="editor-sprites" value="grass-pale"><img src="assets/tiles/grass_pale.png"/></div>
+                <div><input type="radio" id="editor-sprite-tree_dark_green" name="editor-sprites" value="tree_dark_green"><img src="assets/tiles/tree_dark_green.png"/></div>
             </fieldset>
         </div>
 
     </div>
 </div>
+<pre id="editor-info-panel"></pre>
 </body>
 </html>
