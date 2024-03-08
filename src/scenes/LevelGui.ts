@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import { ALL_THING_PROPERTIES, Coords, Level, LevelLocation, Thing, ThingDescription } from "../engine/Level";
-import { SpritesToAnimate } from "./SpritesToAnimate";
 import { Direction } from "../engine/Direction";
 import { TILE_SIZE } from "../config";
 import { GAME } from "../engine/game";
@@ -34,8 +33,6 @@ export default class LevelGui extends Phaser.Scene {
 
   // @ts-ignore undefined - has to be set before usage (fail fast)
   private level: Level;
-
-  private readonly spritesToAnimate = new SpritesToAnimate();
 
   private createdNonThings: Sprite[] = [];
   private readonly createdSpritesByThingId: Map<number, Sprite> = new Map();
@@ -197,8 +194,6 @@ export default class LevelGui extends Phaser.Scene {
     this.updateSideText(playerLocation);
     this.updateInventory(playerLocation);
 
-    this.spritesToAnimate.animateAll();
-
     disableKeyEventsOnEditorWidgets();
   }
 
@@ -298,7 +293,13 @@ export default class LevelGui extends Phaser.Scene {
 
     const thingSprite = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, thing.description.sprite).setDepth(depths.things).setInteractive();
 
-    this.spritesToAnimate.addSprite(thing, thingSprite);
+
+    if (thing.description.sprite.startsWith("__")) {
+      thingSprite.anims.play({
+        key: thing.description.sprite,
+        startFrame: Math.floor(Math.random() * 4)
+      });
+    }
 
     thingSprite.on('pointerup', async (pointer: Pointer) => {
       if (pointer.rightButtonReleased()) {
@@ -323,7 +324,6 @@ export default class LevelGui extends Phaser.Scene {
   }
 
   private clearLevel() {
-    this.spritesToAnimate.clearAll();
 
     this.createdNonThings.forEach(createdObject => createdObject.destroy(true));
     this.createdNonThings = [];
