@@ -5,6 +5,7 @@ import { Direction } from "../engine/Direction";
 import { TILE_SIZE } from "../config";
 import { GAME } from "../engine/game";
 import { Errand } from "../engine/Errand";
+import { sprites } from "./sprites";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
 
@@ -44,18 +45,16 @@ export default class LevelGui extends Phaser.Scene {
     super('level');
   }
 
-
   preload() {
-    this.load.image('void', 'assets/tiles/void.png');
-    this.load.image('wall', 'assets/tiles/wall.png');
-    this.load.image('floor', 'assets/tiles/floor.png');
-    this.load.image('player', 'assets/tiles/wizard1.png');
-    this.load.image('key', 'assets/tiles/key1.png');
-    this.load.image('key_green', 'assets/tiles/key_green.png');
-    this.load.image('lock', 'assets/tiles/lock.png');
-    this.load.image('grass-pale', 'assets/tiles/grass_pale.png');
-    this.load.image('tree_dark_green', 'assets/tiles/tree_dark_green.png');
-    this.load.spritesheet('fire', 'assets/tiles/fire.png', { frameWidth: TILE_SIZE, frameHeight: TILE_SIZE });
+
+    sprites.forEach(spriteName => {
+      const path = `assets/tiles/${spriteName}.png`;
+      if (spriteName.startsWith("__")) {
+        this.load.spritesheet(spriteName, path, { frameWidth: TILE_SIZE, frameHeight: TILE_SIZE });
+      } else {
+        this.load.image(spriteName, path);
+      }
+    });
 
     this.events.on("create", async () => this.populateLevel());
     this.events.on("wake", async () => this.populateLevel());
@@ -76,7 +75,7 @@ export default class LevelGui extends Phaser.Scene {
     const startCoords: Coords = { x: this.level.errand.startCoords.x, y: this.level.errand.startCoords.y };
     const playerPixelCoords = toPixelCoords(startCoords);
 
-    this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'player').setDepth(depths.player);
+    this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'wizard1').setDepth(depths.player);
 
     this.createdNonThings.push(this.player);
 
@@ -99,6 +98,9 @@ export default class LevelGui extends Phaser.Scene {
         await this.applyEditorTool(location, locationPixelCoords);
       }
     });
+    // voidTile.on('pointerover', async () => {
+    //   (document.getElementById("editor-info-panel")! as HTMLInputElement).textContent = "";
+    // });
 
     this.createdNonThings.push(voidTile);
 
@@ -131,12 +133,17 @@ export default class LevelGui extends Phaser.Scene {
   create() {
     console.log("Level create");
 
-    this.anims.create({
-      key: 'burn',
-      frameRate: 7,
-      frames: this.anims.generateFrameNumbers('fire', { start: 0, end: 3 }),
-      repeat: -1,
-    });
+    sprites
+      .filter(spriteName => spriteName.startsWith("__"))
+      .forEach(animationName => {
+        this.anims.create({
+          key: animationName,
+          frameRate: 7,
+          frames: this.anims.generateFrameNumbers(animationName, { start: 0, end: 3 }),
+          repeat: -1,
+        });
+      });
+
 
     this.input.keyboard.on('keydown', async (event: KeyboardEvent) => {
 
@@ -307,6 +314,9 @@ export default class LevelGui extends Phaser.Scene {
     thingSprite.on('pointerover', async () => {
       const text = location.things.map(thing => JSON.stringify(thing)).join("\n");
       (document.getElementById("editor-info-panel")! as HTMLInputElement).textContent = text;
+    });
+    thingSprite.on('pointerout', async () => {
+      (document.getElementById("editor-info-panel")! as HTMLInputElement).textContent = "";
     });
 
     this.createdSpritesByThingId.set(thing.id, thingSprite);

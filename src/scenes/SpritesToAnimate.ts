@@ -1,23 +1,21 @@
-import { SpriteAnimationName, spriteAnimations } from "../engine/sprite-names";
 import { Thing } from "../engine/Level";
 
 interface SpriteToAnimate {
 
   sprite: Phaser.Physics.Arcade.Sprite,
-  animationName: SpriteAnimationName
+  animationName: string
 }
 export class SpritesToAnimate {
 
   private readonly toAnimate: SpriteToAnimate[] = [];
 
   public addSprite(thing: Thing, sprite: Phaser.Physics.Arcade.Sprite) {
-    const animationName = spriteAnimations.get(thing.description.sprite);
 
-    if (!animationName) {
+    if (!thing.description.sprite.startsWith("__")) {
       return;
     }
 
-    this.toAnimate.push({ sprite, animationName });
+    this.toAnimate.push({ sprite: sprite, animationName: thing.description.sprite });
   }
 
   public animateAll() {
