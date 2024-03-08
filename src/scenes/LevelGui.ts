@@ -31,6 +31,8 @@ export default class LevelGui extends Phaser.Scene {
   // @ts-ignore
   private sideText: Phaser.GameObjects.Text;
 
+  private sideTextString: string = "";
+
   // @ts-ignore undefined - has to be set before usage (fail fast)
   private level: Level;
 
@@ -168,7 +170,7 @@ export default class LevelGui extends Phaser.Scene {
     const sidePanelWidth = 5 * TILE_SIZE;
 
     this.sideText = this.add
-      .text(0, 0, "Hello again! This is a very long message written to test text wrapping in Phazer.\n", {
+      .text(0, 0, "", {
           color: "#000",
           strokeThickness: 0,
           font: "22px Georgia",
@@ -217,6 +219,7 @@ export default class LevelGui extends Phaser.Scene {
     const sideTextPixels = toPixelCoords(sideTextCoords);
     this.sideText.x = sideTextPixels.x - tileCenterOffset;
     this.sideText.y = sideTextPixels.y - tileCenterOffset;
+    this.sideText.setText(this.sideTextString);
   }
 
   private updateInventory(playerLocation: Coords) {
@@ -250,6 +253,8 @@ export default class LevelGui extends Phaser.Scene {
       this.exitLevel();
       return;
     }
+
+    this.sideTextString = moveResult.text || "";
 
     const playerPixelCoords = toPixelCoords(this.level.getPlayerLocation());
 
@@ -285,7 +290,8 @@ export default class LevelGui extends Phaser.Scene {
     return {
       label: (document.getElementById("editor-label")! as HTMLInputElement).value,
       sprite: (document.querySelector('input[name="editor-sprites"]:checked') as HTMLInputElement)?.value,
-      properties: ALL_THING_PROPERTIES.filter(property => (document.getElementById(`editor-property-${property}`)! as HTMLInputElement).checked)
+      properties: ALL_THING_PROPERTIES.filter(property => (document.getElementById(`editor-property-${property}`)! as HTMLInputElement).checked),
+      text: (document.getElementById("editor-text")! as HTMLInputElement).value || undefined
     }
   }
 
