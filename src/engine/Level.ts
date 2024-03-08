@@ -18,6 +18,7 @@ export interface ThingDescription {
   readonly properties: ThingProperty[],
   readonly sprite: string,
   readonly label?: string,
+  readonly text?: string,
 }
 
 export const ALL_THING_PROPERTIES = [
@@ -72,12 +73,14 @@ export interface MoveResult {
   moved: boolean,
   died: boolean
   levelComplete: boolean;
+  text: string | undefined;
 }
 
 const doNothing: MoveResult = {
   moved: false,
   died: false,
-  levelComplete: false
+  levelComplete: false,
+  text: undefined
 }
 
 export class Level {
@@ -142,7 +145,8 @@ export class Level {
     return {
       moved: canMove,
       died: died,
-      levelComplete: this.isLevelComplete()
+      levelComplete: this.isLevelComplete(),
+      text: this.getText()
     };
   }
 
@@ -228,5 +232,28 @@ export class Level {
     }
 
     return requiredReceives.every(requiredLabel => this.doneReceivers.some(doneReceiver => doneReceiver === requiredLabel));
+  }
+
+  private getText(): string | undefined {
+    const texts = this
+      .getNeighbours()
+      .flatMap(neighbourLocation => neighbourLocation.things)
+      .map(thing => thing.description.text)
+      .filter(text => text !== undefined);
+
+    return texts.length === 0
+      ? undefined
+      : texts.join();
+  }
+
+  private getNeighbours(): LevelLocation[] {
+    return [
+      { y: this.playerLocation.y - 1, x: this.playerLocation.x },
+      { y: this.playerLocation.y + 1, x: this.playerLocation.x },
+      { y: this.playerLocation.y, x: this.playerLocation.x - 1 },
+      { y: this.playerLocation.y, x: this.playerLocation.x + 1 },
+    ]
+      .filter(coords => coords.x >= 0 && coords.y >= 0 && coords.x < this.errand.levelDimensions.width && coords.y < this.errand.levelDimensions.height)
+      .map(coords => this.levelMatrix[coords.y][coords.x]);
   }
 }

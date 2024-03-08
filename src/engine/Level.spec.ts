@@ -8,7 +8,8 @@ let level: Level;
 const stayed: MoveResult = {
   moved: false,
   died: false,
-  levelComplete: false
+  levelComplete: false,
+  text: undefined
 }
 
 const moved: MoveResult = {
@@ -384,7 +385,7 @@ describe("completing level", () => {
     });
   });
 
-  describe("by receive", ()=> {
+  describe("by receive", () => {
 
     it("complete when required receiver receives", () => {
 
@@ -518,6 +519,11 @@ describe("completing level", () => {
     ]);
   });
 
+  function addThing(x: number, y: number, label: string, ...properties: ThingProperty[]) {
+    addThingWithProps({ ...defaultAddThingProps, x, y, label, properties });
+  }
+
+
   function completionRequiresInventory(...requiredInventory: string[]) {
     level = new Level({
       description: {
@@ -560,18 +566,66 @@ describe("completing level", () => {
     });
   }
 
-  function addThing(x: number, y: number, label: string | undefined, ...properties: ThingProperty[]) {
-    level.levelMatrix[y][x].things.push(new Thing({
-      label: label,
-      properties: properties,
-      sprite: "fire",
-    }));
-  }
-
   function movementToCompletedFlags(...directions: Direction[]): boolean[] {
     return directions.map(direction => level.tryToMove(direction).levelComplete);
   }
 });
+
+describe("reading or listening", () => {
+
+  beforeEach(() => {
+    level = createLevel(
+      "   ",
+      "   ",
+      "   ",
+    )
+  });
+
+  it("show text from neighbouring location", () => {
+
+    addText(0, 0, "Foo!");
+
+    expect(movementToText(
+      Direction.LEFT,
+      Direction.RIGHT,
+      Direction.UP,
+      Direction.RIGHT,
+    )).toEqual([
+      "Foo!",
+      undefined,
+      "Foo!",
+      undefined
+    ]);
+  });
+
+  function addText(x: number, y: number, text: string) {
+    addThingWithProps({ ...defaultAddThingProps, x, y, properties: [], text });
+  }
+
+  function movementToText(...directions: Direction[]): (string | undefined)[] {
+    return directions.map(direction => level.tryToMove(direction).text);
+  }
+
+});
+
+interface AddThingProps {
+  x: number,
+  y: number,
+  label: string | undefined,
+  properties: ThingProperty[],
+  text: string | undefined
+}
+
+const defaultAddThingProps: AddThingProps = { x: 0, y: 0, label: undefined, properties: [], text: undefined };
+
+function addThingWithProps(props: AddThingProps) {
+  level.levelMatrix[props.y][props.x].things.push(new Thing({
+    label: props.label,
+    properties: props.properties,
+    text: props.text,
+    sprite: "",
+  }));
+}
 
 function getAllThings(level: Level): Thing[] {
   return level.levelMatrix.flatMap(row => row.flatMap(loc => loc.things));
