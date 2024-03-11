@@ -583,7 +583,7 @@ describe("reading or listening", () => {
 
   it("show text from neighbouring location", () => {
 
-    addText(0, 0, "Foo!");
+    addText(0, 0, "Foo!", true);
 
     expect(movementToText(
       Direction.LEFT,
@@ -598,8 +598,25 @@ describe("reading or listening", () => {
     ]);
   });
 
-  function addText(x: number, y: number, text: string) {
-    addThingWithProps({ ...defaultAddThingProps, x, y, properties: [], text });
+  it("do not show non-automatic text from neighbouring location", () => {
+
+    addText(0, 0, "Foo!", false);
+
+    expect(movementToText(
+      Direction.LEFT,
+      Direction.RIGHT,
+      Direction.UP,
+      Direction.RIGHT,
+    )).toEqual([
+      undefined,
+      undefined,
+      undefined,
+      undefined
+    ]);
+  });
+
+  function addText(x: number, y: number, text: string, isAutomatic: boolean) {
+    addThingWithProps({ ...defaultAddThingProps, x, y, properties: isAutomatic ? ["automatic"] : [], text });
   }
 
   function movementToText(...directions: Direction[]): (string | undefined)[] {

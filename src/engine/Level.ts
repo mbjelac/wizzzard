@@ -25,7 +25,8 @@ export const ALL_THING_PROPERTIES = [
   "wall",
   "death",
   "pickup",
-  "receiver"
+  "receiver",
+  "automatic"
 ] as const;
 type ThingPropertyTuple = typeof ALL_THING_PROPERTIES;
 export type ThingProperty = ThingPropertyTuple[number];
@@ -238,6 +239,7 @@ export class Level {
     const texts = this
       .getNeighbours()
       .flatMap(neighbourLocation => neighbourLocation.things)
+      .filter(thing => thing.is("automatic") && thing.description.text !== undefined)
       .map(thing => thing.description.text)
       .filter(text => text !== undefined);
 
