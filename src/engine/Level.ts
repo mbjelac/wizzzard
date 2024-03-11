@@ -26,7 +26,8 @@ export const ALL_THING_PROPERTIES = [
   "death",
   "pickup",
   "receiver",
-  "automatic"
+  "automatic",
+  "vanish",
 ] as const;
 type ThingPropertyTuple = typeof ALL_THING_PROPERTIES;
 export type ThingProperty = ThingPropertyTuple[number];
@@ -134,11 +135,11 @@ export class Level {
       this.playerLocation = this.errand.startCoords;
     }
 
-    const give = this.doesLocationHaveProperty(nextLocation, "receiver");
+    const receiver = this.getReceiver(nextLocation);
 
-    if (give) {
-      this.removeOneItemWithReceiverLabelFromInventory(nextLocation);
-      this.disableReceiver(nextLocation);
+    if (receiver !== undefined) {
+      this.removeOneItemWithReceiverLabelFromInventory(receiver.description.label!);
+      this.disableReceiver(receiver);
     }
 
     this.transferAllPickupsFromLevelToInventory(nextLocation);
@@ -160,15 +161,9 @@ export class Level {
     location.things = location.things.filter(thing => !thing.is("pickup"));
   }
 
-  private removeOneItemWithReceiverLabelFromInventory(location: LevelLocation) {
+  private removeOneItemWithReceiverLabelFromInventory(label: string) {
 
-    const receiverLabel = location.things.find(thing => thing.is("receiver"))!.description.label;
-
-    if (receiverLabel === undefined) {
-      throw Error("Receiver has no label! " + JSON.stringify(location));
-    }
-
-    const index = this.inventory.findIndex(inventoryItem => inventoryItem.description.label === receiverLabel);
+    const index = this.inventory.findIndex(inventoryItem => inventoryItem.description.label === label);
 
     if (index === -1) {
       return;
@@ -177,9 +172,7 @@ export class Level {
     this.inventory.splice(index, 1);
   }
 
-  private disableReceiver(location: LevelLocation) {
-    const receiver = location.things.find(thing => thing.is("receiver"))!;
-
+  private disableReceiver(receiver: Thing) {
     receiver.removeProperty("receiver");
     this.doneReceivers.push(receiver.description.label!);
   }
@@ -210,7 +203,7 @@ export class Level {
     return this.inventoryHasRequiredItems() && this.requiredReceivesDone();
   }
 
-  private inventoryHasRequiredItems() {
+  private inventoryHasRequiredItems(): boolean {
     const requiredLabels = this.errand.completionCriteria.inventory;
 
     if (requiredLabels.length === 0) {
@@ -257,5 +250,19 @@ export class Level {
     ]
       .filter(coords => coords.x >= 0 && coords.y >= 0 && coords.x < this.errand.levelDimensions.width && coords.y < this.errand.levelDimensions.height)
       .map(coords => this.levelMatrix[coords.y][coords.x]);
+  }
+
+  private getReceiver(location: LevelLocation): Thing | undefined {
+    return location.things
+      .find(thing =>
+        thing.is("receiver")
+        && this.inventoryContainsLabel(thing.description.label)
+      );
+  }
+
+  private inventoryContainsLabel(label: string | undefined): boolean {
+    return this.inventory.map(thing => thing.description.label)
+      .filter(inventoryLabel => inventoryLabel !== undefined)
+      .some(inventoryLabel => inventoryLabel === label);
   }
 }

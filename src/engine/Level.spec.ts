@@ -217,25 +217,19 @@ describe("giving a picked up item to a receiver", () => {
 
   const receiverLabel = "someLabel";
 
-  let receivableItem: Thing;
-  let receiver: Thing;
-
   beforeEach(() => {
     level = createLevel(
       "   ",
       "   ",
       "   "
     );
-
-    receivableItem = new Thing(createThingProps(EditorTool.KEY_GREEN, receiverLabel)!);
-    receiver = new Thing(createThingProps(EditorTool.RECEIVER, receiverLabel)!);
-
-    level.levelMatrix[2][2].things.push(receivableItem);
-    level.levelMatrix[0][0].things.push(receiver);
   });
 
 
   it("item is no longer in inventory after giving to receiver", () => {
+
+    addPickup(2, 2, receiverLabel);
+    addReceiver(0,0, receiverLabel);
 
     // move to pick up
     level.tryToMove(Direction.RIGHT);
@@ -250,67 +244,141 @@ describe("giving a picked up item to a receiver", () => {
     expect(level.getInventory()).toEqual([]);
   });
 
-  it("item is not in level after giving to receiver", () => {
-
-    // move to pick up
-    level.tryToMove(Direction.RIGHT);
-    level.tryToMove(Direction.DOWN);
-
-    // move to give
-    level.tryToMove(Direction.LEFT);
-    level.tryToMove(Direction.UP);
-    level.tryToMove(Direction.LEFT);
-    level.tryToMove(Direction.UP);
-
-    expect(getAllThings(level).every(thing => thing.id !== receivableItem.id)).toBe(true);
-  });
-
   it("only the receiver's item is given", () => {
 
-    const anotherPickupItem = new Thing(createThingProps(EditorTool.KEY, "someOtherLabel")!);
-    const anotherPickupLocation = level.levelMatrix[0][2];
-    anotherPickupLocation.things.push(anotherPickupItem);
+    const item1 = addPickup(2, 2, "someOtherLabel");
+    const item2 = addPickup(2, 0, receiverLabel);
+    addReceiver(0,0, receiverLabel);
 
-    // move to pick up
+    // move to pick up #1
     level.tryToMove(Direction.RIGHT);
     level.tryToMove(Direction.DOWN);
 
-    // move to pick up another
+    // move to give #1
+    level.tryToMove(Direction.LEFT);
     level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
     level.tryToMove(Direction.UP);
 
-    // move to receiver
+    // move to pick up #2
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.RIGHT);
+
+    // move to give #2
+    level.tryToMove(Direction.LEFT);
     level.tryToMove(Direction.LEFT);
 
-    // give
-    level.tryToMove(Direction.LEFT);
-
-
-    expect(level.getInventory()).toEqual([anotherPickupItem]);
+    expect(level.getInventory()).toEqual([item1]);
   });
 
   it("only one item can be given", () => {
 
-    const receivableItem2 = new Thing(createThingProps(EditorTool.KEY, receiverLabel)!);
-    level.levelMatrix[0][2].things.push(receivableItem2);
+    const item1 = addPickup(2, 0, receiverLabel);
+    const item2 = addPickup(2, 2, receiverLabel);
+    addReceiver(0,1, receiverLabel);
 
-    // move to pick up
+    // move to pick up #2
     level.tryToMove(Direction.RIGHT);
     level.tryToMove(Direction.DOWN);
 
-    // move to pick up another
+    // move to give #2
     level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.LEFT);
+
+    // move to pickup #1
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.RIGHT);
     level.tryToMove(Direction.UP);
 
-    // move to receiver
-    level.tryToMove(Direction.LEFT);
-
-    // give twice
+    // move to give #1
+    level.tryToMove(Direction.DOWN);
     level.tryToMove(Direction.LEFT);
     level.tryToMove(Direction.LEFT);
 
+    expect(level.getInventory()).toEqual([item1]);
+  });
 
-    expect(level.getInventory()).toEqual([receivableItem2]);
+  it("multiple receivers can receive on same location", () => {
+
+    addPickup(2, 0, "foo");
+    addPickup(2, 2, "bar");
+    addReceiver(0,1, "foo");
+    addReceiver(0,1, "bar");
+
+    // move to pick up bar
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.DOWN);
+
+    // move to give bar
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.LEFT);
+
+    // move to pickup foo
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.UP);
+
+    // move to give foo
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.LEFT);
+
+    expect(level.getInventory()).toEqual([]);
+  });
+
+  function addPickup(x: number, y: number, label: string): Thing {
+    return addThingWithProps({x, y, label, properties: ["pickup"], text: undefined});
+  }
+
+  function addReceiver(x: number, y: number, label: string): Thing {
+    return addThingWithProps({x, y, label, properties: ["receiver"], text: undefined});
+  }
+});
+
+describe("vanishing receiver", ()=> {
+
+  let vanishingReceiver: Thing;
+
+  beforeEach(()=> {
+    level = createLevel(
+      "   ",
+      "   ",
+      "   ",
+      );
+
+    addThingWithProps({
+      x: 0,
+      y: 1,
+      properties: ["pickup"],
+      label: "foo",
+      text: undefined
+    });
+
+    vanishingReceiver = addThingWithProps({
+      x: 2,
+      y: 1,
+      properties: ["receiver", "vanish"],
+      label: "foo",
+      text: undefined
+    });
+  });
+
+  it("vanishing receiver vanishes on receiving", () => {
+
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.RIGHT);
+
+    expect(getThingsAt(2, 1)).toEqual([]);
+  });
+
+  it("vanishing receiver does not vanish without receiving", () => {
+
+    level.tryToMove(Direction.RIGHT);
+
+    expect(getThingsAt(2, 1)).toEqual([vanishingReceiver]);
   });
 });
 
@@ -635,15 +703,21 @@ interface AddThingProps {
 
 const defaultAddThingProps: AddThingProps = { x: 0, y: 0, label: undefined, properties: [], text: undefined };
 
-function addThingWithProps(props: AddThingProps) {
-  level.levelMatrix[props.y][props.x].things.push(new Thing({
+function addThingWithProps(props: AddThingProps): Thing {
+  const thing = new Thing({
     label: props.label,
     properties: props.properties,
     text: props.text,
     sprite: "",
-  }));
+  });
+  level.levelMatrix[props.y][props.x].things.push(thing);
+  return thing;
 }
 
 function getAllThings(level: Level): Thing[] {
   return level.levelMatrix.flatMap(row => row.flatMap(loc => loc.things));
+}
+
+function getThingsAt(x: number, y: number, skipInitialThings: boolean = true): Thing[] {
+  return level.levelMatrix[y][x].things.slice(skipInitialThings ? 1 : 0);
 }
