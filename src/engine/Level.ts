@@ -140,6 +140,7 @@ export class Level {
     if (receiver !== undefined) {
       this.removeOneItemWithReceiverLabelFromInventory(receiver.description.label!);
       this.disableReceiver(receiver);
+      this.receiverVanishes(nextLocation, receiver);
     }
 
     this.transferAllPickupsFromLevelToInventory(nextLocation);
@@ -264,5 +265,11 @@ export class Level {
     return this.inventory.map(thing => thing.description.label)
       .filter(inventoryLabel => inventoryLabel !== undefined)
       .some(inventoryLabel => inventoryLabel === label);
+  }
+
+  private receiverVanishes(location: LevelLocation, receiver: Thing) {
+    if (receiver.is("vanish")) {
+      location.things.splice(location.things.indexOf(receiver), 1);
+    }
   }
 }
