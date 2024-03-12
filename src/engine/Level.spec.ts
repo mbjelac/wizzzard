@@ -405,6 +405,26 @@ describe("vanishing receiver", ()=> {
 
     expect(getThingsAt(2, 1)).toEqual([vanishingReceiver]);
   });
+
+  it("wall vanishing receiver blocks move if not receiving", () => {
+
+    vanishingReceiver.description.properties.push("wall");
+
+    const moveResult = level.tryToMove(Direction.RIGHT);
+
+    expect(moveResult.moved).toBe(false);
+  });
+
+  it("wall vanishing receiver does not block move if receiving", () => {
+
+    vanishingReceiver.description.properties.push("wall");
+
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.RIGHT);
+    const moveResult = level.tryToMove(Direction.RIGHT);
+
+    expect(moveResult.moved).toBe(true);
+  });
 });
 
 describe("completing level", () => {

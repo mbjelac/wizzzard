@@ -127,17 +127,7 @@ export class Level {
       return doNothing;
     }
 
-    const canMove = !this.doesLocationHaveProperty(nextLocation, "wall");
 
-    if (canMove) {
-      this.playerLocation = nextCoords;
-    }
-
-    const died = this.doesLocationHaveProperty(nextLocation, "death");
-
-    if (died) {
-      this.playerLocation = this.errand.startCoords;
-    }
 
     const receiver = this.getReceiver(nextLocation);
 
@@ -148,6 +138,18 @@ export class Level {
         this.removeFromLocation(nextLocation, receiver);
         thingsToRemove.push(receiver);
       }
+    }
+
+    const canMove = !this.doesLocationHaveProperty(nextLocation, "wall");
+
+    if (canMove) {
+      this.playerLocation = nextCoords;
+    }
+
+    const died = this.doesLocationHaveProperty(nextLocation, "death");
+
+    if (died) {
+      this.playerLocation = this.errand.startCoords;
     }
 
     this.transferAllPickupsFromLevelToInventory(nextLocation);
