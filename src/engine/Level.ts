@@ -146,17 +146,11 @@ export class Level {
       this.playerLocation = nextCoords;
     }
 
-    const died = this.doesLocationHaveProperty(nextLocation, "death");
-
-    if (died) {
-      this.playerLocation = this.errand.startCoords;
-    }
-
     this.transferAllPickupsFromLevelToInventory(nextLocation);
 
     return {
       moved: canMove,
-      died: died,
+      died: this.doesLocationHaveProperty(nextLocation, "death"),
       levelComplete: this.isLevelComplete(),
       text: this.getText(),
       removedThings: thingsToRemove

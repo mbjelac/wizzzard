@@ -124,26 +124,6 @@ describe("dying", () => {
         })
       );
   });
-
-  describe("teleports to starting position after death", () => {
-
-    Direction.getAllDirections()
-      .forEach(direction =>
-        it(direction.name, () => {
-
-          moveIntoFire();
-
-          expect([
-            level.tryToMove(direction),
-            level.tryToMove(direction)]
-          ).toStrictEqual([moved, stayed]);
-        }));
-
-    function moveIntoFire() {
-      level.tryToMove(Direction.UP);
-      level.tryToMove(Direction.RIGHT);
-    }
-  });
 });
 
 describe("picking up things", () => {
