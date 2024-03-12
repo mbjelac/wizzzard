@@ -121,6 +121,8 @@ export class Level {
 
     const nextLocation = this.getLocation(nextCoords);
 
+    const thingsToRemove: Thing[] = [];
+
     if (nextLocation === undefined) {
       return doNothing;
     }
@@ -142,7 +144,10 @@ export class Level {
     if (receiver !== undefined) {
       this.removeOneItemWithReceiverLabelFromInventory(receiver.description.label!);
       this.disableReceiver(receiver);
-      this.receiverVanishes(nextLocation, receiver);
+      if (receiver.is("vanish")) {
+        this.removeFromLocation(nextLocation, receiver);
+        thingsToRemove.push(receiver);
+      }
     }
 
     this.transferAllPickupsFromLevelToInventory(nextLocation);
@@ -152,9 +157,7 @@ export class Level {
       died: died,
       levelComplete: this.isLevelComplete(),
       text: this.getText(),
-      removedThings: [
-        ...(receiver ? [receiver] : [])
-      ]
+      removedThings: thingsToRemove
     };
   }
 
@@ -272,9 +275,7 @@ export class Level {
       .some(inventoryLabel => inventoryLabel === label);
   }
 
-  private receiverVanishes(location: LevelLocation, receiver: Thing) {
-    if (receiver.is("vanish")) {
-      location.things.splice(location.things.indexOf(receiver), 1);
-    }
+  private removeFromLocation(location: LevelLocation, thing: Thing) {
+      location.things.splice(location.things.indexOf(thing), 1);
   }
 }

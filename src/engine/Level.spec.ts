@@ -329,6 +329,21 @@ describe("giving a picked up item to a receiver", () => {
     expect(level.getInventory()).toEqual([]);
   });
 
+  it("receiver does not appear in removed things", () => {
+
+    addPickup(2, 1, receiverLabel);
+    addReceiver(0,1, receiverLabel);
+
+    // move to pick up
+    level.tryToMove(Direction.RIGHT);
+
+    // move to give
+    level.tryToMove(Direction.LEFT);
+    const removedThings = level.tryToMove(Direction.LEFT).removedThings;
+
+    expect(removedThings).toEqual([]);
+  });
+
   function addPickup(x: number, y: number, label: string): Thing {
     return addThingWithProps({x, y, label, properties: ["pickup"], text: undefined});
   }
