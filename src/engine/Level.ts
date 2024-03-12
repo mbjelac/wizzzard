@@ -152,7 +152,9 @@ export class Level {
       died: died,
       levelComplete: this.isLevelComplete(),
       text: this.getText(),
-      removedThings: []
+      removedThings: [
+        ...(receiver ? [receiver] : [])
+      ]
     };
   }
 
