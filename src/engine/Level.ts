@@ -28,6 +28,7 @@ export const ALL_THING_PROPERTIES = [
   "receiver",
   "automatic",
   "vanish",
+  "give"
 ] as const;
 type ThingPropertyTuple = typeof ALL_THING_PROPERTIES;
 export type ThingProperty = ThingPropertyTuple[number];
@@ -142,9 +143,8 @@ export class Level {
 
     if (canMove) {
       this.playerLocation = nextCoords;
+      thingsToRemove.push(...this.transferAllPickupsFromLevelToInventory(nextLocation));
     }
-
-    thingsToRemove.push(...this.transferAllPickupsFromLevelToInventory(nextLocation));
 
     return {
       moved: canMove,
@@ -272,6 +272,6 @@ export class Level {
   }
 
   private removeFromLocation(location: LevelLocation, thing: Thing) {
-      location.things.splice(location.things.indexOf(thing), 1);
+    location.things.splice(location.things.indexOf(thing), 1);
   }
 }

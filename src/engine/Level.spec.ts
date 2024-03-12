@@ -177,6 +177,21 @@ describe("picking up things", () => {
     expect(removedThings).toEqual([pickupItem]);
   });
 
+  it("can not pick up if can not move to location", () => {
+
+    addThingWithProps({
+      x: 2,
+      y: 2,
+      properties: ["wall"],
+      label: undefined,
+      text: undefined
+    });
+
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.DOWN);
+    expect(level.getInventory()).toEqual([]);
+  });
+
   describe("multiple items", () => {
 
     let additionalItem: Thing;
@@ -410,6 +425,69 @@ describe("vanishing receiver", ()=> {
     const moveResult = level.tryToMove(Direction.RIGHT);
 
     expect(moveResult.moved).toBe(true);
+  });
+});
+
+describe("giving receiver", ()=> {
+
+  let givingReceiver: Thing;
+  let gift: Thing;
+
+  beforeEach(()=> {
+    level = createLevel(
+      "   ",
+      "   ",
+      "   ",
+    );
+
+    addThingWithProps({
+      x: 0,
+      y: 1,
+      properties: ["pickup"],
+      label: "foo",
+      text: undefined
+    });
+
+    gift = addThingWithProps({
+      x: 2,
+      y: 1,
+      properties: ["pickup"],
+      label: "bar",
+      text: undefined
+    })
+
+    givingReceiver = addThingWithProps({
+      x: 2,
+      y: 1,
+      properties: ["receiver", "wall", "give"],
+      label: "foo",
+      text: undefined
+    });
+  });
+
+  it("giving receiver gives on receiving", () => {
+
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.RIGHT);
+
+    expect(level.getInventory()).toEqual([gift]);
+  });
+
+  it("giving receiver does not give if it did not receive", () => {
+
+    level.tryToMove(Direction.RIGHT);
+
+    expect(level.getInventory()).toEqual([]);
+  });
+
+  it("gift no longer in level after being given", () => {
+
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.RIGHT);
+
+    expect(getAllThings(level).every(thing => !thing.equals(gift))).toBe(true);
   });
 });
 
