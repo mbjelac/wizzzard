@@ -169,6 +169,11 @@ export class Level {
   }
 
   private transferAllPickupsFromLevelToInventory(location: LevelLocation): Thing[] {
+
+    if (!this.collisionEnabled){
+      return [];
+    }
+
     const thingsToPickup = location.things.filter(thing => thing.is("pickup"));
     this.inventory.push(...thingsToPickup);
     location.things = location.things.filter(thing => !thing.is("pickup"));
@@ -243,6 +248,11 @@ export class Level {
   }
 
   private getText(): string | undefined {
+
+    if (!this.collisionEnabled) {
+      return undefined;
+    }
+
     const texts = this
       .getNeighbours()
       .flatMap(neighbourLocation => neighbourLocation.things)
@@ -286,6 +296,11 @@ export class Level {
   }
 
   private findTextAt(location: LevelLocation, label: string): string | undefined {
+
+    if (!this.collisionEnabled) {
+      return undefined;
+    }
+
     return location
       .things
       .find(thing => thing.description.label === label)
