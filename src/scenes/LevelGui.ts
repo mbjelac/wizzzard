@@ -152,11 +152,6 @@ export default class LevelGui extends Phaser.Scene {
         await this.move(direction);
       }
 
-      if (event.key === 'c') {
-        this.level.collisionEnabled = !this.level.collisionEnabled;
-        console.log(`collision ${this.level.collisionEnabled ? "en" : "dis"}abled`);
-      }
-
       if (event.code === "Escape") {
         this.exitLevel();
       }
@@ -197,6 +192,9 @@ export default class LevelGui extends Phaser.Scene {
     this.updateInventory(playerLocation);
 
     disableKeyEventsOnEditorWidgets();
+
+    const collisions = (document.getElementById("editor-collisions")! as HTMLInputElement).checked;
+    this.level.collisionEnabled = collisions;
   }
 
   private updateSidePanel(playerLocation: Coords) {
