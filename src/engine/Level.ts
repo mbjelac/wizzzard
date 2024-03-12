@@ -127,8 +127,6 @@ export class Level {
       return doNothing;
     }
 
-
-
     const receiver = this.getReceiver(nextLocation);
 
     if (receiver !== undefined) {
@@ -146,7 +144,7 @@ export class Level {
       this.playerLocation = nextCoords;
     }
 
-    this.transferAllPickupsFromLevelToInventory(nextLocation);
+    thingsToRemove.push(...this.transferAllPickupsFromLevelToInventory(nextLocation));
 
     return {
       moved: canMove,
@@ -161,9 +159,11 @@ export class Level {
     return location.things.some(thing => thing.is(property)) && this.collisionEnabled;
   }
 
-  private transferAllPickupsFromLevelToInventory(location: LevelLocation) {
-    this.inventory.push(...location.things.filter(thing => thing.is("pickup")));
+  private transferAllPickupsFromLevelToInventory(location: LevelLocation): Thing[] {
+    const thingsToPickup = location.things.filter(thing => thing.is("pickup"));
+    this.inventory.push(...thingsToPickup);
     location.things = location.things.filter(thing => !thing.is("pickup"));
+    return thingsToPickup;
   }
 
   private removeOneItemWithReceiverLabelFromInventory(label: string) {

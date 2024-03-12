@@ -241,15 +241,14 @@ export default class LevelGui extends Phaser.Scene {
 
     const moveResult = this.level.tryToMove(direction);
 
-    this.removeSpritesPutInInventory();
-    this.displayInventory();
-
-    this.removeSpritesOfRemovedThings(moveResult.removedThings);
-
     if (moveResult.died) {
       await this.populateLevel();
       return;
     }
+
+    this.removeSpritesOfRemovedThings(moveResult.removedThings);
+
+    this.displayInventory();
 
     if (moveResult.levelComplete) {
       this.exitLevel();
@@ -262,17 +261,6 @@ export default class LevelGui extends Phaser.Scene {
 
     this.player.setX(playerPixelCoords.x);
     this.player.setY(playerPixelCoords.y);
-  }
-
-  private removeSpritesPutInInventory() {
-    this.level.getInventory().forEach(thing => {
-      const sprite = this.createdSpritesByThingId.get(thing.id);
-      if (sprite === undefined) {
-        return;
-      }
-      sprite.destroy(true);
-      this.createdSpritesByThingId.delete(thing.id);
-    });
   }
 
   private removeSpritesOfRemovedThings(removedThings: Thing[]) {

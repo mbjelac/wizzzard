@@ -148,7 +148,7 @@ describe("picking up things", () => {
   it("can move over item", () => {
     level.tryToMove(Direction.RIGHT);
     const moveResult = level.tryToMove(Direction.DOWN);
-    expect(moveResult).toEqual<typeof moveResult>(moved);
+    expect(moveResult.moved).toBe(true);
   });
 
   it("there is one item which can be picked up", () => {
@@ -169,6 +169,12 @@ describe("picking up things", () => {
     level.tryToMove(Direction.RIGHT);
     level.tryToMove(Direction.DOWN);
     expect(level.getInventory()).toEqual([pickupItem]);
+  });
+
+  it("picked up item in removed things", () => {
+    level.tryToMove(Direction.RIGHT);
+    const removedThings = level.tryToMove(Direction.DOWN).removedThings;
+    expect(removedThings).toEqual([pickupItem]);
   });
 
   describe("multiple items", () => {
