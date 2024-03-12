@@ -128,7 +128,9 @@ export class Level {
       return doNothing;
     }
 
-    const receiver = this.getReceiver(nextLocation);
+    const receiver = this.getReceiverForAnInventoryItem(nextLocation);
+
+    let receiveEventText: string | undefined = undefined;
 
     if (receiver !== undefined) {
       this.removeOneItemWithReceiverLabelFromInventory(receiver.description.label!);
@@ -140,6 +142,10 @@ export class Level {
       if (receiver.is("give")) {
         thingsToRemove.push(...this.transferAllPickupsFromLevelToInventory(nextLocation));
       }
+      receiveEventText = this.findTextAt(nextLocation, "onInteraction");
+    } else {
+      const atReceiver = this.doesLocationHaveProperty(nextLocation, "receiver")
+      receiveEventText = this.findTextAt(nextLocation, atReceiver ? "preInteraction" : "postInteraction");
     }
 
     const canMove = !this.doesLocationHaveProperty(nextLocation, "wall");
@@ -153,7 +159,7 @@ export class Level {
       moved: canMove,
       died: this.doesLocationHaveProperty(nextLocation, "death"),
       levelComplete: this.isLevelComplete(),
-      text: this.getText(),
+      text: receiveEventText || this.getText(),
       removedThings: thingsToRemove
     };
   }
@@ -260,8 +266,9 @@ export class Level {
       .map(coords => this.levelMatrix[coords.y][coords.x]);
   }
 
-  private getReceiver(location: LevelLocation): Thing | undefined {
-    return location.things
+  private getReceiverForAnInventoryItem(location: LevelLocation): Thing | undefined {
+    return location
+      .things
       .find(thing =>
         thing.is("receiver")
         && this.inventoryContainsLabel(thing.description.label)
@@ -276,5 +283,13 @@ export class Level {
 
   private removeFromLocation(location: LevelLocation, thing: Thing) {
     location.things.splice(location.things.indexOf(thing), 1);
+  }
+
+  private findTextAt(location: LevelLocation, label: string): string | undefined {
+    return location
+      .things
+      .find(thing => thing.description.label === label)
+      ?.description
+      .text;
   }
 }

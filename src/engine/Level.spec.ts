@@ -508,6 +508,68 @@ describe("giving receiver", ()=> {
   });
 });
 
+describe("receiver shows text", () => {
+
+  const receiverLabel = "someLabel";
+  const preText = "You do not have what I need.";
+  const onText = "Yes, that's it! Thank you for giving me what I need!";
+  const postText = "Very nice that you gave me what I need.";
+
+  beforeEach(() => {
+    level = createLevel(
+      "   ",
+      "   ",
+      "   "
+    );
+
+    addPickup(2, 1, receiverLabel);
+    addReceiver(0,1, receiverLabel);
+    addReceiverText(0, 1, "preInteraction", preText);
+    addReceiverText(0, 1, "onInteraction", onText);
+    addReceiverText(0, 1, "postInteraction", postText);
+  });
+
+
+  it("shows pre-text when not receiving", () => {
+
+    const text = level.tryToMove(Direction.LEFT).text;
+
+    expect(text).toEqual(preText);
+  });
+
+  it("shows on-text when receiving", () => {
+
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.LEFT);
+    const text = level.tryToMove(Direction.LEFT).text;
+
+    expect(text).toEqual(onText);
+  });
+
+  it("shows post-text after already received", () => {
+
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.LEFT);
+    const text = level.tryToMove(Direction.LEFT).text;
+
+    expect(text).toEqual(postText);
+  });
+
+  function addPickup(x: number, y: number, label: string): Thing {
+    return addThingWithProps({x, y, label, properties: ["pickup"], text: undefined});
+  }
+
+  function addReceiver(x: number, y: number, label: string): Thing {
+    return addThingWithProps({x, y, label, properties: ["receiver", "wall"], text: undefined});
+  }
+
+  function addReceiverText(x: number, y: number, label: string, text: string): Thing {
+    return addThingWithProps({x, y, label, properties: [], text: text});
+  }
+});
+
+
 describe("completing level", () => {
 
   describe("by pickup", () => {
