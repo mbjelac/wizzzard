@@ -137,6 +137,9 @@ export class Level {
         this.removeFromLocation(nextLocation, receiver);
         thingsToRemove.push(receiver);
       }
+      if (receiver.is("give")) {
+        thingsToRemove.push(...this.transferAllPickupsFromLevelToInventory(nextLocation));
+      }
     }
 
     const canMove = !this.doesLocationHaveProperty(nextLocation, "wall");

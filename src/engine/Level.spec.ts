@@ -454,7 +454,7 @@ describe("giving receiver", ()=> {
       properties: ["pickup"],
       label: "bar",
       text: undefined
-    })
+    });
 
     givingReceiver = addThingWithProps({
       x: 2,
@@ -488,6 +488,23 @@ describe("giving receiver", ()=> {
     level.tryToMove(Direction.RIGHT);
 
     expect(getAllThings(level).every(thing => !thing.equals(gift))).toBe(true);
+  });
+
+  it("giving receiver gives all pickups under it on receiving", () => {
+
+    const gift2 = addThingWithProps({
+      x: 2,
+      y: 1,
+      properties: ["pickup"],
+      label: "pop",
+      text: undefined
+    })
+
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.RIGHT);
+
+    expect(level.getInventory()).toEqual([gift, gift2]);
   });
 });
 
