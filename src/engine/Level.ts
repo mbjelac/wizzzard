@@ -76,13 +76,15 @@ export interface MoveResult {
   died: boolean
   levelComplete: boolean;
   text: string | undefined;
+  removedThings: Thing[];
 }
 
 const doNothing: MoveResult = {
   moved: false,
   died: false,
   levelComplete: false,
-  text: undefined
+  text: undefined,
+  removedThings: []
 }
 
 export class Level {
@@ -149,7 +151,8 @@ export class Level {
       moved: canMove,
       died: died,
       levelComplete: this.isLevelComplete(),
-      text: this.getText()
+      text: this.getText(),
+      removedThings: []
     };
   }
 

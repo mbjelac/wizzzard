@@ -244,6 +244,8 @@ export default class LevelGui extends Phaser.Scene {
     this.removeSpritesPutInInventory();
     this.displayInventory();
 
+    this.removeSpritesOfRemovedThings(moveResult.removedThings);
+
     if (moveResult.died) {
       await this.populateLevel();
       return;
@@ -264,6 +266,17 @@ export default class LevelGui extends Phaser.Scene {
 
   private removeSpritesPutInInventory() {
     this.level.getInventory().forEach(thing => {
+      const sprite = this.createdSpritesByThingId.get(thing.id);
+      if (sprite === undefined) {
+        return;
+      }
+      sprite.destroy(true);
+      this.createdSpritesByThingId.delete(thing.id);
+    });
+  }
+
+  private removeSpritesOfRemovedThings(removedThings: Thing[]) {
+    removedThings.forEach(thing => {
       const sprite = this.createdSpritesByThingId.get(thing.id);
       if (sprite === undefined) {
         return;

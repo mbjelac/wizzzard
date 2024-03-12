@@ -9,7 +9,8 @@ const stayed: MoveResult = {
   moved: false,
   died: false,
   levelComplete: false,
-  text: undefined
+  text: undefined,
+  removedThings: []
 }
 
 const moved: MoveResult = {
@@ -372,6 +373,15 @@ describe("vanishing receiver", ()=> {
     level.tryToMove(Direction.RIGHT);
 
     expect(getThingsAt(2, 1)).toEqual([]);
+  });
+
+  it("vanishing receiver appears in removed things", () => {
+
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.RIGHT);
+    const removedThings = level.tryToMove(Direction.RIGHT).removedThings;
+
+    expect(removedThings).toEqual([vanishingReceiver]);
   });
 
   it("vanishing receiver does not vanish without receiving", () => {
