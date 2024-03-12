@@ -93,7 +93,7 @@ export class Level {
   public readonly editor = new LevelEditor();
 
   public readonly levelMatrix: LevelMatrix;
-  private playerLocation: Coords;
+  private playerCoords: Coords;
 
   public collisionEnabled = true;
 
@@ -103,7 +103,7 @@ export class Level {
   constructor(
     public readonly errand: Errand,
   ) {
-    this.playerLocation = { ...errand.startCoords };
+    this.playerCoords = { ...errand.startCoords };
     this.levelMatrix = this
       .errand
       .matrix
@@ -118,7 +118,7 @@ export class Level {
 
   public tryToMove(direction: Direction): MoveResult {
 
-    const nextCoords = direction.move(this.playerLocation);
+    const nextCoords = direction.move(this.playerCoords);
 
     const nextLocation = this.getLocation(nextCoords);
 
@@ -142,7 +142,7 @@ export class Level {
     const canMove = !this.doesLocationHaveProperty(nextLocation, "wall");
 
     if (canMove) {
-      this.playerLocation = nextCoords;
+      this.playerCoords = nextCoords;
       thingsToRemove.push(...this.transferAllPickupsFromLevelToInventory(nextLocation));
     }
 
@@ -193,7 +193,7 @@ export class Level {
   }
 
   getPlayerLocation(): Coords {
-    return this.playerLocation;
+    return this.playerCoords;
   }
 
   matrixNotEmpty() {
@@ -248,10 +248,10 @@ export class Level {
 
   private getNeighbours(): LevelLocation[] {
     return [
-      { y: this.playerLocation.y - 1, x: this.playerLocation.x },
-      { y: this.playerLocation.y + 1, x: this.playerLocation.x },
-      { y: this.playerLocation.y, x: this.playerLocation.x - 1 },
-      { y: this.playerLocation.y, x: this.playerLocation.x + 1 },
+      { y: this.playerCoords.y - 1, x: this.playerCoords.x },
+      { y: this.playerCoords.y + 1, x: this.playerCoords.x },
+      { y: this.playerCoords.y, x: this.playerCoords.x - 1 },
+      { y: this.playerCoords.y, x: this.playerCoords.x + 1 },
     ]
       .filter(coords => coords.x >= 0 && coords.y >= 0 && coords.x < this.errand.levelDimensions.width && coords.y < this.errand.levelDimensions.height)
       .map(coords => this.levelMatrix[coords.y][coords.x]);
