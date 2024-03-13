@@ -912,7 +912,7 @@ describe("pushing", ()=> {
     expect(pushed).toEqual([pushable]);
   });
 
-  it("pushable has been relocated within level", () => {
+  it("pushable is relocated within level", () => {
     level.tryToMove(Direction.RIGHT);
 
     expect(getCoordsOf(pushable)).toEqual<Coords>({
