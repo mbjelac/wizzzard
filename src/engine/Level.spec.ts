@@ -10,7 +10,8 @@ const stayed: MoveResult = {
   died: false,
   levelComplete: false,
   text: undefined,
-  removedThings: []
+  removedThings: [],
+  pushed: []
 }
 
 const moved: MoveResult = {
@@ -881,6 +882,45 @@ describe("reading or listening", () => {
 
 });
 
+describe("pushing", ()=> {
+
+  let pushable: Thing;
+
+  beforeEach(()=> {
+    level = createLevel(
+      "     ",
+      "     ",
+      "     ",
+    );
+
+    pushable = addThingWithProps({
+      x: 2,
+      y: 1,
+      properties: ["pushable"],
+      label: undefined,
+      text: undefined
+    });
+  });
+
+  it("can move to pushable", () => {
+    const moved = level.tryToMove(Direction.RIGHT).moved;
+    expect(moved).toBe(true);
+  });
+
+  it("pushable is pushed", () => {
+    const pushed = level.tryToMove(Direction.RIGHT).pushed;
+    expect(pushed).toEqual([pushable]);
+  });
+
+  it("pushable has been relocated within level", () => {
+    level.tryToMove(Direction.RIGHT);
+
+    expect(getCoordsOf(pushable)).toEqual<Coords>({
+      x: 3, y: 1
+    });
+  });
+});
+
 interface AddThingProps {
   x: number,
   y: number,
@@ -908,4 +948,16 @@ function getAllThings(level: Level): Thing[] {
 
 function getThingsAt(x: number, y: number, skipInitialThings: boolean = true): Thing[] {
   return level.levelMatrix[y][x].things.slice(skipInitialThings ? 1 : 0);
+}
+
+function getCoordsOf(thing: Thing): Coords | undefined {
+  const locations = level.levelMatrix
+    .flatMap((row, rowIndex) => row
+        .flatMap((col, colIndex) => ({
+          hitCount: col.things.filter(levelThing => levelThing.equals(thing)).length,
+          coords: {x: colIndex, y: rowIndex}
+        })))
+    .filter(loc => loc.hitCount === 1)
+
+  return locations[0]?.coords;
 }

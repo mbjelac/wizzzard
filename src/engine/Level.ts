@@ -28,7 +28,8 @@ export const ALL_THING_PROPERTIES = [
   "receiver",
   "automatic",
   "vanish",
-  "give"
+  "give",
+  "pushable"
 ] as const;
 type ThingPropertyTuple = typeof ALL_THING_PROPERTIES;
 export type ThingProperty = ThingPropertyTuple[number];
@@ -78,6 +79,7 @@ export interface MoveResult {
   levelComplete: boolean;
   text: string | undefined;
   removedThings: Thing[];
+  pushed: Thing[];
 }
 
 const doNothing: MoveResult = {
@@ -85,7 +87,8 @@ const doNothing: MoveResult = {
   died: false,
   levelComplete: false,
   text: undefined,
-  removedThings: []
+  removedThings: [],
+  pushed: []
 }
 
 export class Level {
@@ -160,7 +163,8 @@ export class Level {
       died: this.doesLocationHaveProperty(nextLocation, "death"),
       levelComplete: this.isLevelComplete(),
       text: receiveEventText || this.getText(),
-      removedThings: thingsToRemove
+      removedThings: thingsToRemove,
+      pushed: []
     };
   }
 
