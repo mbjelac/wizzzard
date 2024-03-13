@@ -259,6 +259,20 @@ export default class LevelGui extends Phaser.Scene {
 
     this.player.setX(playerPixelCoords.x);
     this.player.setY(playerPixelCoords.y);
+
+    moveResult.pushed.forEach(pushedThing => {
+
+      const thingSprite = this.createdSpritesByThingId.get(pushedThing.id);
+
+      if (thingSprite === undefined) {
+        return;
+      }
+
+      const pushedThingPixelCoords = toPixelCoords(direction.move(this.level.getPlayerCoords()));
+
+      thingSprite.setX(pushedThingPixelCoords.x);
+      thingSprite.setY(pushedThingPixelCoords.y);
+    });
   }
 
   private removeSpritesOfRemovedThings(removedThings: Thing[]) {
