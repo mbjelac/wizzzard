@@ -185,7 +185,7 @@ export default class LevelGui extends Phaser.Scene {
 
   update(time: number, delta: number) {
 
-    const playerLocation = this.level.getPlayerLocation();
+    const playerLocation = this.level.getPlayerCoords();
 
     this.updateSidePanel(playerLocation);
     this.updateSideText(playerLocation);
@@ -255,7 +255,7 @@ export default class LevelGui extends Phaser.Scene {
 
     this.sideTextString = moveResult.text || "";
 
-    const playerPixelCoords = toPixelCoords(this.level.getPlayerLocation());
+    const playerPixelCoords = toPixelCoords(this.level.getPlayerCoords());
 
     this.player.setX(playerPixelCoords.x);
     this.player.setY(playerPixelCoords.y);

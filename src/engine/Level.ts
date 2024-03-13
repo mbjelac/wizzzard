@@ -206,7 +206,7 @@ export class Level {
     return row[coords.x];
   }
 
-  getPlayerLocation(): Coords {
+  getPlayerCoords(): Coords {
     return this.playerCoords;
   }
 
