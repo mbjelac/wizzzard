@@ -9,4 +9,5 @@ export const sprites = [
   "void",
   "wall",
   "wizard1",
+  "ball"
 ];
