@@ -330,4 +330,21 @@ export class Level {
 
     return pushables;
   }
+
+  getDepth(thing: Thing): number {
+    return this.getlocationOfThing(thing)!.things.indexOf(thing);
+  }
+
+  private getlocationOfThing(thing: Thing): LevelLocation | undefined {
+    return this
+      .levelMatrix
+      .flatMap(row => row
+        .flatMap(location => ({
+          hitCount: location.things.filter(levelThing => levelThing.equals(thing)).length,
+          location: location
+        })))
+      .filter(result => result.hitCount === 1)[0]
+      ?.location;
+  }
+
 }

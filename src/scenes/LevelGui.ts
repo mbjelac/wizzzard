@@ -11,13 +11,11 @@ import Sprite = Phaser.Physics.Arcade.Sprite;
 const tileCenterOffset = TILE_SIZE / 2;
 
 const depths = {
-  things: 2,
-  floors: 0,
-  decorations: 1,
+  void: -1,
+  decorations: 10,
   player: 9,
-  infoBackground: 8,
-  info: 11,
-  editor: 20
+  infoBackground: 11,
+  info: 12
 };
 
 export default class LevelGui extends Phaser.Scene {
@@ -91,7 +89,7 @@ export default class LevelGui extends Phaser.Scene {
       y: y
     });
 
-    const voidTile = this.physics.add.sprite(locationPixelCoords.x, locationPixelCoords.y, 'void').setDepth(depths.floors).setInteractive();
+    const voidTile = this.physics.add.sprite(locationPixelCoords.x, locationPixelCoords.y, 'void').setDepth(depths.void).setInteractive();
     voidTile.on('pointerup', async (pointer: Pointer) => {
       if (pointer.leftButtonReleased()) {
         await this.applyEditorTool(location, locationPixelCoords);
@@ -272,6 +270,7 @@ export default class LevelGui extends Phaser.Scene {
 
       thingSprite.setX(pushedThingPixelCoords.x);
       thingSprite.setY(pushedThingPixelCoords.y);
+      thingSprite.setDepth(this.level.getDepth(pushedThing))
     });
   }
 
@@ -310,7 +309,9 @@ export default class LevelGui extends Phaser.Scene {
 
   private addThingSprite(pixelCoords: Coords, location: LevelLocation, thing: Thing) {
 
-    const thingSprite = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, thing.description.sprite).setDepth(depths.things).setInteractive();
+    const thingDepth = location.things.indexOf(thing);
+
+    const thingSprite = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, thing.description.sprite).setDepth(thingDepth).setInteractive();
 
 
     if (thing.description.sprite.startsWith("__")) {
