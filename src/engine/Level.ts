@@ -158,13 +158,15 @@ export class Level {
       thingsToRemove.push(...this.transferAllPickupsFromLevelToInventory(nextLocation));
     }
 
+    const pushedThings = this.pushThings(nextLocation, direction);
+
     return {
       moved: canMove,
       died: this.doesLocationHaveProperty(nextLocation, "death"),
       levelComplete: this.isLevelComplete(),
       text: receiveEventText || this.getText(),
       removedThings: thingsToRemove,
-      pushed: []
+      pushed: pushedThings
     };
   }
 
@@ -310,5 +312,22 @@ export class Level {
       .find(thing => thing.description.label === label)
       ?.description
       .text;
+  }
+
+  private pushThings(location: LevelLocation, direction: Direction): Thing[] {
+
+    const pushedToCoords = direction.move(this.playerCoords);
+    const pushedLocation = this.getLocation(pushedToCoords);
+
+    if (pushedLocation === undefined){
+      return [];
+    }
+
+    const pushables = location.things.filter(thing => thing.is("pushable"));
+
+    location.things = location.things.filter(thing => !pushables.find(pushable => pushable.equals(thing)));
+    pushedLocation.things.push(...pushables);
+
+    return pushables;
   }
 }
