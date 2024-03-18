@@ -140,7 +140,7 @@ describe("picking up things", () => {
       "# ."
     );
 
-    pickupLocation = level.levelMatrix[2][2];
+    pickupLocation = level.levelLocations[2][2];
     pickupLocationFloor = pickupLocation.things[0];
     pickupItem = pickupLocation.things[1];
   });
@@ -967,20 +967,20 @@ function addThingWithProps(props: AddThingProps): Thing {
     text: props.text,
     sprite: "",
   });
-  level.levelMatrix[props.y][props.x].things.push(thing);
+  level.levelLocations[props.y][props.x].things.push(thing);
   return thing;
 }
 
 function getAllThings(level: Level): Thing[] {
-  return level.levelMatrix.flatMap(row => row.flatMap(loc => loc.things));
+  return level.levelLocations.flatMap(row => row.flatMap(loc => loc.things));
 }
 
 function getThingsAt(x: number, y: number, skipInitialThings: boolean = true): Thing[] {
-  return level.levelMatrix[y][x].things.slice(skipInitialThings ? 1 : 0);
+  return level.levelLocations[y][x].things.slice(skipInitialThings ? 1 : 0);
 }
 
 function getCoordsOf(thing: Thing): Coords | undefined {
-  const locations = level.levelMatrix
+  const locations = level.levelLocations
     .flatMap((row, rowIndex) => row
       .flatMap((col, colIndex) => ({
         hitCount: col.things.filter(levelThing => levelThing.equals(thing)).length,

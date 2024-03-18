@@ -82,7 +82,7 @@ export default class LevelGui extends Phaser.Scene {
   }
 
   private addLocation(x: number, y: number) {
-    const location = this.level.levelMatrix[y][x];
+    const location = this.level.levelLocations[y][x];
 
     const locationPixelCoords = toPixelCoords({
       x: x,
@@ -358,7 +358,7 @@ export default class LevelGui extends Phaser.Scene {
 
     const errand: Errand = {
       ...this.level.errand,
-      matrix: this.level.levelMatrix.map(row => row
+      matrix: this.level.levelLocations.map(row => row
         .map(location => ({
             things: location.things
               .map(thing => thing.description)

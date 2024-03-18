@@ -91,11 +91,19 @@ const doNothing: MoveResult = {
   pushed: []
 }
 
+interface LevelLocationWithCoords {
+
+  coords: Coords,
+  things: Thing[]
+}
+
+type LevelLocations = LevelLocationWithCoords[][];
+
 export class Level {
 
   public readonly editor = new LevelEditor();
 
-  public readonly levelMatrix: LevelMatrix;
+  public readonly levelLocations: LevelLocations;
   private playerCoords: Coords;
 
   public collisionEnabled = true;
@@ -107,11 +115,12 @@ export class Level {
     public readonly errand: Errand,
   ) {
     this.playerCoords = { ...errand.startCoords };
-    this.levelMatrix = this
+    this.levelLocations = this
       .errand
       .matrix
-      .map(row => row
-        .map(location => ({
+      .map((row, rowIndex) => row
+        .map((location, columnIndex) => ({
+            coords: { x: columnIndex, y: rowIndex },
             things: location.things
               .map(thingProps => new Thing(thingProps))
           })
@@ -121,9 +130,7 @@ export class Level {
 
   public tryToMove(direction: Direction): MoveResult {
 
-    const nextCoords = direction.move(this.playerCoords);
-
-    const nextLocation = this.getLocation(nextCoords);
+    const nextLocation = this.getMoveLocation(this.playerCoords, direction);
 
     const thingsToRemove: Thing[] = [];
 
@@ -151,14 +158,12 @@ export class Level {
       receiveEventText = this.findTextAt(nextLocation, atReceiver ? "preInteraction" : "postInteraction");
     }
 
-    const canMove = !this.doesLocationHaveProperty(nextLocation, "wall");
+    const canMove = !this.doesLocationHaveProperty(nextLocation, "wall") && this.pushableCanBePushed(nextLocation, direction);
 
     if (canMove) {
-      this.playerCoords = nextCoords;
+      this.playerCoords = nextLocation.coords;
       thingsToRemove.push(...this.transferAllPickupsFromLevelToInventory(nextLocation));
     }
-
-    const pushedThings = this.pushThings(nextLocation, direction);
 
     return {
       moved: canMove,
@@ -166,17 +171,22 @@ export class Level {
       levelComplete: this.isLevelComplete(),
       text: receiveEventText || this.getText(),
       removedThings: thingsToRemove,
-      pushed: pushedThings
+      pushed: canMove ? this.pushThings(nextLocation, direction) : []
     };
   }
 
-  private doesLocationHaveProperty(location: LevelLocation, property: ThingProperty): boolean {
+  private getMoveLocation(startCoords: Coords, direction: Direction): LevelLocationWithCoords | undefined {
+    const nextCoords = direction.move(startCoords);
+    return this.getLocation(nextCoords);
+  }
+
+  private doesLocationHaveProperty(location: LevelLocationWithCoords, property: ThingProperty): boolean {
     return location.things.some(thing => thing.is(property)) && this.collisionEnabled;
   }
 
-  private transferAllPickupsFromLevelToInventory(location: LevelLocation): Thing[] {
+  private transferAllPickupsFromLevelToInventory(location: LevelLocationWithCoords): Thing[] {
 
-    if (!this.collisionEnabled){
+    if (!this.collisionEnabled) {
       return [];
     }
 
@@ -202,8 +212,8 @@ export class Level {
     this.doneReceivers.push(receiver.description.label!);
   }
 
-  private getLocation(coords: Coords): LevelLocation | undefined {
-    const row = this.levelMatrix[coords.y];
+  private getLocation(coords: Coords): LevelLocationWithCoords | undefined {
+    const row = this.levelLocations[coords.y];
 
     if (!row) {
       return undefined;
@@ -217,7 +227,7 @@ export class Level {
   }
 
   matrixNotEmpty() {
-    return this.levelMatrix.length > 0 && this.levelMatrix.every(row => row.length > 0);
+    return this.levelLocations.length > 0 && this.levelLocations.every(row => row.length > 0);
   }
 
   getInventory(): Thing[] {
@@ -271,7 +281,7 @@ export class Level {
       : texts.join();
   }
 
-  private getNeighbours(): LevelLocation[] {
+  private getNeighbours(): LevelLocationWithCoords[] {
     return [
       { y: this.playerCoords.y - 1, x: this.playerCoords.x },
       { y: this.playerCoords.y + 1, x: this.playerCoords.x },
@@ -279,10 +289,10 @@ export class Level {
       { y: this.playerCoords.y, x: this.playerCoords.x + 1 },
     ]
       .filter(coords => coords.x >= 0 && coords.y >= 0 && coords.x < this.errand.levelDimensions.width && coords.y < this.errand.levelDimensions.height)
-      .map(coords => this.levelMatrix[coords.y][coords.x]);
+      .map(coords => this.levelLocations[coords.y][coords.x]);
   }
 
-  private getReceiverForAnInventoryItem(location: LevelLocation): Thing | undefined {
+  private getReceiverForAnInventoryItem(location: LevelLocationWithCoords): Thing | undefined {
     return location
       .things
       .find(thing =>
@@ -297,11 +307,11 @@ export class Level {
       .some(inventoryLabel => inventoryLabel === label);
   }
 
-  private removeFromLocation(location: LevelLocation, thing: Thing) {
+  private removeFromLocation(location: LevelLocationWithCoords, thing: Thing) {
     location.things.splice(location.things.indexOf(thing), 1);
   }
 
-  private findTextAt(location: LevelLocation, label: string): string | undefined {
+  private findTextAt(location: LevelLocationWithCoords, label: string): string | undefined {
 
     if (!this.collisionEnabled) {
       return undefined;
@@ -314,12 +324,11 @@ export class Level {
       .text;
   }
 
-  private pushThings(location: LevelLocation, direction: Direction): Thing[] {
+  private pushThings(location: LevelLocationWithCoords, direction: Direction): Thing[] {
 
-    const pushedToCoords = direction.move(this.playerCoords);
-    const pushedLocation = this.getLocation(pushedToCoords);
+    const pushedLocation = this.getMoveLocation(this.playerCoords, direction);
 
-    if (pushedLocation === undefined){
+    if (pushedLocation === undefined) {
       return [];
     }
 
@@ -335,9 +344,9 @@ export class Level {
     return this.getlocationOfThing(thing)!.things.indexOf(thing);
   }
 
-  private getlocationOfThing(thing: Thing): LevelLocation | undefined {
+  private getlocationOfThing(thing: Thing): LevelLocationWithCoords | undefined {
     return this
-      .levelMatrix
+      .levelLocations
       .flatMap(row => row
         .flatMap(location => ({
           hitCount: location.things.filter(levelThing => levelThing.equals(thing)).length,
@@ -347,4 +356,14 @@ export class Level {
       ?.location;
   }
 
+  private pushableCanBePushed(location: LevelLocationWithCoords, direction: Direction): boolean {
+
+    const pushLocation = this.getMoveLocation(location.coords, direction);
+
+    return !this.doesLocationHaveProperty(location, "pushable")
+      || (
+        pushLocation !== undefined
+        && !this.doesLocationHaveProperty(pushLocation, "wall")
+      );
+  }
 }
