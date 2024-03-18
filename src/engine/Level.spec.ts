@@ -35,7 +35,7 @@ function createLevel(...rows: string[]): Level {
       description: "",
       title: ""
     },
-    levelDimensions: { width: 3, height: 3 },
+    levelDimensions: { width: rows[0].length, height: rows.length },
     matrix: factory.fromMatrix(...rows),
     startCoords: startCoords,
     completionCriteria: {
@@ -232,7 +232,7 @@ describe("giving a picked up item to a receiver", () => {
   it("item is no longer in inventory after giving to receiver", () => {
 
     addPickup(2, 2, receiverLabel);
-    addReceiver(0,0, receiverLabel);
+    addReceiver(0, 0, receiverLabel);
 
     // move to pick up
     level.tryToMove(Direction.RIGHT);
@@ -251,7 +251,7 @@ describe("giving a picked up item to a receiver", () => {
 
     const item1 = addPickup(2, 2, "someOtherLabel");
     const item2 = addPickup(2, 0, receiverLabel);
-    addReceiver(0,0, receiverLabel);
+    addReceiver(0, 0, receiverLabel);
 
     // move to pick up #1
     level.tryToMove(Direction.RIGHT);
@@ -278,7 +278,7 @@ describe("giving a picked up item to a receiver", () => {
 
     const item1 = addPickup(2, 0, receiverLabel);
     const item2 = addPickup(2, 2, receiverLabel);
-    addReceiver(0,1, receiverLabel);
+    addReceiver(0, 1, receiverLabel);
 
     // move to pick up #2
     level.tryToMove(Direction.RIGHT);
@@ -306,8 +306,8 @@ describe("giving a picked up item to a receiver", () => {
 
     addPickup(2, 0, "foo");
     addPickup(2, 2, "bar");
-    addReceiver(0,1, "foo");
-    addReceiver(0,1, "bar");
+    addReceiver(0, 1, "foo");
+    addReceiver(0, 1, "bar");
 
     // move to pick up bar
     level.tryToMove(Direction.RIGHT);
@@ -334,7 +334,7 @@ describe("giving a picked up item to a receiver", () => {
   it("receiver does not appear in removed things", () => {
 
     addPickup(2, 1, receiverLabel);
-    addReceiver(0,1, receiverLabel);
+    addReceiver(0, 1, receiverLabel);
 
     // move to pick up
     level.tryToMove(Direction.RIGHT);
@@ -347,24 +347,24 @@ describe("giving a picked up item to a receiver", () => {
   });
 
   function addPickup(x: number, y: number, label: string): Thing {
-    return addThingWithProps({x, y, label, properties: ["pickup"], text: undefined});
+    return addThingWithProps({ x, y, label, properties: ["pickup"], text: undefined });
   }
 
   function addReceiver(x: number, y: number, label: string): Thing {
-    return addThingWithProps({x, y, label, properties: ["receiver"], text: undefined});
+    return addThingWithProps({ x, y, label, properties: ["receiver"], text: undefined });
   }
 });
 
-describe("vanishing receiver", ()=> {
+describe("vanishing receiver", () => {
 
   let vanishingReceiver: Thing;
 
-  beforeEach(()=> {
+  beforeEach(() => {
     level = createLevel(
       "   ",
       "   ",
       "   ",
-      );
+    );
 
     addThingWithProps({
       x: 0,
@@ -429,12 +429,12 @@ describe("vanishing receiver", ()=> {
   });
 });
 
-describe("giving receiver", ()=> {
+describe("giving receiver", () => {
 
   let givingReceiver: Thing;
   let gift: Thing;
 
-  beforeEach(()=> {
+  beforeEach(() => {
     level = createLevel(
       "   ",
       "   ",
@@ -524,7 +524,7 @@ describe("receiver shows text", () => {
     );
 
     addPickup(2, 1, receiverLabel);
-    addReceiver(0,1, receiverLabel);
+    addReceiver(0, 1, receiverLabel);
     addReceiverText(0, 1, "preInteraction", preText);
     addReceiverText(0, 1, "onInteraction", onText);
     addReceiverText(0, 1, "postInteraction", postText);
@@ -558,15 +558,15 @@ describe("receiver shows text", () => {
   });
 
   function addPickup(x: number, y: number, label: string): Thing {
-    return addThingWithProps({x, y, label, properties: ["pickup"], text: undefined});
+    return addThingWithProps({ x, y, label, properties: ["pickup"], text: undefined });
   }
 
   function addReceiver(x: number, y: number, label: string): Thing {
-    return addThingWithProps({x, y, label, properties: ["receiver", "wall"], text: undefined});
+    return addThingWithProps({ x, y, label, properties: ["receiver", "wall"], text: undefined });
   }
 
   function addReceiverText(x: number, y: number, label: string, text: string): Thing {
-    return addThingWithProps({x, y, label, properties: [], text: text});
+    return addThingWithProps({ x, y, label, properties: [], text: text });
   }
 });
 
@@ -882,24 +882,18 @@ describe("reading or listening", () => {
 
 });
 
-describe("pushing", ()=> {
+describe("pushing", () => {
 
   let pushable: Thing;
 
-  beforeEach(()=> {
+  beforeEach(() => {
     level = createLevel(
       "     ",
       "     ",
       "     ",
     );
 
-    pushable = addThingWithProps({
-      x: 2,
-      y: 1,
-      properties: ["pushable"],
-      label: undefined,
-      text: undefined
-    });
+    pushable = addThing(2, 1, "pushable");
   });
 
   it("can move to pushable", () => {
@@ -919,7 +913,42 @@ describe("pushing", ()=> {
       x: 3, y: 1
     });
   });
+
+  describe("when wall behind", ()=> {
+
+    beforeEach(()=> {
+      addThing(3, 1, "wall");
+    });
+
+    it("can not move to push", () => {
+      const moved = level.tryToMove(Direction.RIGHT).moved;
+      expect(moved).toBe(false);
+    });
+
+    it("pushable is not pushed", () => {
+      const pushed = level.tryToMove(Direction.RIGHT).pushed;
+      expect(pushed).toEqual([]);
+    });
+
+    it("pushable is not relocated within level", () => {
+      level.tryToMove(Direction.RIGHT);
+      expect(getCoordsOf(pushable)).toEqual<Coords>({
+        x: 2, y: 1
+      });
+    });
+  });
 });
+
+
+function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
+  return addThingWithProps({
+    x: x,
+    y: y,
+    properties: properties,
+    label: undefined,
+    text: undefined
+  });
+}
 
 interface AddThingProps {
   x: number,
@@ -953,10 +982,10 @@ function getThingsAt(x: number, y: number, skipInitialThings: boolean = true): T
 function getCoordsOf(thing: Thing): Coords | undefined {
   const locations = level.levelMatrix
     .flatMap((row, rowIndex) => row
-        .flatMap((col, colIndex) => ({
-          hitCount: col.things.filter(levelThing => levelThing.equals(thing)).length,
-          coords: {x: colIndex, y: rowIndex}
-        })))
+      .flatMap((col, colIndex) => ({
+        hitCount: col.things.filter(levelThing => levelThing.equals(thing)).length,
+        coords: { x: colIndex, y: rowIndex }
+      })))
     .filter(loc => loc.hitCount === 1)
 
   return locations[0]?.coords;
