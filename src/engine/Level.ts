@@ -7,12 +7,12 @@ export interface Coords {
   readonly y: number
 }
 
-export interface LevelLocation {
+export interface LevelCell {
 
   things: Thing[]
 }
 
-export type LevelMatrix = LevelLocation[][];
+export type LevelMatrix = LevelCell[][];
 
 export interface ThingDescription {
   readonly properties: ThingProperty[],
@@ -91,19 +91,16 @@ const doNothing: MoveResult = {
   pushed: []
 }
 
-interface LevelLocationWithCoords {
-
+interface LevelLocation {
   coords: Coords,
-  things: Thing[]
+  things: Thing[],
 }
-
-type LevelLocations = LevelLocationWithCoords[][];
 
 export class Level {
 
   public readonly editor = new LevelEditor();
 
-  public readonly levelLocations: LevelLocations;
+  public readonly levelLocations: LevelLocation[][];
   private playerCoords: Coords;
 
   public collisionEnabled = true;
@@ -175,16 +172,16 @@ export class Level {
     };
   }
 
-  private getMoveLocation(startCoords: Coords, direction: Direction): LevelLocationWithCoords | undefined {
+  private getMoveLocation(startCoords: Coords, direction: Direction): LevelLocation | undefined {
     const nextCoords = direction.move(startCoords);
     return this.getLocation(nextCoords);
   }
 
-  private doesLocationHaveProperty(location: LevelLocationWithCoords, ...properties: ThingProperty[]): boolean {
+  private doesLocationHaveProperty(location: LevelLocation, ...properties: ThingProperty[]): boolean {
     return location.things.some(thing => properties.some(property => thing.is(property))) && this.collisionEnabled;
   }
 
-  private transferAllPickupsFromLevelToInventory(location: LevelLocationWithCoords): Thing[] {
+  private transferAllPickupsFromLevelToInventory(location: LevelLocation): Thing[] {
 
     if (!this.collisionEnabled) {
       return [];
@@ -212,7 +209,7 @@ export class Level {
     this.doneReceivers.push(receiver.description.label!);
   }
 
-  private getLocation(coords: Coords): LevelLocationWithCoords | undefined {
+  private getLocation(coords: Coords): LevelLocation | undefined {
     const row = this.levelLocations[coords.y];
 
     if (!row) {
@@ -281,7 +278,7 @@ export class Level {
       : texts.join();
   }
 
-  private getNeighbours(): LevelLocationWithCoords[] {
+  private getNeighbours(): LevelLocation[] {
     return [
       { y: this.playerCoords.y - 1, x: this.playerCoords.x },
       { y: this.playerCoords.y + 1, x: this.playerCoords.x },
@@ -292,7 +289,7 @@ export class Level {
       .map(coords => this.levelLocations[coords.y][coords.x]);
   }
 
-  private getReceiverForAnInventoryItem(location: LevelLocationWithCoords): Thing | undefined {
+  private getReceiverForAnInventoryItem(location: LevelLocation): Thing | undefined {
     return location
       .things
       .find(thing =>
@@ -307,11 +304,11 @@ export class Level {
       .some(inventoryLabel => inventoryLabel === label);
   }
 
-  private removeFromLocation(location: LevelLocationWithCoords, thing: Thing) {
+  private removeFromLocation(location: LevelLocation, thing: Thing) {
     location.things.splice(location.things.indexOf(thing), 1);
   }
 
-  private findTextAt(location: LevelLocationWithCoords, label: string): string | undefined {
+  private findTextAt(location: LevelLocation, label: string): string | undefined {
 
     if (!this.collisionEnabled) {
       return undefined;
@@ -324,7 +321,7 @@ export class Level {
       .text;
   }
 
-  private pushThings(location: LevelLocationWithCoords, direction: Direction): Thing[] {
+  private pushThings(location: LevelLocation, direction: Direction): Thing[] {
 
     const pushedLocation = this.getMoveLocation(this.playerCoords, direction);
 
@@ -344,7 +341,7 @@ export class Level {
     return this.getLocationOfThing(thing)!.things.indexOf(thing);
   }
 
-  private getLocationOfThing(thing: Thing): LevelLocationWithCoords | undefined {
+  private getLocationOfThing(thing: Thing): LevelLocation | undefined {
     return this
       .levelLocations
       .flatMap(row => row
@@ -356,7 +353,7 @@ export class Level {
       ?.location;
   }
 
-  private pushableCanBePushed(location: LevelLocationWithCoords, direction: Direction): boolean {
+  private pushableCanBePushed(location: LevelLocation, direction: Direction): boolean {
 
     const pushLocation = this.getMoveLocation(location.coords, direction);
 

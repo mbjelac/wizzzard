@@ -1,5 +1,5 @@
 import { LevelEditor } from "./LevelEditor";
-import { LevelLocation, ThingDescription } from "../Level";
+import { LevelCell, ThingDescription } from "../Level";
 
 let editor: LevelEditor;
 
@@ -9,7 +9,7 @@ beforeEach(()=>{
 
 it("does not add same thing twice", () => {
 
-  const location: LevelLocation = {
+  const location: LevelCell = {
     things: []
   };
 
@@ -27,7 +27,7 @@ it("does not add same thing twice", () => {
 
 it("adds two different things", () => {
 
-  const location: LevelLocation = {
+  const location: LevelCell = {
     things: []
   };
 

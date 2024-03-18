@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ALL_THING_PROPERTIES, Coords, Level, LevelLocation, Thing, ThingDescription } from "../engine/Level";
+import { ALL_THING_PROPERTIES, Coords, Level, LevelCell, Thing, ThingDescription } from "../engine/Level";
 import { Direction } from "../engine/Direction";
 import { TILE_SIZE } from "../config";
 import { GAME } from "../engine/game";
@@ -285,15 +285,15 @@ export default class LevelGui extends Phaser.Scene {
     });
   }
 
-  private async applyEditorTool(location: LevelLocation, locationPixelCoords: Coords) {
+  private async applyEditorTool(cell: LevelCell, locationPixelCoords: Coords) {
 
-    const addResult = this.level.editor.addThing(location, this.getThingDescription());
+    const addResult = this.level.editor.addThing(cell, this.getThingDescription());
 
     if (!addResult.addedThing) {
       return;
     }
 
-    this.addThingSprite(locationPixelCoords, location, addResult.addedThing);
+    this.addThingSprite(locationPixelCoords, cell, addResult.addedThing);
 
     await this.saveLevelMatrix();
   }
@@ -307,9 +307,9 @@ export default class LevelGui extends Phaser.Scene {
     }
   }
 
-  private addThingSprite(pixelCoords: Coords, location: LevelLocation, thing: Thing) {
+  private addThingSprite(pixelCoords: Coords, cell: LevelCell, thing: Thing) {
 
-    const thingDepth = location.things.indexOf(thing);
+    const thingDepth = cell.things.indexOf(thing);
 
     const thingSprite = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, thing.description.sprite).setDepth(thingDepth).setInteractive();
 
@@ -323,17 +323,17 @@ export default class LevelGui extends Phaser.Scene {
 
     thingSprite.on('pointerup', async (pointer: Pointer) => {
       if (pointer.rightButtonReleased()) {
-        this.level.editor.removeThing(location, thing);
+        this.level.editor.removeThing(cell, thing);
         thingSprite.destroy(true);
         await this.saveLevelMatrix();
       }
       if (pointer.leftButtonReleased()) {
-        await this.applyEditorTool(location, pixelCoords);
+        await this.applyEditorTool(cell, pixelCoords);
       }
     });
 
     thingSprite.on('pointerover', async () => {
-      const text = location.things.map(thing => JSON.stringify(thing)).join("\n");
+      const text = cell.things.map(thing => JSON.stringify(thing)).join("\n");
       (document.getElementById("editor-info-panel")! as HTMLInputElement).textContent = text;
     });
     thingSprite.on('pointerout', async () => {
