@@ -1004,13 +1004,12 @@ function getThingsAt(x: number, y: number, skipInitialThings: boolean = true): T
 }
 
 function getCoordsOf(thing: Thing): Coords | undefined {
-  const locations = level.levelLocations
+  return level.levelLocations
     .flatMap((row, rowIndex) => row
       .flatMap((col, colIndex) => ({
         hitCount: col.things.filter(levelThing => levelThing.equals(thing)).length,
         coords: { x: colIndex, y: rowIndex }
       })))
-    .filter(loc => loc.hitCount === 1)
-
-  return locations[0]?.coords;
+    .find(loc => loc.hitCount === 1)
+    ?.coords;
 }
