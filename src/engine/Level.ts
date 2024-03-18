@@ -49,7 +49,7 @@ export class Thing {
   }
 
   equals(thing: Thing): boolean {
-    return this.descriptionEquals(thing.description);
+    return this.id === thing.id;
   }
 
   descriptionEquals(description: ThingDescription): boolean {
@@ -341,10 +341,10 @@ export class Level {
   }
 
   getDepth(thing: Thing): number {
-    return this.getlocationOfThing(thing)!.things.indexOf(thing);
+    return this.getLocationOfThing(thing)!.things.indexOf(thing);
   }
 
-  private getlocationOfThing(thing: Thing): LevelLocationWithCoords | undefined {
+  private getLocationOfThing(thing: Thing): LevelLocationWithCoords | undefined {
     return this
       .levelLocations
       .flatMap(row => row
@@ -352,7 +352,7 @@ export class Level {
           hitCount: location.things.filter(levelThing => levelThing.equals(thing)).length,
           location: location
         })))
-      .filter(result => result.hitCount === 1)[0]
+      .find(result => result.hitCount === 1)
       ?.location;
   }
 
