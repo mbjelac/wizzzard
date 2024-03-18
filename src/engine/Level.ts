@@ -180,8 +180,8 @@ export class Level {
     return this.getLocation(nextCoords);
   }
 
-  private doesLocationHaveProperty(location: LevelLocationWithCoords, property: ThingProperty): boolean {
-    return location.things.some(thing => thing.is(property)) && this.collisionEnabled;
+  private doesLocationHaveProperty(location: LevelLocationWithCoords, ...properties: ThingProperty[]): boolean {
+    return location.things.some(thing => properties.some(property => thing.is(property))) && this.collisionEnabled;
   }
 
   private transferAllPickupsFromLevelToInventory(location: LevelLocationWithCoords): Thing[] {
@@ -363,7 +363,7 @@ export class Level {
     return !this.doesLocationHaveProperty(location, "pushable")
       || (
         pushLocation !== undefined
-        && !this.doesLocationHaveProperty(pushLocation, "wall")
+        && !this.doesLocationHaveProperty(pushLocation, "wall", "pushable")
       );
   }
 }

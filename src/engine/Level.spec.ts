@@ -937,6 +937,30 @@ describe("pushing", () => {
       });
     });
   });
+
+  describe("when pushable behind", ()=> {
+
+    beforeEach(()=> {
+      addThing(3, 1, "pushable");
+    });
+
+    it("can not move to push", () => {
+      const moved = level.tryToMove(Direction.RIGHT).moved;
+      expect(moved).toBe(false);
+    });
+
+    it("pushable is not pushed", () => {
+      const pushed = level.tryToMove(Direction.RIGHT).pushed;
+      expect(pushed).toEqual([]);
+    });
+
+    it("pushable is not relocated within level", () => {
+      level.tryToMove(Direction.RIGHT);
+      expect(getCoordsOf(pushable)).toEqual<Coords>({
+        x: 2, y: 1
+      });
+    });
+  });
 });
 
 
