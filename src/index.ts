@@ -26,7 +26,7 @@ const spritesNotInEditor = [
 sprites
   .filter(spriteName => spritesNotInEditor.indexOf(spriteName) === -1)
   .forEach(spriteName => {
-    spriteSelectionPanel.innerHTML += `<div><input type="radio" id="editor-sprite-${spriteName}" name="editor-sprites" value="${spriteName}"><img src="assets/tiles/${spriteName}.png"/></div>\n`;
+    spriteSelectionPanel.innerHTML += `<div><input type="radio" id="editor-sprite-${spriteName}" name="editor-sprites" value="${spriteName}"><img src="assets/tiles/${spriteName}.png"/> ${spriteName}</div>\n`;
   });
 
 
