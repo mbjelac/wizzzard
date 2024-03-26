@@ -311,7 +311,11 @@ export default class LevelGui extends Phaser.Scene {
 
     const thingDepth = cell.things.indexOf(thing);
 
-    const thingSprite = this.physics.add.sprite(pixelCoords.x, pixelCoords.y, thing.description.sprite).setDepth(thingDepth).setInteractive();
+    const thingSprite = this.physics.add
+      .sprite(pixelCoords.x, pixelCoords.y, thing.description.sprite)
+      .setDepth(thingDepth)
+      .setDisplaySize(64, 64)
+      .setInteractive();
 
 
     if (thing.description.sprite.startsWith("__")) {
