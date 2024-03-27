@@ -1,14 +1,17 @@
+import { Coords } from "../engine/Level";
+
 export const sprites = new Map<string, SpriteConfig>([
-  ["forest/alpaca-tree", { frameIndex: 0}],
-  ["forest/micro-tree", { frameIndex: 0}],
-  ["forest/grass", { frameIndex: 1}],
-  ["town/brick", { frameIndex: 4}],
-  ["town/window", { frameIndex: 5}],
-  ["town/floor-wooden", { frameIndex: 6}],
-  ["void", { frameIndex: 2}],
-  ["wizard1", { frameIndex: 9}],
+  ["forest/alpaca-tree", { tileCoords: {x: 0, y: 0}}],
+  ["forest/micro-tree", { tileCoords: {x: 0, y: 0}}],
+  ["forest/grass", { tileCoords: {x: 1, y: 0}}],
+  ["town/brick", { tileCoords: {x: 4, y: 0}}],
+  ["town/window", { tileCoords: {x: 5, y: 0}}],
+  ["town/floor-wooden", { tileCoords: {x: 6, y: 0}}],
+  ["town/door-wooden-green-horizontal", { tileCoords: {x: 5, y: 1}}],
+  ["void", { tileCoords: {x: 2, y: 0}}],
+  ["wizard1", { tileCoords: {x: 1, y: 1}}],
 ]);
 
 export interface SpriteConfig {
-  frameIndex: number;
+  tileCoords: Coords;
 }
