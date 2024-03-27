@@ -349,7 +349,7 @@ export default class LevelGui extends Phaser.Scene {
 
     const spriteConfig = sprites.get(name)!;
 
-    const tileSetWidth = 8;
+    const tileSetWidth = 40;
 
     const sprite = this.physics.add
       .sprite(coords.x, coords.y, this.tilesetName, spriteConfig.tileCoords.y * tileSetWidth + spriteConfig.tileCoords.x)
