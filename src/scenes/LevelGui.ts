@@ -38,20 +38,24 @@ export default class LevelGui extends Phaser.Scene {
   private readonly createdSpritesByThingId: Map<number, Sprite> = new Map();
   private inventorySprites: Sprite[] = [];
 
+  private readonly tilesetName = "sprites";
+
   constructor() {
     super('level');
   }
 
   preload() {
 
-    sprites.forEach(spriteName => {
-      const path = `assets/tiles/${spriteName}.png`;
-      if (spriteName.startsWith("__")) {
-        this.load.spritesheet(spriteName, path, { frameWidth: TILE_SIZE, frameHeight: TILE_SIZE });
-      } else {
-        this.load.image(spriteName, path);
-      }
-    });
+    this.load.spritesheet(this.tilesetName, "assets/tileset.png", { frameWidth: 16, frameHeight: 16 });
+
+    // sprites.forEach(spriteName => {
+    //   const path = `assets/tiles/${spriteName}.png`;
+    //   if (spriteName.startsWith("__")) {
+    //     this.load.spritesheet(spriteName, path, { frameWidth: TILE_SIZE, frameHeight: TILE_SIZE });
+    //   } else {
+    //     this.load.image(spriteName, path);
+    //   }
+    // });
 
     this.events.on("create", async () => this.populateLevel());
     this.events.on("wake", async () => this.populateLevel());
@@ -72,7 +76,7 @@ export default class LevelGui extends Phaser.Scene {
     const startCoords: Coords = { x: this.level.errand.startCoords.x, y: this.level.errand.startCoords.y };
     const playerPixelCoords = toPixelCoords(startCoords);
 
-    this.player = this.physics.add.sprite(playerPixelCoords.x, playerPixelCoords.y, 'wizard1').setDepth(depths.player);
+    this.player = this.addSpriteFromTileset("wizard1", playerPixelCoords).setDepth(depths.player);
 
     this.createdNonThings.push(this.player);
 
@@ -89,7 +93,10 @@ export default class LevelGui extends Phaser.Scene {
       y: y
     });
 
-    const voidTile = this.physics.add.sprite(locationPixelCoords.x, locationPixelCoords.y, 'void').setDepth(depths.void).setInteractive();
+    const voidTile = this.addSpriteFromTileset("void", locationPixelCoords)
+      .setDepth(depths.void)
+      .setInteractive();
+
     voidTile.on('pointerup', async (pointer: Pointer) => {
       if (pointer.leftButtonReleased()) {
         await this.applyEditorTool(location, locationPixelCoords);
@@ -121,7 +128,7 @@ export default class LevelGui extends Phaser.Scene {
         return;
       }
 
-      const inventorySprite = this.physics.add.sprite(0, 0, inventoryItem.description.sprite).setDepth(depths.info);
+      const inventorySprite = this.addSpriteFromTileset(inventoryItem.description.sprite, { x: 0, y: 0 }).setDepth(depths.info);
       this.inventorySprites.push(inventorySprite);
     });
   }
@@ -130,16 +137,17 @@ export default class LevelGui extends Phaser.Scene {
   create() {
     console.log("Level create");
 
-    sprites
-      .filter(spriteName => spriteName.startsWith("__"))
-      .forEach(animationName => {
-        this.anims.create({
-          key: animationName,
-          frameRate: 7,
-          frames: this.anims.generateFrameNumbers(animationName, { start: 0, end: 3 }),
-          repeat: -1,
-        });
-      });
+    // TODO: configure animations from sprite configs
+    // sprites
+    //   .filter(spriteName => spriteName.startsWith("__"))
+    //   .forEach(animationName => {
+    //     this.anims.create({
+    //       key: animationName,
+    //       frameRate: 7,
+    //       frames: this.anims.generateFrameNumbers(animationName, { start: 0, end: 3 }),
+    //       repeat: -1,
+    //     });
+    //   });
 
 
     this.input.keyboard.on('keydown', async (event: KeyboardEvent) => {
@@ -311,19 +319,9 @@ export default class LevelGui extends Phaser.Scene {
 
     const thingDepth = cell.things.indexOf(thing);
 
-    const thingSprite = this.physics.add
-      .sprite(pixelCoords.x, pixelCoords.y, thing.description.sprite)
+    const thingSprite = this.addSpriteFromTileset(thing.description.sprite, pixelCoords)
       .setDepth(thingDepth)
-      .setDisplaySize(64, 64)
       .setInteractive();
-
-
-    if (thing.description.sprite.startsWith("__")) {
-      thingSprite.anims.play({
-        key: thing.description.sprite,
-        startFrame: Math.floor(Math.random() * 4)
-      });
-    }
 
     thingSprite.on('pointerup', async (pointer: Pointer) => {
       if (pointer.rightButtonReleased()) {
@@ -345,6 +343,24 @@ export default class LevelGui extends Phaser.Scene {
     });
 
     this.createdSpritesByThingId.set(thing.id, thingSprite);
+  }
+
+  private addSpriteFromTileset(name: string, coords: Coords): Sprite {
+
+    const spriteConfig = sprites.get(name)!;
+
+    const sprite = this.physics.add
+      .sprite(coords.x, coords.y, this.tilesetName, spriteConfig.frameIndex)
+      .setDisplaySize(64, 64);
+
+    // if (thing.description.sprite.startsWith("__")) {
+    //   thingSprite.anims.play({
+    //     key: thing.description.sprite,
+    //     startFrame: Math.floor(Math.random() * 4)
+    //   });
+    // }
+
+    return sprite;
   }
 
   private clearLevel() {
