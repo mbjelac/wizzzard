@@ -76,7 +76,7 @@ export default class LevelGui extends Phaser.Scene {
     const startCoords: Coords = { x: this.level.errand.startCoords.x, y: this.level.errand.startCoords.y };
     const playerPixelCoords = toPixelCoords(startCoords);
 
-    this.player = this.addSpriteFromTileset("wizard1", playerPixelCoords).setDepth(depths.player);
+    this.player = this.addSpriteFromTileset("wizard", playerPixelCoords).setDepth(depths.player);
 
     this.createdNonThings.push(this.player);
 

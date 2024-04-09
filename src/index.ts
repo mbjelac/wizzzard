@@ -19,7 +19,7 @@ new Phaser.Game(
 const spriteSelectionPanel: HTMLElement = document.getElementById("editor-sprites")!;
 
 const spritesNotInEditor = [
-  "wizard1",
+  "wizard",
   "void"
 ];
 

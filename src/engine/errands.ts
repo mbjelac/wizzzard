@@ -17,43 +17,18 @@ const errands: Errand[] = [
   },
   {
     description: {
-      id: "emptyRoom",
-      title: "Empty Room",
-      description: "An empty room"
+      id: "woodenDog",
+      title: "The wooden dog",
+      description: "Wooden dog description..."
     },
-    levelDimensions: { width: 3, height: 3 },
+    levelDimensions: { width: 40, height: 30 },
+    startCoords: { x: 7, y: 7 },
     matrix: [],
-    startCoords: { x: 1, y: 1 },
     completionCriteria: {
-      inventory: ["someLabel"]
-    },
-  },
-  {
-    description: {
-      id: "ringOfFire",
-      title: "Ring of fire",
-      description: "A ring of fire is conjured around you. What do you do?"
-    },
-    levelDimensions: { width: 7, height: 7 },
-    matrix: [],
-    startCoords: { x: 3, y: 3 },
-    completionCriteria: {
-      inventory: ["someLabel"]
-    },
-  },
-  {
-    description: {
-      id: "dungeon",
-      title: "A dungeon",
-      description: "Another dungeon. Boring."
-    },
-    levelDimensions: { width: 12, height: 9 },
-    matrix: [],
-    startCoords: { x: 1, y: 3 },
-    completionCriteria: {
-      inventory: ["someLabel"]
-    },
-  },
+      inventory: ["seed"],
+      receives: []
+    }
+  }
 ];
 
 export async function getErrand(errandId: string): Promise<Errand> {
