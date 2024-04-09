@@ -1,8 +1,8 @@
 import { Coords } from "../engine/Level";
 
-const spriteConfigs = {
+export const SPRITE_CONFIGS = {
   town: {
-    tree: spriteConfig({ x: 0, y: 7 })
+    tree: spriteConfig({ x: 0, y: 0 })
   }
 }
 
@@ -12,7 +12,11 @@ export function spriteConfig(coords: Coords): SpriteConfig {
   };
 }
 
-export const sprites = new Map<string, SpriteConfig>([
+export const SPRITE_CONFIGS_BY_LOCATION: Map<string, SpriteConfig> = new Map();
+
+export const SPRITE_CONFIG_VOID: SpriteConfig = { tileCoords: { x: 0, y: 7 } };
+
+const sprites = new Map<string, SpriteConfig>([
   ["void", { tileCoords: { x: 0, y: 7 } }],
   ["wizard", { tileCoords: { x: 0, y: 8 } }],
 

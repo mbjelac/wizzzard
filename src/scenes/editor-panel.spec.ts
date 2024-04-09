@@ -1,27 +1,9 @@
 import { SpriteConfig, spriteConfig } from "./sprites";
+import { convertToHtml } from "./editor-panel";
 
-function convertToHtml(
-  spriteConfigs: any,
-  configToHtml: (spriteConfig: SpriteConfig) => string
-): string {
-  return Object
-    .keys(spriteConfigs)
-    .map(key => {
 
-      if (spriteConfigs[key].tileCoords !== undefined) {
-        return "<p>" + configToHtml(spriteConfigs[key]) + " " + key + "</p>";
-      }
 
-      return "<details><summary>" +
-        key +
-        "</summary>" +
-        convertToHtml(spriteConfigs[key], configToHtml) +
-        "</details>";
-    })
-    .join("");
-}
-
-const spriteConfigToString = (spriteConfig: SpriteConfig) => `x:${spriteConfig.tileCoords.x},y:${spriteConfig.tileCoords.y}`;
+const spriteConfigToString = (lastKey: string, spriteConfig: SpriteConfig) => `${lastKey}=x:${spriteConfig.tileCoords.x},y:${spriteConfig.tileCoords.y}`;
 
 it("convert single config to HTML", () => {
 
@@ -30,7 +12,7 @@ it("convert single config to HTML", () => {
     spriteConfigToString
   );
 
-  expect(html).toEqual("<p>x:4,y:2 foo</p>");
+  expect(html).toEqual("foo=x:4,y:2");
 });
 
 it("convert multiple configs to HTML", () => {
@@ -45,7 +27,7 @@ it("convert multiple configs to HTML", () => {
 
   expect(html)
     .toEqual(
-      "<p>x:4,y:2 foo</p><p>x:5,y:3 bar</p>"
+      "foo=x:4,y:2bar=x:5,y:3"
     );
 });
 
@@ -62,9 +44,7 @@ it("convert single config tree to collapsible HTML", () => {
       "<summary>" +
       "foo" +
       "</summary>" +
-      "<p>" +
-      "x:4,y:2 bar" +
-      "</p>" +
+      "bar=x:4,y:2" +
       "</details>"
     );
 });
@@ -87,12 +67,8 @@ it("convert multiple single-level config tree to collapsible HTML", () => {
       "<summary>" +
       "foo" +
       "</summary>" +
-      "<p>" +
-      "x:4,y:2 bar" +
-      "</p>" +
-      "<p>" +
-      "x:5,y:3 pop" +
-      "</p>" +
+      "bar=x:4,y:2" +
+      "pop=x:5,y:3" +
       "</details>"
     );
 });
@@ -117,30 +93,13 @@ it("convert multi-level config tree to collapsible HTML", () => {
       "<summary>" +
       "foo" +
       "</summary>" +
-      "<p>" +
-      "x:4,y:2 bar" +
-      "</p>" +
+      "bar=x:4,y:2" +
       "<details>" +
       "<summary>" +
       "pop" +
       "</summary>" +
-      "<p>" +
-      "x:5,y:3 fuzz" +
-      "</p>" +
+      "fuzz=x:5,y:3" +
       "</details>" +
       "</details>"
     );
 });
-
-/*
-
-<details>
-  <summary>
-    What is the meaning of life?
-  </summary>
-  <p>
-    42
-  </p>
-</details>
-
-*/

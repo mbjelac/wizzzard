@@ -4,7 +4,7 @@ import { Direction } from "../engine/Direction";
 import { TILE_SIZE } from "../config";
 import { GAME } from "../engine/game";
 import { Errand } from "../engine/Errand";
-import { sprites } from "./sprites";
+import { SPRITE_CONFIG_VOID, SPRITE_CONFIGS_BY_LOCATION } from "./sprites";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
 
@@ -347,7 +347,9 @@ export default class LevelGui extends Phaser.Scene {
 
   private addSpriteFromTileset(name: string, coords: Coords): Sprite {
 
-    const spriteConfig = sprites.get(name)!;
+    const spriteConfig = name === "void"
+      ? SPRITE_CONFIG_VOID
+      : SPRITE_CONFIGS_BY_LOCATION.get(name)!;
 
     const tileSetWidth = 40;
 
