@@ -32,7 +32,7 @@ spriteSelectionPanel.innerHTML += convertToHtml(
 
     SPRITE_CONFIGS_BY_LOCATION.set(spriteId, spriteConfig);
 
-    return `<div style="display: flex; flex-direction: row; margin-bottom: 5px">
+    return `<div style="display: flex; flex-direction: row;">
 <input type="radio" id="editor-sprite-${spriteId}" name="editor-sprites" value="${spriteId}">
 <div
 style="
