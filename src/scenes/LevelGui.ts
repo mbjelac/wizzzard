@@ -347,6 +347,8 @@ export default class LevelGui extends Phaser.Scene {
 
   private addSpriteFromTileset(name: string, coords: Coords): Sprite {
 
+    console.log("addSpriteFromTileset", name, SPRITE_CONFIGS_BY_LOCATION);
+
     const spriteConfig = name === "void"
       ? SPRITE_CONFIG_VOID
       : name === "wizard"

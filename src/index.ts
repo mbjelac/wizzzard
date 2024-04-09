@@ -1,20 +1,10 @@
-import Phaser from 'phaser';
-import config from './config';
-import LevelGui from "./scenes/LevelGui";
-import ErrandsGui from "./scenes/ErrandsGui";
 import { SPRITE_CONFIGS, SPRITE_CONFIGS_BY_LOCATION } from "./scenes/sprites";
 import { ALL_THING_PROPERTIES } from "./engine/Level";
 import { convertToHtml } from "./scenes/editor-panel";
-
-
-new Phaser.Game(
-  Object.assign(config, {
-    scene: [
-      ErrandsGui,
-      LevelGui,
-    ]
-  })
-);
+import Phaser from "phaser";
+import config from "./config";
+import ErrandsGui from "./scenes/ErrandsGui";
+import LevelGui from "./scenes/LevelGui";
 
 
 const spriteSelectionPanel: HTMLElement = document.getElementById("editor-sprites")!;
@@ -71,3 +61,13 @@ window.addEventListener("keydown", function (e) {
     e.preventDefault();
   }
 }, false);
+
+
+new Phaser.Game(
+  Object.assign(config, {
+    scene: [
+      ErrandsGui,
+      LevelGui,
+    ]
+  })
+);
