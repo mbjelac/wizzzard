@@ -37,6 +37,19 @@
         #editor-panel > * {
             margin-top: 15px;
         }
+
+        details {
+            user-select: none;
+        }
+
+        summary {
+            display: flex;
+            cursor: pointer;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
     </style>
     <script type="module" src="/src/index.ts"></script>
 </head>
