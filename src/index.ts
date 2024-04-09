@@ -63,3 +63,10 @@ ALL_THING_PROPERTIES
                 </div>\n`;
   });
 
+
+// prevent arrow keys from scrolling the browser window
+window.addEventListener("keydown", function(e) {
+  if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+    e.preventDefault();
+  }
+}, false);
