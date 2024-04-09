@@ -15,6 +15,7 @@ export function spriteConfig(coords: Coords): SpriteConfig {
 export const SPRITE_CONFIGS_BY_LOCATION: Map<string, SpriteConfig> = new Map();
 
 export const SPRITE_CONFIG_VOID: SpriteConfig = { tileCoords: { x: 0, y: 7 } };
+export const SPRITE_CONFIG_WIZARD: SpriteConfig = { tileCoords: { x: 0, y: 8 } };
 
 const sprites = new Map<string, SpriteConfig>([
   ["void", { tileCoords: { x: 0, y: 7 } }],
