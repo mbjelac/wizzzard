@@ -97,6 +97,41 @@ it("convert multiple single-level config tree to collapsible HTML", () => {
     );
 });
 
+it("convert multi-level config tree to collapsible HTML", () => {
+
+  const html = convertToHtml(
+    {
+      foo: {
+        bar: spriteConfig({ x: 4, y: 2 }),
+        pop: {
+          fuzz: spriteConfig({ x: 5, y: 3 })
+        },
+      }
+    },
+    spriteConfigToString
+  );
+
+  expect(html)
+    .toEqual(
+      "<details>" +
+      "<summary>" +
+      "foo" +
+      "</summary>" +
+      "<p>" +
+      "x:4,y:2 bar" +
+      "</p>" +
+      "<details>" +
+      "<summary>" +
+      "pop" +
+      "</summary>" +
+      "<p>" +
+      "x:5,y:3 fuzz" +
+      "</p>" +
+      "</details>" +
+      "</details>"
+    );
+});
+
 /*
 
 <details>
