@@ -295,7 +295,13 @@ export default class LevelGui extends Phaser.Scene {
 
   private async applyEditorTool(cell: LevelCell, locationPixelCoords: Coords) {
 
-    const addResult = this.level.editor.addThing(cell, this.getThingDescription());
+    const description = this.getThingDescription();
+
+    if (description === undefined) {
+      return;
+    }
+
+    const addResult = this.level.editor.addThing(cell, description);
 
     if (!addResult.addedThing) {
       return;
@@ -306,10 +312,17 @@ export default class LevelGui extends Phaser.Scene {
     await this.saveLevelMatrix();
   }
 
-  private getThingDescription(): ThingDescription {
+  private getThingDescription(): ThingDescription | undefined {
+
+    const selectedSprite = (document.querySelector('input[name="editor-sprites"]:checked') as HTMLInputElement)?.value;
+
+    if (selectedSprite === undefined) {
+      return undefined;
+    }
+
     return {
-      label: (document.getElementById("editor-label")! as HTMLInputElement).value,
-      sprite: (document.querySelector('input[name="editor-sprites"]:checked') as HTMLInputElement)?.value,
+      label: (document.getElementById("editor-label")! as HTMLInputElement).value || undefined,
+      sprite: selectedSprite,
       properties: ALL_THING_PROPERTIES.filter(property => (document.getElementById(`editor-property-${property}`)! as HTMLInputElement).checked),
       text: (document.getElementById("editor-text")! as HTMLInputElement).value || undefined
     }
@@ -347,13 +360,15 @@ export default class LevelGui extends Phaser.Scene {
 
   private addSpriteFromTileset(name: string, coords: Coords): Sprite {
 
-    console.log("addSpriteFromTileset", name, SPRITE_CONFIGS_BY_LOCATION);
-
     const spriteConfig = name === "void"
       ? SPRITE_CONFIG_VOID
       : name === "wizard"
         ? SPRITE_CONFIG_WIZARD
         : SPRITE_CONFIGS_BY_LOCATION.get(name)!;
+
+    if (spriteConfig === undefined) {
+      throw new Error("Could not find sprite config for " + name);
+    }
 
     const tileSetWidth = 40;
 
