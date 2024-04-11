@@ -1,4 +1,4 @@
-import { Level, LevelCell, LevelLocation, MoveResult, Thing, ThingProperty } from "./Level";
+import { Level, LevelLocation, MoveResult, Thing, ThingProperty } from "./Level";
 import { createThingProps, LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
 import { EditorTool } from "./editor/EditorTool";

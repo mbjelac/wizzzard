@@ -1,5 +1,5 @@
 import { LevelEditor } from "./LevelEditor";
-import { LevelCell, LevelLocation } from "../Level";
+import { LevelLocation } from "../Level";
 import { ThingDescription } from "../Errand";
 
 let editor: LevelEditor;
