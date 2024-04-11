@@ -116,6 +116,14 @@ export class Level {
       return doNothing;
     }
 
+    if (!this.collisionEnabled) {
+      this.playerCoords = nextLocation.coords;
+      return {
+        ...doNothing,
+        moved: true
+      };
+    }
+
     const receiver = this.getReceiverForAnInventoryItem(nextLocation);
 
     let receiveEventText: string | undefined = undefined;
@@ -159,15 +167,10 @@ export class Level {
   }
 
   private doesLocationHaveProperty(location: LevelLocation, ...properties: ThingProperty[]): boolean {
-    return location.things.some(thing => properties.some(property => thing.is(property))) && this.collisionEnabled;
+    return location.things.some(thing => properties.some(property => thing.is(property)));
   }
 
   private transferAllPickupsFromLevelToInventory(location: LevelLocation): Thing[] {
-
-    if (!this.collisionEnabled) {
-      return [];
-    }
-
     const thingsToPickup = location.things.filter(thing => thing.is("pickup"));
     this.inventory.push(...thingsToPickup);
     location.things = location.things.filter(thing => !thing.is("pickup"));
@@ -242,11 +245,6 @@ export class Level {
   }
 
   private getText(): string | undefined {
-
-    if (!this.collisionEnabled) {
-      return undefined;
-    }
-
     const texts = this
       .getNeighbours()
       .flatMap(neighbourLocation => neighbourLocation.things)
@@ -290,11 +288,6 @@ export class Level {
   }
 
   private findTextAt(location: LevelLocation, label: string): string | undefined {
-
-    if (!this.collisionEnabled) {
-      return undefined;
-    }
-
     return location
       .things
       .find(thing => thing.description.label === label)
