@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
-import { ALL_THING_PROPERTIES, Coords, Level, LevelCell, Thing, ThingDescription } from "../engine/Level";
+import { ALL_THING_PROPERTIES, Level, LevelLocation, Thing } from "../engine/Level";
 import { Direction } from "../engine/Direction";
 import { TILE_SIZE } from "../config";
 import { GAME } from "../engine/game";
-import { Errand } from "../engine/Errand";
+import { Coords, Errand, ThingDescription } from "../engine/Errand";
 import { SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION } from "./sprites";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
@@ -39,6 +39,9 @@ export default class LevelGui extends Phaser.Scene {
   private inventorySprites: Sprite[] = [];
 
   private readonly tilesetName = "sprites";
+
+  private leftButtonDown: boolean = false;
+  private rightButtonDown: boolean = false;
 
   constructor() {
     super('level');
@@ -99,12 +102,26 @@ export default class LevelGui extends Phaser.Scene {
 
     voidTile.on('pointerup', async (pointer: Pointer) => {
       if (pointer.leftButtonReleased()) {
+        this.leftButtonDown = false;
+        await this.applyEditorTool(location, locationPixelCoords);
+      }
+      if (pointer.rightButtonReleased()) {
+        this.rightButtonDown = false;
+      }
+    });
+    voidTile.on('pointerdown', async (pointer: Pointer) => {
+      if (pointer.leftButtonDown()) {
+        this.leftButtonDown = true;
+      }
+      if (pointer.rightButtonDown()) {
+        this.rightButtonDown = true;
+      }
+    });
+    voidTile.on('pointermove', async () => {
+      if (this.leftButtonDown) {
         await this.applyEditorTool(location, locationPixelCoords);
       }
     });
-    // voidTile.on('pointerover', async () => {
-    //   (document.getElementById("editor-info-panel")! as HTMLInputElement).textContent = "";
-    // });
 
     this.createdNonThings.push(voidTile);
 
@@ -293,7 +310,7 @@ export default class LevelGui extends Phaser.Scene {
     });
   }
 
-  private async applyEditorTool(cell: LevelCell, locationPixelCoords: Coords) {
+  private async applyEditorTool(levelLocation: LevelLocation, locationPixelCoords: Coords) {
 
     const description = this.getThingDescription();
 
@@ -301,13 +318,13 @@ export default class LevelGui extends Phaser.Scene {
       return;
     }
 
-    const addResult = this.level.editor.addThing(cell, description);
+    const addResult = this.level.editor.addThing(levelLocation, description);
 
     if (!addResult.addedThing) {
       return;
     }
 
-    this.addThingSprite(locationPixelCoords, cell, addResult.addedThing);
+    this.addThingSprite(locationPixelCoords, levelLocation, addResult.addedThing);
 
     await this.saveLevelMatrix();
   }
@@ -328,9 +345,9 @@ export default class LevelGui extends Phaser.Scene {
     }
   }
 
-  private addThingSprite(pixelCoords: Coords, cell: LevelCell, thing: Thing) {
+  private addThingSprite(pixelCoords: Coords, levelLocation: LevelLocation, thing: Thing) {
 
-    const thingDepth = cell.things.indexOf(thing);
+    const thingDepth = levelLocation.things.indexOf(thing);
 
     const thingSprite = this.addSpriteFromTileset(thing.description.sprite, pixelCoords)
       .setDepth(thingDepth)
@@ -338,24 +355,45 @@ export default class LevelGui extends Phaser.Scene {
 
     thingSprite.on('pointerup', async (pointer: Pointer) => {
       if (pointer.rightButtonReleased()) {
-        this.level.editor.removeThing(cell, thing);
-        thingSprite.destroy(true);
-        await this.saveLevelMatrix();
+        this.rightButtonDown = false;
+        await this.removeThing(levelLocation, thing, thingSprite);
       }
       if (pointer.leftButtonReleased()) {
-        await this.applyEditorTool(cell, pixelCoords);
+        this.leftButtonDown = false;
+        await this.applyEditorTool(levelLocation, pixelCoords);
       }
     });
 
-    thingSprite.on('pointerover', async () => {
-      const text = cell.things.map(thing => JSON.stringify(thing)).join("\n");
+    thingSprite.on('pointermove', async () => {
+      const text = levelLocation.things.map(thing => JSON.stringify(thing)).join("\n");
       (document.getElementById("editor-info-panel")! as HTMLInputElement).textContent = text;
+
+      if (this.leftButtonDown) {
+        await this.applyEditorTool(levelLocation, pixelCoords);
+      }
+      if (this.rightButtonDown) {
+        await this.removeThing(levelLocation, thing, thingSprite);
+      }
     });
     thingSprite.on('pointerout', async () => {
       (document.getElementById("editor-info-panel")! as HTMLInputElement).textContent = "";
     });
+    thingSprite.on('pointerdown', async (pointer: Pointer) => {
+      if (pointer.leftButtonDown()) {
+        this.leftButtonDown = true;
+      }
+      if (pointer.rightButtonDown()) {
+        this.rightButtonDown = true;
+      }
+    });
 
     this.createdSpritesByThingId.set(thing.id, thingSprite);
+  }
+
+  private async removeThing(levelLocation: LevelLocation, thing: Thing, thingSprite: Phaser.Physics.Arcade.Sprite) {
+    this.level.editor.removeThing(levelLocation, thing);
+    thingSprite.destroy(true);
+    await this.saveLevelMatrix();
   }
 
   private addSpriteFromTileset(name: string, coords: Coords): Sprite {
