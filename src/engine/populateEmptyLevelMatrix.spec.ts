@@ -1,6 +1,5 @@
-import { LevelDimensions } from "./Errand";
+import { ErrandLocation, ErrandMatrix, LevelDimensions } from "./Errand";
 import { populateEmptyLevelMatrix } from "./game";
-import { LevelCell, LevelMatrix } from "./Level";
 
 describe("non-positive dimensions level produces empty matrix", () => {
   it.each<LevelDimensions>([
@@ -13,7 +12,7 @@ describe("non-positive dimensions level produces empty matrix", () => {
 });
 
 it("1-1 dimensions produce matrix with one empty location", () => {
-  expect(populateEmptyLevelMatrix({ width: 1, height: 1 })).toEqual<LevelMatrix>(
+  expect(populateEmptyLevelMatrix({ width: 1, height: 1 })).toEqual<ErrandMatrix>(
     [
       [
         {
@@ -43,7 +42,7 @@ it("x-y dimensions produce matrix with all elements empty location", () => {
 
   const matrix = populateEmptyLevelMatrix({ width: 2, height: 2 });
 
-  const empty: LevelCell = { things: [] };
+  const empty: ErrandLocation = { things: [] };
 
   expect(matrix).toEqual([
     [empty, empty],

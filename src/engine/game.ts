@@ -1,5 +1,5 @@
 import { Errand, ErrandDescription, ErrandMatrix, LevelDimensions } from "./Errand";
-import { Level, LevelMatrix } from "./Level";
+import { Level } from "./Level";
 import { getErrand, getErrandDescriptions, setErrand } from "./errands";
 
 export class Game {

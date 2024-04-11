@@ -1,17 +1,20 @@
 import { LevelEditor } from "./LevelEditor";
-import { LevelCell, ThingDescription } from "../Level";
+import { LevelCell, LevelLocation } from "../Level";
+import { ThingDescription } from "../Errand";
 
 let editor: LevelEditor;
 
-beforeEach(()=>{
+beforeEach(() => {
   editor = new LevelEditor();
 });
 
 it("does not add same thing twice", () => {
 
-  const location: LevelCell = {
+  const location: LevelLocation = {
+    coords: { x: 0, y: 0 },
     things: []
   };
+
 
   const description: ThingDescription = {
     properties: ["death"],
@@ -27,7 +30,8 @@ it("does not add same thing twice", () => {
 
 it("adds two different things", () => {
 
-  const location: LevelCell = {
+  const location: LevelLocation = {
+    coords: { x: 0, y: 0 },
     things: []
   };
 

@@ -1,4 +1,4 @@
-import { Coords } from "../engine/Level";
+import { Coords } from "../engine/Errand";
 
 
 export function spriteConfig(coords: Coords): SpriteConfig {

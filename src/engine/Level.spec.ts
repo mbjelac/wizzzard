@@ -1,7 +1,8 @@
-import { Coords, Level, LevelCell, MoveResult, Thing, ThingProperty } from "./Level";
+import { Level, LevelCell, LevelLocation, MoveResult, Thing, ThingProperty } from "./Level";
 import { createThingProps, LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
 import { EditorTool } from "./editor/EditorTool";
+import { Coords } from "./Errand";
 
 let level: Level;
 
@@ -129,7 +130,7 @@ describe("dying", () => {
 
 describe("picking up things", () => {
 
-  let pickupLocation: LevelCell;
+  let pickupLocation: LevelLocation;
   let pickupLocationFloor: Thing;
   let pickupItem: Thing;
 

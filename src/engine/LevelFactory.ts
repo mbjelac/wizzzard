@@ -1,6 +1,6 @@
-import { Thing, ThingDescription } from "./Level";
+import { Thing } from "./Level";
 import { EditorTool } from "./editor/EditorTool";
-import { ErrandMatrix } from "./Errand";
+import { ErrandMatrix, ThingDescription } from "./Errand";
 
 export class LevelFactory {
 

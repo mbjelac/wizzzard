@@ -1,25 +1,6 @@
 import { LevelEditor } from "./editor/LevelEditor";
 import { Direction } from "./Direction";
-import { Errand } from "./Errand";
-
-export interface Coords {
-  readonly x: number,
-  readonly y: number
-}
-
-export interface LevelCell {
-
-  things: Thing[]
-}
-
-export type LevelMatrix = LevelCell[][];
-
-export interface ThingDescription {
-  readonly properties: ThingProperty[],
-  readonly sprite: string,
-  readonly label?: string,
-  readonly text?: string,
-}
+import { Coords, Errand, ThingDescription } from "./Errand";
 
 export const ALL_THING_PROPERTIES = [
   "wall",
@@ -91,7 +72,7 @@ const doNothing: MoveResult = {
   pushed: []
 }
 
-interface LevelLocation {
+export interface LevelLocation {
   coords: Coords,
   things: Thing[],
 }

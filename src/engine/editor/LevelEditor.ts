@@ -1,4 +1,5 @@
-import { LevelCell, Thing, ThingDescription } from "../Level";
+import { LevelLocation, Thing } from "../Level";
+import { ThingDescription } from "../Errand";
 
 export interface AddResult {
   addedThing?: Thing
@@ -20,7 +21,7 @@ export class LevelEditor {
     addedThing: undefined
   };
 
-  addThing(location: LevelCell, description: ThingDescription): AddResult {
+  addThing(location: LevelLocation, description: ThingDescription): AddResult {
 
     if (!validateThingDescription(description)) {
       return this.emptyAddResult;
@@ -39,7 +40,7 @@ export class LevelEditor {
     };
   }
 
-  removeThing(location: LevelCell, thing: Thing) {
+  removeThing(location: LevelLocation, thing: Thing) {
 
     const index = location.things.findIndex(thing => thing.id === thing.id);
 
