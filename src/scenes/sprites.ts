@@ -13,6 +13,7 @@ export const SPRITE_CONFIG_VOID: SpriteConfig = { tileCoords: { x: 0, y: 7 } };
 export const SPRITE_CONFIG_WIZARD: SpriteConfig = { tileCoords: { x: 0, y: 10 } };
 
 export const SPRITE_CONFIGS = {
+  transparent: spriteConfig({x: 1, y: 7}),
   town: {
     wall: {
       brown: spriteConfig({ x: 4, y: 3 })
