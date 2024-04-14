@@ -41,13 +41,6 @@ export class LevelEditor {
   }
 
   removeThing(location: LevelLocation, thing: Thing) {
-
-    const index = location.things.findIndex(thing => thing.id === thing.id);
-
-    if (index === -1) {
-      throw Error(`Thing ${JSON.stringify(thing)} not found at location ${JSON.stringify(location)}.`);
-    }
-
-    location.things.splice(index, 1);
+    location.things = location.things.filter(locationThing => locationThing.id !== thing.id);
   }
 }
