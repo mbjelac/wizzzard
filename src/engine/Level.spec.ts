@@ -873,8 +873,27 @@ describe("reading or listening", () => {
     ]);
   });
 
+  it("show non-automatic text from wall-like location on interaction", () => {
+
+    addText(0, 0, "Foo!", false);
+
+    expect(movementToText(
+      Direction.LEFT,
+      Direction.UP,
+      Direction.RIGHT,
+      Direction.UP,
+      Direction.LEFT,
+    )).toEqual([
+      undefined,
+      "Foo!",
+      undefined,
+      undefined,
+      "Foo!"
+    ]);
+  });
+
   function addText(x: number, y: number, text: string, isAutomatic: boolean) {
-    addThingWithProps({ ...defaultAddThingProps, x, y, properties: isAutomatic ? ["automatic"] : [], text });
+    addThingWithProps({ ...defaultAddThingProps, x, y, properties: isAutomatic ? ["automatic", "wall"] : ["wall"], text });
   }
 
   function movementToText(...directions: Direction[]): (string | undefined)[] {

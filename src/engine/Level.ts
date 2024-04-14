@@ -146,16 +146,20 @@ export class Level {
 
     const canMove = !this.doesLocationHaveProperty(nextLocation, "wall") && this.pushableCanBePushed(nextLocation, direction);
 
+    let interactionText: string | undefined = undefined;
+
     if (canMove) {
       this.playerCoords = nextLocation.coords;
       thingsToRemove.push(...this.transferAllPickupsFromLevelToInventory(nextLocation));
+    } else {
+      interactionText = this.getTextsFrom(nextLocation);
     }
 
     return {
       moved: canMove,
       died: this.doesLocationHaveProperty(nextLocation, "death"),
       levelComplete: this.isLevelComplete(),
-      text: receiveEventText || this.getText(),
+      text: receiveEventText || interactionText || this.getNeighbouringTexts(),
       removedThings: thingsToRemove,
       pushed: canMove ? this.pushThings(nextLocation, direction) : []
     };
@@ -244,17 +248,17 @@ export class Level {
     return requiredReceives.every(requiredLabel => this.doneReceivers.some(doneReceiver => doneReceiver === requiredLabel));
   }
 
-  private getText(): string | undefined {
-    const texts = this
+  private getNeighbouringTexts(): string | undefined {
+
+    const neighbouringTexts = this
       .getNeighbours()
       .flatMap(neighbourLocation => neighbourLocation.things)
       .filter(thing => thing.is("automatic") && thing.description.text !== undefined)
-      .map(thing => thing.description.text)
-      .filter(text => text !== undefined);
+      .map(thing => thing.description.text);
 
-    return texts.length === 0
+    return neighbouringTexts.length === 0
       ? undefined
-      : texts.join();
+      : neighbouringTexts.join();
   }
 
   private getNeighbours(): LevelLocation[] {
@@ -336,5 +340,13 @@ export class Level {
         pushLocation !== undefined
         && !this.doesLocationHaveProperty(pushLocation, "wall", "pushable")
       );
+  }
+
+  private getTextsFrom(location: LevelLocation): string {
+    return location
+      .things
+      .filter(thing => !thing.is("automatic") && thing.description.text !== undefined)
+      .map(thing=> thing.description.text as string)
+      .join();
   }
 }
