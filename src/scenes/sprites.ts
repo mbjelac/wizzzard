@@ -13,7 +13,7 @@ export const SPRITE_CONFIG_VOID: SpriteConfig = { tileCoords: { x: 0, y: 7 } };
 export const SPRITE_CONFIG_WIZARD: SpriteConfig = { tileCoords: { x: 0, y: 10 } };
 
 export const SPRITE_CONFIGS = {
-  transparent: spriteConfig({x: 1, y: 7}),
+  transparent: spriteConfig({ x: 1, y: 7 }),
   town: {
     wall: {
       brown: spriteConfig({ x: 4, y: 3 })
@@ -26,6 +26,16 @@ export const SPRITE_CONFIGS = {
     },
     floor: {
       wooden: spriteConfig({ x: 6, y: 0 }),
+    },
+    furniture: {
+      wooden: {
+        table: spriteConfig({ x: 9, y: 0 }),
+        tableContents1: spriteConfig({ x: 10, y: 0 }),
+        tableContents2: spriteConfig({ x: 11, y: 0 }),
+        shelves: spriteConfig({ x: 9, y: 1 }),
+        shelveContents1: spriteConfig({ x: 10, y: 1 }),
+        chair: spriteConfig({ x: 9, y: 2 }),
+      }
     },
     pumpkin: {
       static: spriteConfig({ x: 0, y: 1 }),
@@ -90,8 +100,8 @@ export const SPRITE_CONFIGS = {
     },
     barrel: {
       brown: {
-        water: spriteConfig({x: 1, y: 6}),
-        broken: spriteConfig({x: 2, y: 6}),
+        water: spriteConfig({ x: 1, y: 6 }),
+        broken: spriteConfig({ x: 2, y: 6 }),
       }
     }
   },
@@ -109,18 +119,18 @@ export const SPRITE_CONFIGS = {
       },
     },
     rock: {
-      big: spriteConfig({x: 0, y: 6})
+      big: spriteConfig({ x: 0, y: 6 })
     },
   },
   keys: {
-    silver: spriteConfig({x: 1, y: 8})
+    silver: spriteConfig({ x: 1, y: 8 })
   },
-  characters:{
-    kim: spriteConfig({x: 2, y: 9})
+  characters: {
+    kim: spriteConfig({ x: 2, y: 9 })
   },
   misc: {
-    woodenDog: spriteConfig({x: 0, y: 9}),
-    seed: spriteConfig({x: 1, y: 9}),
+    woodenDog: spriteConfig({ x: 0, y: 9 }),
+    seed: spriteConfig({ x: 1, y: 9 }),
   }
 }
 
