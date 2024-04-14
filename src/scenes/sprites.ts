@@ -30,6 +30,7 @@ export const SPRITE_CONFIGS = {
     pumpkin: {
       static: spriteConfig({ x: 0, y: 1 }),
       mobile: spriteConfig({ x: 1, y: 1 }),
+      haloween: spriteConfig({ x: 3, y: 2 }),
     },
     fence: {
       stone: {
