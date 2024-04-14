@@ -10,7 +10,7 @@ export function spriteConfig(coords: Coords): SpriteConfig {
 export const SPRITE_CONFIGS_BY_LOCATION: Map<string, SpriteConfig> = new Map();
 
 export const SPRITE_CONFIG_VOID: SpriteConfig = { tileCoords: { x: 0, y: 7 } };
-export const SPRITE_CONFIG_WIZARD: SpriteConfig = { tileCoords: { x: 0, y: 8 } };
+export const SPRITE_CONFIG_WIZARD: SpriteConfig = { tileCoords: { x: 0, y: 10 } };
 
 export const SPRITE_CONFIGS = {
   town: {
@@ -89,7 +89,7 @@ export const SPRITE_CONFIGS = {
     barrel: {
       brown: {
         water: spriteConfig({x: 1, y: 6}),
-        broken: spriteConfig({x: 1, y: 6}),
+        broken: spriteConfig({x: 2, y: 6}),
       }
     }
   },
@@ -109,6 +109,16 @@ export const SPRITE_CONFIGS = {
     rock: {
       big: spriteConfig({x: 0, y: 6})
     },
+  },
+  keys: {
+    silver: spriteConfig({x: 1, y: 8})
+  },
+  characters:{
+    kim: spriteConfig({x: 2, y: 9})
+  },
+  misc: {
+    woodenDog: spriteConfig({x: 0, y: 9}),
+    seed: spriteConfig({x: 1, y: 9}),
   }
 }
 
