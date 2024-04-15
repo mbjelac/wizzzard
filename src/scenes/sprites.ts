@@ -1,9 +1,10 @@
 import { Coords } from "../engine/Errand";
 
 
-export function spriteConfig(coords: Coords): SpriteConfig {
+export function spriteConfig(coords: Coords, animation: Animation | undefined = undefined): SpriteConfig {
   return {
-    tileCoords: coords
+    tileCoords: coords,
+    animation
   };
 }
 
@@ -100,8 +101,14 @@ export const SPRITE_CONFIGS = {
     },
     barrel: {
       brown: {
-        water: spriteConfig({ x: 1, y: 6 }),
-        broken: spriteConfig({ x: 2, y: 6 }),
+        water: spriteConfig(
+          { x: 1, y: 6 },
+          {
+            frameCount: 2,
+            framesPerSecond: 4
+          }
+        ),
+        broken: spriteConfig({ x: 2, y: 7 }),
       }
     }
   },
@@ -121,6 +128,15 @@ export const SPRITE_CONFIGS = {
     rock: {
       big: spriteConfig({ x: 0, y: 6 })
     },
+    fly: {
+      silver: spriteConfig(
+        { x: 0, y: 12 },
+        {
+          frameCount: 16,
+          framesPerSecond: 8
+        }
+      ),
+    }
   },
   keys: {
     silver: spriteConfig({ x: 1, y: 8 })
@@ -136,4 +152,10 @@ export const SPRITE_CONFIGS = {
 
 export interface SpriteConfig {
   tileCoords: Coords;
+  animation?: Animation;
+}
+
+export interface Animation {
+  frameCount: number;
+  framesPerSecond?: number;
 }

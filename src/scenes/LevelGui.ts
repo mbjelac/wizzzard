@@ -51,15 +51,6 @@ export default class LevelGui extends Phaser.Scene {
 
     this.load.spritesheet(this.tilesetName, "assets/tileset.png", { frameWidth: 16, frameHeight: 16 });
 
-    // sprites.forEach(spriteName => {
-    //   const path = `assets/tiles/${spriteName}.png`;
-    //   if (spriteName.startsWith("__")) {
-    //     this.load.spritesheet(spriteName, path, { frameWidth: TILE_SIZE, frameHeight: TILE_SIZE });
-    //   } else {
-    //     this.load.image(spriteName, path);
-    //   }
-    // });
-
     this.events.on("create", async () => this.populateLevel());
     this.events.on("wake", async () => this.populateLevel());
   }
@@ -153,19 +144,6 @@ export default class LevelGui extends Phaser.Scene {
 
   create() {
     console.log("Level create");
-
-    // TODO: configure animations from sprite configs
-    // sprites
-    //   .filter(spriteName => spriteName.startsWith("__"))
-    //   .forEach(animationName => {
-    //     this.anims.create({
-    //       key: animationName,
-    //       frameRate: 7,
-    //       frames: this.anims.generateFrameNumbers(animationName, { start: 0, end: 3 }),
-    //       repeat: -1,
-    //     });
-    //   });
-
 
     this.input.keyboard.on('keydown', async (event: KeyboardEvent) => {
 
@@ -410,16 +388,33 @@ export default class LevelGui extends Phaser.Scene {
 
     const tileSetWidth = 40;
 
+    const frameIndex = spriteConfig.tileCoords.y * tileSetWidth + spriteConfig.tileCoords.x;
     const sprite = this.physics.add
-      .sprite(coords.x, coords.y, this.tilesetName, spriteConfig.tileCoords.y * tileSetWidth + spriteConfig.tileCoords.x)
+      .sprite(coords.x, coords.y, this.tilesetName, frameIndex)
       .setDisplaySize(64, 64);
 
-    // if (thing.description.sprite.startsWith("__")) {
-    //   thingSprite.anims.play({
-    //     key: thing.description.sprite,
-    //     startFrame: Math.floor(Math.random() * 4)
-    //   });
-    // }
+    if (spriteConfig.animation !== undefined) {
+
+      const animationName = `${name}_animation`;
+
+      sprite.anims.create({
+        key: animationName,
+        frameRate: spriteConfig.animation.framesPerSecond || 7,
+        frames: this.anims.generateFrameNumbers(
+          this.tilesetName,
+          {
+            start: frameIndex,
+            end: frameIndex + spriteConfig.animation.frameCount - 1
+          }
+        ),
+        repeat: -1,
+      });
+
+      sprite.play({
+        key: animationName,
+        startFrame: Math.floor(Math.random() * (spriteConfig.animation.frameCount - 1))
+      });
+    }
 
     return sprite;
   }
