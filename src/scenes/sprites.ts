@@ -126,7 +126,7 @@ export const SPRITE_CONFIGS = {
       },
     },
     rock: {
-      big: spriteConfig({ x: 1, y: 7 })
+      big: spriteConfig({ x: 3, y: 7 })
     },
     fly: {
       silver: spriteConfig(
