@@ -102,9 +102,9 @@ export const SPRITE_CONFIGS = {
     barrel: {
       brown: {
         water: spriteConfig(
-          { x: 1, y: 6 },
+          { x: 0, y: 6 },
           {
-            frameCount: 2,
+            frameCount: 4,
             framesPerSecond: 4
           }
         ),
@@ -126,7 +126,7 @@ export const SPRITE_CONFIGS = {
       },
     },
     rock: {
-      big: spriteConfig({ x: 0, y: 6 })
+      big: spriteConfig({ x: 1, y: 7 })
     },
     fly: {
       silver: spriteConfig(
