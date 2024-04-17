@@ -142,7 +142,7 @@ export const SPRITE_CONFIGS = {
     silver: spriteConfig({ x: 1, y: 8 })
   },
   characters: {
-    kim: spriteConfig({ x: 2, y: 9 })
+    kim: spriteConfig({ x: 2, y: 9 }, { frameCount: 6, framesPerSecond: 3})
   },
   misc: {
     woodenDog: spriteConfig({ x: 0, y: 9 }),
