@@ -1,4 +1,4 @@
-import { SpriteConfig, spriteConfig } from "./sprites";
+import { spriteAt, SpriteConfig, spriteConfig } from "./sprites";
 import { convertToHtml } from "./editor-panel";
 
 
@@ -8,7 +8,7 @@ const spriteConfigToString = (lastKey: string, spriteConfig: SpriteConfig) => `$
 it("convert single config to HTML", () => {
 
   const html = convertToHtml(
-    { foo: spriteConfig({ x: 4, y: 2 }) },
+    { foo: spriteAt(4, 2) },
     spriteConfigToString
   );
 
@@ -19,8 +19,8 @@ it("convert multiple configs to HTML", () => {
 
   const html = convertToHtml(
     {
-      foo: spriteConfig({ x: 4, y: 2 }),
-      bar: spriteConfig({ x: 5, y: 3 }),
+      foo: spriteAt(4, 2),
+      bar: spriteAt(5, 3),
     },
     spriteConfigToString
   );
@@ -34,7 +34,7 @@ it("convert multiple configs to HTML", () => {
 it("convert single config tree to collapsible HTML", () => {
 
   const html = convertToHtml(
-    { foo: { bar: spriteConfig({ x: 4, y: 2 }) } },
+    { foo: { bar: spriteAt(4, 2) } },
     spriteConfigToString
   );
 
@@ -54,8 +54,8 @@ it("convert multiple single-level config tree to collapsible HTML", () => {
   const html = convertToHtml(
     {
       foo: {
-        bar: spriteConfig({ x: 4, y: 2 }),
-        pop: spriteConfig({ x: 5, y: 3 }),
+        bar: spriteAt(4, 2),
+        pop: spriteAt(5, 3),
       }
     },
     spriteConfigToString
@@ -78,9 +78,9 @@ it("convert multi-level config tree to collapsible HTML", () => {
   const html = convertToHtml(
     {
       foo: {
-        bar: spriteConfig({ x: 4, y: 2 }),
+        bar: spriteAt(4, 2),
         pop: {
-          fuzz: spriteConfig({ x: 5, y: 3 })
+          fuzz: spriteAt(5, 3)
         },
       }
     },
