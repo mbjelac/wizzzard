@@ -18,6 +18,9 @@ const depths = {
   info: 12
 };
 
+const animation1 = "animation1";
+const animation2 = "animation2";
+
 export default class LevelGui extends Phaser.Scene {
 
   // @ts-ignore
@@ -246,6 +249,7 @@ export default class LevelGui extends Phaser.Scene {
     }
 
     this.removeSpritesOfRemovedThings(moveResult.removedThings);
+    this.updateAnimationsOfThingsWhichChangedState(moveResult.changedState);
 
     this.displayInventory();
 
@@ -395,10 +399,8 @@ export default class LevelGui extends Phaser.Scene {
 
     if (spriteConfig.animation !== undefined) {
 
-      const animationName = `${name}_animation`;
-
       sprite.anims.create({
-        key: animationName,
+        key: animation1,
         frameRate: spriteConfig.animation.framesPerSecond || 7,
         frames: this.anims.generateFrameNumbers(
           this.tilesetName,
@@ -410,8 +412,23 @@ export default class LevelGui extends Phaser.Scene {
         repeat: -1,
       });
 
+      if (spriteConfig.auxAnimation !== undefined) {
+        sprite.anims.create({
+          key: animation2,
+          frameRate: spriteConfig.auxAnimation.framesPerSecond || 7,
+          frames: this.anims.generateFrameNumbers(
+            this.tilesetName,
+            {
+              start: frameIndex + spriteConfig.animation.frameCount - 1,
+              end: frameIndex + spriteConfig.animation.frameCount + spriteConfig.auxAnimation.frameCount - 1
+            }
+          ),
+          repeat: -1,
+        });
+      }
+
       sprite.play({
-        key: animationName,
+        key: animation1,
         startFrame: Math.floor(Math.random() * (spriteConfig.animation.frameCount - 1))
       });
     }
@@ -445,6 +462,21 @@ export default class LevelGui extends Phaser.Scene {
 
     await GAME.setErrand(errand);
 
+  }
+
+  private updateAnimationsOfThingsWhichChangedState(things: Thing[]) {
+
+    things.forEach(thing => {
+
+      const sprite = this.createdSpritesByThingId.get(thing.id);
+
+      if (sprite === undefined) {
+        return;
+      }
+
+      sprite.stop();
+      sprite.play(animation2);
+    });
   }
 }
 
