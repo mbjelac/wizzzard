@@ -12,7 +12,8 @@ const stayed: MoveResult = {
   levelComplete: false,
   text: undefined,
   removedThings: [],
-  pushed: []
+  pushed: [],
+  changedState: []
 }
 
 const moved: MoveResult = {
@@ -558,19 +559,49 @@ describe("receiver shows text", () => {
     expect(text).toEqual(postText);
   });
 
-  function addPickup(x: number, y: number, label: string): Thing {
-    return addThingWithProps({ x, y, label, properties: ["pickup"], text: undefined });
-  }
-
-  function addReceiver(x: number, y: number, label: string): Thing {
-    return addThingWithProps({ x, y, label, properties: ["receiver", "wall"], text: undefined });
-  }
-
   function addReceiverText(x: number, y: number, label: string, text: string): Thing {
     return addThingWithProps({ x, y, label, properties: [], text: text });
   }
+
 });
 
+describe("receiver put in changed-state list", () => {
+
+  const receiverLabel = "any";
+
+  let receiver: Thing;
+
+  beforeEach(() => {
+    level = createLevel(
+      "   ",
+      "   ",
+      "   "
+    );
+
+    addPickup(2, 1, receiverLabel);
+    receiver = addReceiver(0, 1, receiverLabel);
+  });
+
+  it("receiver in changed-state list only after receiving", () => {
+
+    expect(movementToChangedStateLists(
+      Direction.RIGHT,
+      Direction.LEFT,
+      Direction.LEFT,
+    )).toEqual<Thing[][]>(
+      [
+        [],
+        [],
+        [receiver]
+      ]
+    );
+  });
+
+  function movementToChangedStateLists(...directions: Direction[]): Thing[][] {
+    return directions.map(direction => level.tryToMove(direction).changedState);
+  }
+
+});
 
 describe("completing level", () => {
 
@@ -828,7 +859,6 @@ describe("completing level", () => {
     return directions.map(direction => level.tryToMove(direction).levelComplete);
   }
 });
-
 describe("reading or listening", () => {
 
   beforeEach(() => {
@@ -901,6 +931,7 @@ describe("reading or listening", () => {
   }
 
 });
+
 
 describe("pushing", () => {
 
@@ -983,7 +1014,6 @@ describe("pushing", () => {
   });
 });
 
-
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
   return addThingWithProps({
     x: x,
@@ -1002,7 +1032,16 @@ interface AddThingProps {
   text: string | undefined
 }
 
+
 const defaultAddThingProps: AddThingProps = { x: 0, y: 0, label: undefined, properties: [], text: undefined };
+
+function addReceiver(x: number, y: number, label: string): Thing {
+  return addThingWithProps({ x, y, label, properties: ["receiver", "wall"], text: undefined });
+}
+
+function addPickup(x: number, y: number, label: string): Thing {
+  return addThingWithProps({ x, y, label, properties: ["pickup"], text: undefined });
+}
 
 function addThingWithProps(props: AddThingProps): Thing {
   const thing = new Thing({

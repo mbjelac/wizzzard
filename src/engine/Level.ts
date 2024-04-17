@@ -61,6 +61,7 @@ export interface MoveResult {
   text: string | undefined;
   removedThings: Thing[];
   pushed: Thing[];
+  changedState: Thing[];
 }
 
 const doNothing: MoveResult = {
@@ -69,7 +70,8 @@ const doNothing: MoveResult = {
   levelComplete: false,
   text: undefined,
   removedThings: [],
-  pushed: []
+  pushed: [],
+  changedState: []
 }
 
 export interface LevelLocation {
@@ -128,6 +130,8 @@ export class Level {
 
     let receiveEventText: string | undefined = undefined;
 
+    const changedStateThings: Thing[] = [];
+
     if (receiver !== undefined) {
       this.removeOneItemWithReceiverLabelFromInventory(receiver.description.label!);
       this.disableReceiver(receiver);
@@ -139,6 +143,7 @@ export class Level {
         thingsToRemove.push(...this.transferAllPickupsFromLevelToInventory(nextLocation));
       }
       receiveEventText = this.findTextAt(nextLocation, "onInteraction");
+      changedStateThings.push(receiver);
     } else {
       const atReceiver = this.doesLocationHaveProperty(nextLocation, "receiver")
       receiveEventText = this.findTextAt(nextLocation, atReceiver ? "preInteraction" : "postInteraction");
@@ -161,7 +166,8 @@ export class Level {
       levelComplete: this.isLevelComplete(),
       text: receiveEventText || interactionText || this.getNeighbouringTexts(),
       removedThings: thingsToRemove,
-      pushed: canMove ? this.pushThings(nextLocation, direction) : []
+      pushed: canMove ? this.pushThings(nextLocation, direction) : [],
+      changedState: changedStateThings
     };
   }
 
@@ -346,7 +352,7 @@ export class Level {
     return location
       .things
       .filter(thing => !thing.is("automatic") && thing.description.text !== undefined)
-      .map(thing=> thing.description.text as string)
+      .map(thing => thing.description.text as string)
       .join();
   }
 }
