@@ -419,7 +419,7 @@ export default class LevelGui extends Phaser.Scene {
           frames: this.anims.generateFrameNumbers(
             this.tilesetName,
             {
-              start: frameIndex + spriteConfig.animation.frameCount - 1,
+              start: frameIndex + spriteConfig.animation.frameCount,
               end: frameIndex + spriteConfig.animation.frameCount + spriteConfig.auxAnimation.frameCount - 1
             }
           ),

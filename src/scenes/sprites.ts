@@ -8,7 +8,8 @@ function spriteConfig(
 ): SpriteConfig {
   return {
     tileCoords: coords,
-    animation
+    animation,
+    auxAnimation
   };
 }
 
