@@ -4,6 +4,7 @@ export interface SpriteConfig {
   tileCoords: Coords;
   animation?: Animation;
   auxAnimation?: Animation;
+  variants: Coords[];
 }
 
 export interface Animation {
@@ -16,25 +17,28 @@ function spriteConfig(
   coords: Coords,
   animation: Animation | undefined = undefined,
   auxAnimation: Animation | undefined = undefined,
+  variants: Coords[] = []
 ): SpriteConfig {
   return {
     tileCoords: coords,
     animation,
-    auxAnimation
+    auxAnimation,
+    variants
   };
 }
 
 export function spriteAt(x: number, y: number): SpriteConfig {
   return {
-    tileCoords: { x, y }
+    tileCoords: { x, y },
+    variants: []
   };
 }
 
 
 export const SPRITE_CONFIGS_BY_LOCATION: Map<string, SpriteConfig> = new Map();
 
-export const SPRITE_CONFIG_VOID: SpriteConfig = { tileCoords: { x: 0, y: 7 } };
-export const SPRITE_CONFIG_WIZARD: SpriteConfig = { tileCoords: { x: 0, y: 10 } };
+export const SPRITE_CONFIG_VOID = spriteAt(0, 7);
+export const SPRITE_CONFIG_WIZARD = spriteAt(0, 10);
 
 export const SPRITE_CONFIGS = {
   transparent: spriteAt(1, 7),
@@ -143,7 +147,17 @@ export const SPRITE_CONFIGS = {
     }
   },
   forest: {
-    tree: spriteAt(2, 0),
+    tree: spriteConfig(
+      {x:2, y:0},
+      undefined,
+      undefined,
+      [
+        {x: 0, y: 17},
+        {x: 1, y: 17},
+        {x: 2, y: 17},
+        {x: 3, y: 17},
+      ]
+    ),
     floor: spriteAt(3, 0),
     woodenWall: {
       light: {

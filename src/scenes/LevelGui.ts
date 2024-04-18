@@ -4,7 +4,7 @@ import { Direction } from "../engine/Direction";
 import { TILE_SIZE } from "../config";
 import { GAME } from "../engine/game";
 import { Coords, Errand, ThingDescription } from "../engine/Errand";
-import { SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION } from "./sprites";
+import { SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION, SpriteConfig } from "./sprites";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
 
@@ -20,6 +20,21 @@ const depths = {
 
 const animation1 = "animation1";
 const animation2 = "animation2";
+
+function getTileCoords(spriteConfig: SpriteConfig) {
+
+  if (spriteConfig.variants.length === 0) {
+    return spriteConfig.tileCoords;
+  }
+
+  const randomIndex = Math.floor(Math.random() * (spriteConfig.variants.length + 1)) - 1;
+
+  if (randomIndex === -1) {
+    return spriteConfig.tileCoords;
+  }
+
+  return spriteConfig.variants[randomIndex];
+}
 
 export default class LevelGui extends Phaser.Scene {
 
@@ -392,7 +407,9 @@ export default class LevelGui extends Phaser.Scene {
 
     const tileSetWidth = 40;
 
-    const frameIndex = spriteConfig.tileCoords.y * tileSetWidth + spriteConfig.tileCoords.x;
+    const tileCoords = getTileCoords(spriteConfig);
+
+    const frameIndex = tileCoords.y * tileSetWidth + tileCoords.x;
     const sprite = this.physics.add
       .sprite(coords.x, coords.y, this.tilesetName, frameIndex)
       .setDisplaySize(64, 64);
