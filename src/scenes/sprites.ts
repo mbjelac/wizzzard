@@ -1,5 +1,16 @@
 import { Coords } from "../engine/Errand";
 
+export interface SpriteConfig {
+  tileCoords: Coords;
+  animation?: Animation;
+  auxAnimation?: Animation;
+}
+
+export interface Animation {
+  frameCount: number;
+  framesPerSecond?: number;
+}
+
 
 function spriteConfig(
   coords: Coords,
@@ -32,6 +43,7 @@ export const SPRITE_CONFIGS = {
       brown: spriteAt(4, 3)
     },
     tree: spriteAt(0, 0),
+    bush: spriteAt(3, 3),
     grass: spriteAt(1, 0),
     brick: spriteAt(4, 0),
     window: {
@@ -45,8 +57,14 @@ export const SPRITE_CONFIGS = {
         table: spriteAt(9, 0),
         tableContents1: spriteAt(10, 0),
         tableContents2: spriteAt(11, 0),
+        tableContents3: spriteAt(12, 0),
+        tableContents4: spriteAt(13, 0),
         shelves: spriteAt(9, 1),
         shelveContents1: spriteAt(10, 1),
+        shelveContents2: spriteAt(11, 1),
+        shelveContents3: spriteAt(12, 1),
+        shelveContents4: spriteAt(13, 1),
+        shelveContents5: spriteAt(14, 1),
         chair: spriteAt(9, 2),
       }
     },
@@ -148,6 +166,15 @@ export const SPRITE_CONFIGS = {
           framesPerSecond: 8
         }
       ),
+    },
+    toadstools: {
+      toadstool1: spriteAt(0,16),
+      toadstool2: spriteAt(1,16),
+      toadstool3: spriteAt(2,16),
+      toadstool4: spriteAt(3,16),
+      toadstool5: spriteAt(4,16),
+      toadstool6: spriteAt(5,16),
+      toadstool7: spriteAt(6,16),
     }
   },
   keys: {
@@ -166,13 +193,3 @@ export const SPRITE_CONFIGS = {
   }
 }
 
-export interface SpriteConfig {
-  tileCoords: Coords;
-  animation?: Animation;
-  auxAnimation?: Animation;
-}
-
-export interface Animation {
-  frameCount: number;
-  framesPerSecond?: number;
-}
