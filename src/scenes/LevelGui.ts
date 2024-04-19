@@ -42,7 +42,7 @@ export default class LevelGui extends Phaser.Scene {
   private player: Phaser.Physics.Arcade.Sprite;
 
   // @ts-ignore
-  private sidePanel: Phaser.GameObjects.Rectangle;
+  private sidePanel: Phaser.GameObjects.Sprite;
 
   // @ts-ignore
   private sideText: Phaser.GameObjects.Text;
@@ -68,6 +68,7 @@ export default class LevelGui extends Phaser.Scene {
   preload() {
 
     this.load.spritesheet(this.tilesetName, "assets/tileset.png", { frameWidth: 16, frameHeight: 16 });
+    this.load.image("panel", "assets/panel.png");
 
     this.events.on("create", async () => this.populateLevel());
     this.events.on("wake", async () => this.populateLevel());
@@ -195,8 +196,12 @@ export default class LevelGui extends Phaser.Scene {
       )
       .setDepth(depths.info);
 
-    this.sidePanel = this.add.rectangle(0, 0, sidePanelWidth, 13 * TILE_SIZE, 0xffeeee, 1);
-    this.sidePanel.setDepth(depths.infoBackground)
+    this.sidePanel = this
+      .physics
+      .add
+      .sprite(0, 0, "panel")
+      .setDisplaySize(320, 832)
+      .setDepth(depths.infoBackground);
   }
 
   private exitLevel() {
