@@ -273,7 +273,7 @@ export default class LevelGui extends Phaser.Scene {
       return;
     }
 
-    this.sideTextString = moveResult.text || "";
+    this.sideTextString = moveResult.text ? this.getText(moveResult.text) : "";
 
     const playerPixelCoords = toPixelCoords(this.level.getPlayerCoords());
 
@@ -494,6 +494,13 @@ export default class LevelGui extends Phaser.Scene {
       sprite.stop();
       sprite.play(animation2);
     });
+  }
+
+  private getText(text: string): string {
+
+    const longText = this.level.errand.texts[text];
+
+    return longText ? longText.text : text;
   }
 }
 

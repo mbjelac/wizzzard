@@ -43,4 +43,9 @@ export interface Errand {
   readonly matrix: ErrandMatrix,
   readonly startCoords: Coords
   readonly completionCriteria: CompletionCriteria
+  readonly texts: {[key: string]: TextContent}
+}
+
+export interface TextContent {
+  text: string
 }

@@ -12,7 +12,10 @@ const errands: Errand[] = [
     startCoords: { x: 5, y: 5 },
     matrix: [],
     completionCriteria: {
-      inventory: ["someLabel"]
+      inventory: ["someLabel"],
+      receives: []
+    },
+    texts: {
     }
   },
   {
@@ -27,7 +30,8 @@ const errands: Errand[] = [
     completionCriteria: {
       inventory: ["seed"],
       receives: []
-    }
+    },
+    texts: {}
   }
 ];
 
