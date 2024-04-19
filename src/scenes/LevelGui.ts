@@ -187,9 +187,10 @@ export default class LevelGui extends Phaser.Scene {
       .text(0, 0, "", {
           color: "#000",
           strokeThickness: 0,
-          font: "22px Georgia",
-          wordWrap: { width: sidePanelWidth - 20 },
-          padding: { x: 10 }
+        fontSize: "18px",
+        fontFamily: "VinqueRg",
+          wordWrap: { width: sidePanelWidth - 60 },
+          padding: { x: 30 }
         }
       )
       .setDepth(depths.info);
@@ -230,7 +231,7 @@ export default class LevelGui extends Phaser.Scene {
 
     const sideTextCoords: Coords = {
       x: playerLocation.x + 7,
-      y: playerLocation.y + 4,
+      y: playerLocation.y + 1,
     };
 
     const sideTextPixels = toPixelCoords(sideTextCoords);
