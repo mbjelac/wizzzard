@@ -148,14 +148,14 @@ export const SPRITE_CONFIGS = {
   },
   forest: {
     tree: spriteConfig(
-      {x:2, y:0},
+      {x:0, y:17},
       undefined,
       undefined,
       [
-        {x: 0, y: 17},
         {x: 1, y: 17},
         {x: 2, y: 17},
         {x: 3, y: 17},
+        {x: 4, y: 17},
       ]
     ),
     floor: spriteAt(3, 0),
@@ -181,15 +181,19 @@ export const SPRITE_CONFIGS = {
         }
       ),
     },
-    toadstools: {
-      toadstool1: spriteAt(0,16),
-      toadstool2: spriteAt(1,16),
-      toadstool3: spriteAt(2,16),
-      toadstool4: spriteAt(3,16),
-      toadstool5: spriteAt(4,16),
-      toadstool6: spriteAt(5,16),
-      toadstool7: spriteAt(6,16),
-    }
+    toadstool: spriteConfig(
+      {x:0, y:16},
+      undefined,
+      undefined,
+      [
+        {x: 1, y: 16},
+        {x: 2, y: 16},
+        {x: 3, y: 16},
+        {x: 4, y: 16},
+        {x: 5, y: 16},
+        {x: 6, y: 16},
+      ]
+    ),
   },
   keys: {
     silver: spriteAt(1, 8)
