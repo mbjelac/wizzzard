@@ -147,7 +147,7 @@ export default class LevelGui extends Phaser.Scene {
 
     const inventory = this.level.getInventory();
 
-    Array(3).fill(0).forEach((_, index) => {
+    Array(6).fill(0).forEach((_, index) => {
 
       const inventoryItem = inventory[index];
 
@@ -188,8 +188,8 @@ export default class LevelGui extends Phaser.Scene {
       .text(0, 0, "", {
           color: "#000",
           strokeThickness: 0,
-        fontSize: "18px",
-        fontFamily: "VinqueRg",
+          fontSize: "18px",
+          fontFamily: "VinqueRg",
           wordWrap: { width: sidePanelWidth - 60 },
           padding: { x: 30 }
         }
@@ -254,9 +254,14 @@ export default class LevelGui extends Phaser.Scene {
 
     const inventoryPixels = toPixelCoords(inventoryCoords);
 
+    const xOffset = 5 * 4;
+    const yOffset = -17 * 4;
+    const margin = 3 * 4;
+    const tileOffset = TILE_SIZE + margin;
+
     this.inventorySprites.forEach((inventorySprite, index) => {
-      inventorySprite.x = inventoryPixels.x - tileCenterOffset + index * (TILE_SIZE + 5);
-      inventorySprite.y = inventoryPixels.y - tileCenterOffset;
+      inventorySprite.x = inventoryPixels.x - tileCenterOffset + xOffset + (index % 3) * tileOffset;
+      inventorySprite.y = inventoryPixels.y - tileCenterOffset + yOffset + Math.floor(index / 3) * tileOffset;
     });
   }
 
