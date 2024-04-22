@@ -194,6 +194,19 @@ export const SPRITE_CONFIGS = {
         {x: 6, y: 16},
       ]
     ),
+    path: {
+      horizontal: spriteAt(0, 18),
+      vertical: spriteAt(1, 18),
+      crossing: spriteAt(2, 18),
+      t_s: spriteAt(3, 18),
+      t_n: spriteAt(4, 18),
+      t_w: spriteAt(5, 18),
+      t_e: spriteAt(6, 18),
+      bend_e_s: spriteAt(7, 18),
+      bend_w_s: spriteAt(8, 18),
+      bend_e_n: spriteAt(9, 18),
+      bend_w_n: spriteAt(10, 18),
+    }
   },
   keys: {
     silver: spriteAt(1, 8)
