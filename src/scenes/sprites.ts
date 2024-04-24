@@ -5,6 +5,7 @@ export interface SpriteConfig {
   animation?: Animation;
   auxAnimation?: Animation;
   variants: Coords[];
+  soundEffect?: string;
 }
 
 export interface Animation {
@@ -14,16 +15,20 @@ export interface Animation {
 
 
 function spriteConfig(
-  coords: Coords,
-  animation: Animation | undefined = undefined,
-  auxAnimation: Animation | undefined = undefined,
-  variants: Coords[] = []
+  config: {
+    coords: Coords;
+    animation?: Animation;
+    auxAnimation?: Animation;
+    variants?: Coords[];
+    soundEffect?: string;
+  }
 ): SpriteConfig {
   return {
-    tileCoords: coords,
-    animation,
-    auxAnimation,
-    variants
+    tileCoords: config.coords,
+    animation: config.animation,
+    auxAnimation: config.auxAnimation,
+    variants: config.variants || [],
+    soundEffect: config.soundEffect
   };
 }
 
@@ -48,7 +53,10 @@ export const SPRITE_CONFIGS = {
     },
     tree: spriteAt(0, 0),
     bush: spriteAt(3, 3),
-    grass: spriteAt(1, 0),
+    grass: spriteConfig({
+      coords: { x: 1, y: 0 },
+      soundEffect: "grassStep"
+    }),
     brick: spriteAt(4, 0),
     window: {
       green: spriteAt(5, 0),
@@ -135,29 +143,27 @@ export const SPRITE_CONFIGS = {
     },
     barrel: {
       brown: {
-        water: spriteConfig(
-          { x: 0, y: 6 },
-          {
+        water: spriteConfig({
+          coords: { x: 0, y: 6 },
+          animation: {
             frameCount: 4,
             framesPerSecond: 4
           }
-        ),
+        }),
         broken: spriteAt(2, 7),
       }
     }
   },
   forest: {
-    tree: spriteConfig(
-      {x:0, y:17},
-      undefined,
-      undefined,
-      [
-        {x: 1, y: 17},
-        {x: 2, y: 17},
-        {x: 3, y: 17},
-        {x: 4, y: 17},
+    tree: spriteConfig({
+      coords: { x: 0, y: 17 },
+      variants: [
+        { x: 1, y: 17 },
+        { x: 2, y: 17 },
+        { x: 3, y: 17 },
+        { x: 4, y: 17 },
       ]
-    ),
+    }),
     floor: spriteAt(3, 0),
     woodenWall: {
       light: {
@@ -173,27 +179,25 @@ export const SPRITE_CONFIGS = {
       big: spriteAt(3, 7)
     },
     fly: {
-      silver: spriteConfig(
-        { x: 0, y: 12 },
-        {
+      silver: spriteConfig({
+        coords: { x: 0, y: 12 },
+        animation: {
           frameCount: 16,
           framesPerSecond: 8
         }
-      ),
+      }),
     },
-    toadstool: spriteConfig(
-      {x:0, y:16},
-      undefined,
-      undefined,
-      [
-        {x: 1, y: 16},
-        {x: 2, y: 16},
-        {x: 3, y: 16},
-        {x: 4, y: 16},
-        {x: 5, y: 16},
-        {x: 6, y: 16},
+    toadstool: spriteConfig({
+      coords: { x: 0, y: 16 },
+      variants: [
+        { x: 1, y: 16 },
+        { x: 2, y: 16 },
+        { x: 3, y: 16 },
+        { x: 4, y: 16 },
+        { x: 5, y: 16 },
+        { x: 6, y: 16 },
       ]
-    ),
+    }),
     path: {
       horizontal: spriteAt(0, 18),
       vertical: spriteAt(1, 18),
@@ -212,11 +216,11 @@ export const SPRITE_CONFIGS = {
     silver: spriteAt(1, 8)
   },
   characters: {
-    kim: spriteConfig(
-      { x: 2, y: 9 },
-      { frameCount: 6, framesPerSecond: 3 },
-      { frameCount: 4, framesPerSecond: 3 }
-    )
+    kim: spriteConfig({
+      coords: { x: 2, y: 9 },
+      animation: { frameCount: 6, framesPerSecond: 3 },
+      auxAnimation: { frameCount: 4, framesPerSecond: 3 }
+    })
   },
   misc: {
     woodenDog: spriteAt(0, 9),

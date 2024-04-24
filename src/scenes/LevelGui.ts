@@ -54,6 +54,7 @@ export default class LevelGui extends Phaser.Scene {
 
   private createdNonThings: Sprite[] = [];
   private readonly createdSpritesByThingId: Map<number, Sprite> = new Map();
+  private readonly soundEffectsBySpriteName: Map<string, string> = new Map();
   private inventorySprites: Sprite[] = [];
 
   private readonly tilesetName = "sprites";
@@ -73,6 +74,7 @@ export default class LevelGui extends Phaser.Scene {
     this.load.image("panel", "assets/panel.png");
 
     this.load.audio("summerMeadow", "assets/sounds/ambient/summer-meadow.mp3");
+    this.load.audio("grassStep", "assets/sounds/effect/grass-step.mp3");
 
     this.events.on("create", async () => this.populateLevel());
     this.events.on("wake", async () => this.populateLevel());
@@ -340,6 +342,8 @@ export default class LevelGui extends Phaser.Scene {
       thingSprite.setY(pushedThingPixelCoords.y);
       thingSprite.setDepth(this.level.getDepth(pushedThing))
     });
+
+    this.playSoundEffectOnPlayerLocation();
   }
 
   private removeSpritesOfRemovedThings(removedThings: Thing[]) {
@@ -496,6 +500,10 @@ export default class LevelGui extends Phaser.Scene {
       });
     }
 
+    if (spriteConfig.soundEffect !== undefined) {
+      this.soundEffectsBySpriteName.set(name, spriteConfig.soundEffect);
+    }
+
     return sprite;
   }
 
@@ -537,6 +545,18 @@ export default class LevelGui extends Phaser.Scene {
     const longText = this.level.errand.texts[text];
 
     return longText ? longText.text : text;
+  }
+
+  private playSoundEffectOnPlayerLocation() {
+
+     const soundEffect = this
+       .level
+       .getLocation(this.level.getPlayerCoords())!
+       .things
+       .map(thing => this.soundEffectsBySpriteName.get(thing.description.sprite))
+       .filter(soundEffectName => soundEffectName !== undefined)[0];
+
+     this.sound.play(soundEffect!);
   }
 }
 

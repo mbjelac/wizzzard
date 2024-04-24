@@ -203,7 +203,7 @@ export class Level {
     this.doneReceivers.push(receiver.description.label!);
   }
 
-  private getLocation(coords: Coords): LevelLocation | undefined {
+  getLocation(coords: Coords): LevelLocation | undefined {
     const row = this.levelLocations[coords.y];
 
     if (!row) {
