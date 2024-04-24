@@ -61,6 +61,8 @@ export default class LevelGui extends Phaser.Scene {
   private leftButtonDown: boolean = false;
   private rightButtonDown: boolean = false;
 
+  private ambientSound: Phaser.Sound.BaseSound | undefined;
+
   constructor() {
     super('level');
   }
@@ -70,8 +72,11 @@ export default class LevelGui extends Phaser.Scene {
     this.load.spritesheet(this.tilesetName, "assets/tileset.png", { frameWidth: 16, frameHeight: 16 });
     this.load.image("panel", "assets/panel.png");
 
+    this.load.audio("summerMeadow", "assets/sounds/ambient/summer-meadow.mp3");
+
     this.events.on("create", async () => this.populateLevel());
     this.events.on("wake", async () => this.populateLevel());
+    this.events.on("sleep", async () => this.clearLevel());
   }
 
   private async populateLevel() {
@@ -95,7 +100,37 @@ export default class LevelGui extends Phaser.Scene {
 
     this.displayInventory();
 
+    this.playAmbientSound(this.level.errand.initialAmbientSound);
+
     this.cameras.main.startFollow(this.player).setFollowOffset(-3 * TILE_SIZE + tileCenterOffset, 0);
+  }
+
+  private playAmbientSound(soundName?: string) {
+
+    if (soundName === undefined) {
+      return;
+    }
+
+    if (this.ambientSound !== undefined) {
+      this.ambientSound.stop();
+      this.ambientSound.destroy();
+    }
+
+    this.ambientSound = this.sound.add(soundName, { loop: true });
+    this.ambientSound.play();
+  }
+
+  private clearLevel() {
+
+    this.createdNonThings.forEach(createdObject => createdObject.destroy(true));
+    this.createdNonThings = [];
+
+    this.createdSpritesByThingId.forEach(sprite => {
+      sprite.destroy(true)
+    });
+    this.createdSpritesByThingId.clear();
+
+    this.sound.stopAll();
   }
 
   private addLocation(x: number, y: number) {
@@ -464,16 +499,6 @@ export default class LevelGui extends Phaser.Scene {
     return sprite;
   }
 
-  private clearLevel() {
-
-    this.createdNonThings.forEach(createdObject => createdObject.destroy(true));
-    this.createdNonThings = [];
-
-    this.createdSpritesByThingId.forEach(sprite => {
-      sprite.destroy(true)
-    });
-    this.createdSpritesByThingId.clear();
-  }
 
   private async saveLevelMatrix() {
 

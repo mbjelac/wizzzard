@@ -44,6 +44,7 @@ export interface Errand {
   readonly startCoords: Coords
   readonly completionCriteria: CompletionCriteria
   readonly texts: {[key: string]: TextContent}
+  readonly initialAmbientSound?: string;
 }
 
 export interface TextContent {
