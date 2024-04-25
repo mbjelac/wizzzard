@@ -83,8 +83,8 @@ export const SPRITE_CONFIGS = {
     },
     pumpkin: {
       static: spriteAt(0, 1),
-      mobile: spriteAt(1, 1),
-      haloween: spriteAt(3, 2),
+      mobile: spriteAt(1, 1, "slide2"),
+      haloween: spriteAt(3, 2, "slide2"),
     },
     fence: {
       stone: {
@@ -149,7 +149,8 @@ export const SPRITE_CONFIGS = {
           animation: {
             frameCount: 4,
             framesPerSecond: 4
-          }
+          },
+          soundEffect: "slide1"
         }),
         broken: spriteAt(2, 7),
       }

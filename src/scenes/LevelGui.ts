@@ -77,6 +77,9 @@ export default class LevelGui extends Phaser.Scene {
     this.load.audio("summerMeadow", "assets/sounds/ambient/summer-meadow.mp3");
     this.load.audio("grassStep", "assets/sounds/effect/grass-step.mp3");
     this.load.audio("doorUnlock", "assets/sounds/effect/door-unlock.mp3");
+    this.load.audio("pushWood", "assets/sounds/effect/push-wood.mp3");
+    this.load.audio("slide1", "assets/sounds/effect/slide-1.mp3");
+    this.load.audio("slide2", "assets/sounds/effect/slide-2.mp3");
 
     this.events.on("create", async () => this.populateLevel());
     this.events.on("wake", async () => this.populateLevel());
@@ -344,7 +347,9 @@ export default class LevelGui extends Phaser.Scene {
 
       thingSprite.setX(pushedThingPixelCoords.x);
       thingSprite.setY(pushedThingPixelCoords.y);
-      thingSprite.setDepth(this.level.getDepth(pushedThing))
+      thingSprite.setDepth(this.level.getDepth(pushedThing));
+
+      this.playSpriteSoundEffect(pushedThing.description.sprite);
     });
 
     if (moveResult.moved) {
