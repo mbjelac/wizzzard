@@ -63,6 +63,7 @@ export default class LevelGui extends Phaser.Scene {
   private rightButtonDown: boolean = false;
 
   private ambientSound: Phaser.Sound.BaseSound | undefined;
+  private soundEffectPlayed = false;
 
   constructor() {
     super('level');
@@ -75,6 +76,7 @@ export default class LevelGui extends Phaser.Scene {
 
     this.load.audio("summerMeadow", "assets/sounds/ambient/summer-meadow.mp3");
     this.load.audio("grassStep", "assets/sounds/effect/grass-step.mp3");
+    this.load.audio("doorUnlock", "assets/sounds/effect/door-unlock.mp3");
 
     this.events.on("create", async () => this.populateLevel());
     this.events.on("wake", async () => this.populateLevel());
@@ -304,6 +306,8 @@ export default class LevelGui extends Phaser.Scene {
 
   private async move(direction: Direction) {
 
+    this.soundEffectPlayed = false;
+
     const moveResult = this.level.tryToMove(direction);
 
     if (moveResult.died) {
@@ -343,7 +347,9 @@ export default class LevelGui extends Phaser.Scene {
       thingSprite.setDepth(this.level.getDepth(pushedThing))
     });
 
-    this.playSoundEffectOnPlayerLocation();
+    if (moveResult.moved) {
+      this.playSoundEffectOnMove();
+    }
   }
 
   private removeSpritesOfRemovedThings(removedThings: Thing[]) {
@@ -352,6 +358,9 @@ export default class LevelGui extends Phaser.Scene {
       if (sprite === undefined) {
         return;
       }
+
+      this.playSpriteSoundEffect(thing.description.sprite);
+
       sprite.destroy(true);
       this.createdSpritesByThingId.delete(thing.id);
     });
@@ -547,16 +556,28 @@ export default class LevelGui extends Phaser.Scene {
     return longText ? longText.text : text;
   }
 
-  private playSoundEffectOnPlayerLocation() {
+  private playSoundEffectOnMove() {
 
-     const soundEffect = this
-       .level
-       .getLocation(this.level.getPlayerCoords())!
-       .things
-       .map(thing => this.soundEffectsBySpriteName.get(thing.description.sprite))
-       .filter(soundEffectName => soundEffectName !== undefined)[0];
+    const spriteName = this
+      .level
+      .getLocation(this.level.getPlayerCoords())!
+      .things
+      .map(thing => thing.description.sprite)[0];
 
-     this.sound.play(soundEffect!);
+    this.playSpriteSoundEffect(spriteName);
+  }
+
+  private playSpriteSoundEffect(spriteName: string) {
+    if (this.soundEffectPlayed) {
+      return;
+    }
+
+    if (!this.soundEffectsBySpriteName.has(spriteName)) {
+      return;
+    }
+
+    this.soundEffectPlayed = true;
+    this.sound.play(this.soundEffectsBySpriteName.get(spriteName)!);
   }
 }
 

@@ -32,10 +32,11 @@ function spriteConfig(
   };
 }
 
-export function spriteAt(x: number, y: number): SpriteConfig {
+export function spriteAt(x: number, y: number, soundEffect: string | undefined = undefined): SpriteConfig {
   return {
     tileCoords: { x, y },
-    variants: []
+    variants: [],
+    soundEffect
   };
 }
 
@@ -109,8 +110,8 @@ export const SPRITE_CONFIGS = {
         },
         keyhole: {
           closed: {
-            vertical: spriteAt(4, 4),
-            horizontal: spriteAt(5, 4),
+            vertical: spriteAt(4, 4, "doorUnlock"),
+            horizontal: spriteAt(5, 4, "doorUnlock"),
           },
           open: {
             west: spriteAt(4, 5),
@@ -123,8 +124,8 @@ export const SPRITE_CONFIGS = {
       brownSilver: {
         keyhole: {
           closed: {
-            vertical: spriteAt(4, 6),
-            horizontal: spriteAt(5, 6),
+            vertical: spriteAt(4, 6, "doorUnlock"),
+            horizontal: spriteAt(5, 6, "doorUnlock"),
           },
           open: {
             west: spriteAt(4, 7),
