@@ -36,6 +36,11 @@ function getTileCoords(spriteConfig: SpriteConfig) {
   return spriteConfig.variants[randomIndex];
 }
 
+interface AmbientSound {
+  readonly name: string;
+  readonly sound: Phaser.Sound.BaseSound;
+}
+
 export default class LevelGui extends Phaser.Scene {
 
   // @ts-ignore
@@ -62,7 +67,7 @@ export default class LevelGui extends Phaser.Scene {
   private leftButtonDown: boolean = false;
   private rightButtonDown: boolean = false;
 
-  private ambientSound: Phaser.Sound.BaseSound | undefined;
+  private ambientSound: AmbientSound | undefined;
   private soundEffectPlayed = false;
 
   constructor() {
@@ -75,6 +80,8 @@ export default class LevelGui extends Phaser.Scene {
     this.load.image("panel", "assets/panel.png");
 
     this.load.audio("summerMeadow", "assets/sounds/ambient/summer-meadow.mp3");
+    this.load.audio("forest", "assets/sounds/ambient/forest.mp3");
+
     this.load.audio("grassStep", "assets/sounds/effect/grass-step.mp3");
     this.load.audio("doorUnlock", "assets/sounds/effect/door-unlock.mp3");
     this.load.audio("pushWood", "assets/sounds/effect/push-wood.mp3");
@@ -114,17 +121,20 @@ export default class LevelGui extends Phaser.Scene {
 
   private playAmbientSound(soundName?: string) {
 
-    if (soundName === undefined) {
+    if (soundName === undefined || (this.ambientSound !== undefined && this.ambientSound.name === soundName)) {
       return;
     }
 
     if (this.ambientSound !== undefined) {
-      this.ambientSound.stop();
-      this.ambientSound.destroy();
+      this.ambientSound.sound.stop();
+      this.ambientSound.sound.destroy();
     }
 
-    this.ambientSound = this.sound.add(soundName, { loop: true });
-    this.ambientSound.play();
+    this.ambientSound = {
+      name: soundName,
+      sound: this.sound.add(soundName, { loop: true })
+    };
+    this.ambientSound.sound.play();
   }
 
   private clearLevel() {
@@ -355,6 +365,8 @@ export default class LevelGui extends Phaser.Scene {
     if (moveResult.moved) {
       this.playSoundEffectOnMove();
     }
+
+    this.updateAmbientSound();
   }
 
   private removeSpritesOfRemovedThings(removedThings: Thing[]) {
@@ -583,6 +595,17 @@ export default class LevelGui extends Phaser.Scene {
 
     this.soundEffectPlayed = true;
     this.sound.play(this.soundEffectsBySpriteName.get(spriteName)!);
+  }
+
+  private updateAmbientSound() {
+
+    const ambientSoundThing = this
+      .level
+      .getLocation(this.level.getPlayerCoords())
+      ?.things.filter(thing => thing.is("ambientSound"))
+      [0];
+
+    this.playAmbientSound(ambientSoundThing?.description?.label);
   }
 }
 

@@ -10,7 +10,8 @@ export const ALL_THING_PROPERTIES = [
   "automatic",
   "vanish",
   "give",
-  "pushable"
+  "pushable",
+  "ambientSound"
 ] as const;
 type ThingPropertyTuple = typeof ALL_THING_PROPERTIES;
 export type ThingProperty = ThingPropertyTuple[number];
