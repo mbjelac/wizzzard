@@ -166,7 +166,7 @@ export const SPRITE_CONFIGS = {
         { x: 4, y: 17 },
       ]
     }),
-    floor: spriteAt(3, 0),
+    floor: spriteAt(3, 0, "forestStep"),
     woodenWall: {
       light: {
         vertical: spriteAt(7, 0),

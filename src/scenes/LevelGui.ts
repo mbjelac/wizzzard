@@ -83,10 +83,12 @@ export default class LevelGui extends Phaser.Scene {
     this.load.audio("forest", "assets/sounds/ambient/forest.mp3");
 
     this.load.audio("grassStep", "assets/sounds/effect/grass-step.mp3");
+    this.load.audio("forestStep", "assets/sounds/effect/forest-step.mp3");
     this.load.audio("doorUnlock", "assets/sounds/effect/door-unlock.mp3");
     this.load.audio("pushWood", "assets/sounds/effect/push-wood.mp3");
     this.load.audio("slide1", "assets/sounds/effect/slide-1.mp3");
     this.load.audio("slide2", "assets/sounds/effect/slide-2.mp3");
+    this.load.audio("swipe", "assets/sounds/effect/swipe.mp3");
 
     this.events.on("create", async () => this.populateLevel());
     this.events.on("wake", async () => this.populateLevel());
@@ -377,6 +379,7 @@ export default class LevelGui extends Phaser.Scene {
       }
 
       this.playSpriteSoundEffect(thing.description.sprite);
+      this.playSoundEffect("swipe");
 
       sprite.destroy(true);
       this.createdSpritesByThingId.delete(thing.id);
@@ -585,16 +588,20 @@ export default class LevelGui extends Phaser.Scene {
   }
 
   private playSpriteSoundEffect(spriteName: string) {
+    this.playSoundEffect(this.soundEffectsBySpriteName.get(spriteName));
+  }
+
+  private playSoundEffect(effectName: string | undefined) {
     if (this.soundEffectPlayed) {
       return;
     }
 
-    if (!this.soundEffectsBySpriteName.has(spriteName)) {
+    if (!effectName) {
       return;
     }
 
     this.soundEffectPlayed = true;
-    this.sound.play(this.soundEffectsBySpriteName.get(spriteName)!);
+    this.sound.play(effectName);
   }
 
   private updateAmbientSound() {
