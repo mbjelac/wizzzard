@@ -64,6 +64,7 @@ export const SPRITE_CONFIGS = {
     },
     floor: {
       wooden: spriteAt(6, 0),
+      stone: spriteAt(6, 1)
     },
     furniture: {
       wooden: {
