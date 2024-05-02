@@ -111,28 +111,60 @@ export const SPRITE_CONFIGS = {
         },
         keyhole: {
           closed: {
-            vertical: spriteAt(4, 4, "doorUnlock"),
-            horizontal: spriteAt(5, 4, "doorUnlock"),
-          },
-          open: {
-            west: spriteAt(4, 5),
-            south: spriteAt(5, 5),
-            east: spriteAt(6, 5),
-            north: spriteAt(7, 5),
+            vertical: spriteConfig(
+              {
+                coords: { x: 4, y: 4 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
+            horizontal: spriteConfig(
+              {
+                coords: { x: 4, y: 5 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
           }
         }
       },
       brownSilver: {
         keyhole: {
           closed: {
-            vertical: spriteAt(4, 6, "doorUnlock"),
-            horizontal: spriteAt(5, 6, "doorUnlock"),
-          },
-          open: {
-            west: spriteAt(4, 7),
-            south: spriteAt(5, 7),
-            east: spriteAt(6, 7),
-            north: spriteAt(7, 7),
+            vertical: spriteConfig(
+              {
+                coords: { x: 4, y: 6 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
+            horizontal: spriteConfig(
+              {
+                coords: { x: 4, y: 7 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
           }
         }
       },
