@@ -54,8 +54,21 @@ export default class LevelGui extends Phaser.Scene {
 
   private sideTextString: string = "";
 
+  // @ts-ignore
+  private messagePanel: Phaser.GameObjects.Sprite;
+
+  // @ts-ignore
+  private messageText: Phaser.GameObjects.Text;
+
+  // @ts-ignore
+  private messageFooterText: Phaser.GameObjects.Text;
+
+  private messageTextString: string = "";
+
   // @ts-ignore undefined - has to be set before usage (fail fast)
   private level: Level;
+
+  private levelComplete = false;
 
   private createdNonThings: Sprite[] = [];
   private readonly createdSpritesByThingId: Map<number, Sprite> = new Map();
@@ -78,6 +91,7 @@ export default class LevelGui extends Phaser.Scene {
 
     this.load.spritesheet(this.tilesetName, "assets/tileset.png", { frameWidth: 16, frameHeight: 16 });
     this.load.image("panel", "assets/panel.png");
+    this.load.image("messagePanel", "assets/message-panel.png");
 
     this.load.audio("summerMeadow", "assets/sounds/ambient/summer-meadow.mp3");
     this.load.audio("forest", "assets/sounds/ambient/forest.mp3");
@@ -220,6 +234,13 @@ export default class LevelGui extends Phaser.Scene {
 
     this.input.keyboard.on('keydown', async (event: KeyboardEvent) => {
 
+      if (this.levelComplete) {
+        if (event.code === "Enter") {
+          this.exitLevel();
+        }
+        return;
+      }
+
       const direction = keyToDirection(event.key);
 
       if (!!direction) {
@@ -228,6 +249,7 @@ export default class LevelGui extends Phaser.Scene {
 
       if (event.code === "Escape") {
         this.exitLevel();
+        return;
       }
     });
 
@@ -256,6 +278,36 @@ export default class LevelGui extends Phaser.Scene {
       .sprite(0, 0, "panel")
       .setDisplaySize(320, 832)
       .setDepth(depths.infoBackground);
+
+    this.messagePanel = this
+      .physics
+      .add
+      .sprite(0, 0, "messagePanel")
+      .setDisplaySize(640, 320)
+      .setDepth(depths.infoBackground);
+
+    this.messageText = this.add
+      .text(0, 0, "",{
+          color: "#FFF03C",
+          strokeThickness: 0,
+          fontSize: "20px",
+          fontFamily: "VinqueRg",
+          wordWrap: { width: 400 },
+          padding: { x: 60 }
+        }
+      )
+      .setDepth(depths.info);
+
+    this.messageFooterText = this.add
+      .text(0, 0, "Press Enter", {
+          color: "#FFCA52",
+          strokeThickness: 0,
+          fontSize: "10px",
+          wordWrap: { width: 100 },
+          padding: { x: 0 }
+        }
+      )
+      .setDepth(depths.info);
   }
 
   private exitLevel() {
@@ -269,6 +321,7 @@ export default class LevelGui extends Phaser.Scene {
     this.updateSidePanel(playerLocation);
     this.updateSideText(playerLocation);
     this.updateInventory(playerLocation);
+    this.updateMessagePanel(playerLocation);
 
     disableKeyEventsOnEditorWidgets();
 
@@ -319,6 +372,32 @@ export default class LevelGui extends Phaser.Scene {
     });
   }
 
+  private updateMessagePanel(playerLocation: Coords) {
+
+    this.messagePanel.setVisible(this.levelComplete);
+    this.messageText.setVisible(this.levelComplete);
+    this.messageFooterText.setVisible(this.levelComplete);
+
+    if (!this.levelComplete) {
+      return;
+    }
+
+    this.messageTextString = "Congratulations!\nYou have completed this errand.";
+
+    const pixelCoords = toPixelCoords({
+      x: playerLocation.x,
+      y: playerLocation.y
+    });
+
+    this.messagePanel.setX(pixelCoords.x );
+    this.messagePanel.setY(pixelCoords.y);
+    this.messageText.setX(pixelCoords.x - 300);
+    this.messageText.setY(pixelCoords.y - 130);
+    this.messageFooterText.setX(pixelCoords.x);
+    this.messageFooterText.setY(pixelCoords.y + 120);
+    this.messageText.setText(this.messageTextString);
+  }
+
   private async move(direction: Direction) {
 
     this.soundEffectPlayed = false;
@@ -336,8 +415,7 @@ export default class LevelGui extends Phaser.Scene {
     this.displayInventory();
 
     if (moveResult.levelComplete) {
-      this.exitLevel();
-      return;
+      this.levelComplete = true;
     }
 
     this.sideTextString = moveResult.text ? this.getText(moveResult.text) : "";
@@ -378,7 +456,6 @@ export default class LevelGui extends Phaser.Scene {
         return;
       }
 
-      this.playSpriteSoundEffect(thing.description.sprite);
       this.playSoundEffect("swipe");
 
       sprite.destroy(true);
@@ -472,6 +549,7 @@ export default class LevelGui extends Phaser.Scene {
     await this.saveLevelMatrix();
   }
 
+
   private addSpriteFromTileset(name: string, coords: Coords): Sprite {
 
     const spriteConfig = name === "void"
@@ -536,7 +614,6 @@ export default class LevelGui extends Phaser.Scene {
     return sprite;
   }
 
-
   private async saveLevelMatrix() {
 
     const errand: Errand = {
@@ -566,6 +643,8 @@ export default class LevelGui extends Phaser.Scene {
 
       sprite.stop();
       sprite.play(animation2);
+
+      this.playSpriteSoundEffect(thing.description.sprite);
     });
   }
 
