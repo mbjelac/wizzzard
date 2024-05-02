@@ -139,8 +139,30 @@ export const SPRITE_CONFIGS = {
       blueBarSilver: {
         keyhole: {
           closed: {
-            vertical: spriteAt(8, 6, "doorUnlock"),
-            horizontal: spriteAt(9, 6, "doorUnlock"),
+            vertical: spriteConfig(
+              {
+                coords: { x: 8, y: 6 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
+            horizontal: spriteConfig(
+              {
+                coords: { x: 8, y: 7 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
           },
           open: {
             vertical: spriteAt(8, 7),
