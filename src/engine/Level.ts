@@ -8,7 +8,7 @@ export const ALL_THING_PROPERTIES = [
   "pickup",
   "receiver",
   "automatic",
-  "vanish",
+  "open",
   "give",
   "pushable",
   "ambientSound"
@@ -136,9 +136,8 @@ export class Level {
     if (receiver !== undefined) {
       this.removeOneItemWithReceiverLabelFromInventory(receiver.description.label!);
       this.disableReceiver(receiver);
-      if (receiver.is("vanish")) {
-        this.removeFromLocation(nextLocation, receiver);
-        thingsToRemove.push(receiver);
+      if (receiver.is("open")) {
+        receiver.removeProperty("wall");
       }
       if (receiver.is("give")) {
         thingsToRemove.push(...this.transferAllPickupsFromLevelToInventory(nextLocation));

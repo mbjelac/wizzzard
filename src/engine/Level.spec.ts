@@ -37,6 +37,7 @@ function createLevel(...rows: string[]): Level {
       description: "",
       title: ""
     },
+    texts: {},
     levelDimensions: { width: rows[0].length, height: rows.length },
     matrix: factory.fromMatrix(...rows),
     startCoords: startCoords,
@@ -357,9 +358,9 @@ describe("giving a picked up item to a receiver", () => {
   }
 });
 
-describe("vanishing receiver", () => {
+describe("opening receiver", () => {
 
-  let vanishingReceiver: Thing;
+  let openingReceiver: Thing;
 
   beforeEach(() => {
     level = createLevel(
@@ -376,52 +377,43 @@ describe("vanishing receiver", () => {
       text: undefined
     });
 
-    vanishingReceiver = addThingWithProps({
+    openingReceiver = addThingWithProps({
       x: 2,
       y: 1,
-      properties: ["receiver", "vanish"],
+      properties: ["receiver", "open"],
       label: "foo",
       text: undefined
     });
   });
 
-  it("vanishing receiver vanishes on receiving", () => {
+  it("opening receiver changes state on receiving", () => {
 
     level.tryToMove(Direction.LEFT);
     level.tryToMove(Direction.RIGHT);
-    level.tryToMove(Direction.RIGHT);
+    const result = level.tryToMove(Direction.RIGHT);
 
-    expect(getThingsAt(2, 1)).toEqual([]);
+    expect(result.changedState).toEqual([openingReceiver]);
   });
 
-  it("vanishing receiver appears in removed things", () => {
+  it("opening receiver does not change state without receiving", () => {
 
-    level.tryToMove(Direction.LEFT);
-    level.tryToMove(Direction.RIGHT);
-    const removedThings = level.tryToMove(Direction.RIGHT).removedThings;
+    const result = level.tryToMove(Direction.RIGHT);
 
-    expect(removedThings).toEqual([vanishingReceiver]);
+    expect(result.changedState).toEqual([]);
   });
 
-  it("vanishing receiver does not vanish without receiving", () => {
+  it("wall opening receiver blocks move if not receiving", () => {
 
-    level.tryToMove(Direction.RIGHT);
-
-    expect(getThingsAt(2, 1)).toEqual([vanishingReceiver]);
-  });
-
-  it("wall vanishing receiver blocks move if not receiving", () => {
-
-    vanishingReceiver.description.properties.push("wall");
+    openingReceiver.description.properties.push("wall");
 
     const moveResult = level.tryToMove(Direction.RIGHT);
 
     expect(moveResult.moved).toBe(false);
   });
 
-  it("wall vanishing receiver does not block move if receiving", () => {
+  it("wall opening receiver does not block move if receiving", () => {
 
-    vanishingReceiver.description.properties.push("wall");
+    openingReceiver.description.properties.push("wall");
 
     level.tryToMove(Direction.LEFT);
     level.tryToMove(Direction.RIGHT);
