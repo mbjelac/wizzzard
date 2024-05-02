@@ -135,6 +135,18 @@ export const SPRITE_CONFIGS = {
             north: spriteAt(7, 7),
           }
         }
+      },
+      blueBarSilver: {
+        keyhole: {
+          closed: {
+            vertical: spriteAt(8, 6, "doorUnlock"),
+            horizontal: spriteAt(9, 6, "doorUnlock"),
+          },
+          open: {
+            vertical: spriteAt(8, 7),
+            horizontal: spriteAt(9, 7),
+          },
+        }
       }
     },
     herbGarden: {
@@ -155,7 +167,18 @@ export const SPRITE_CONFIGS = {
         }),
         broken: spriteAt(2, 7),
       }
-    }
+    },
+    flowers: spriteConfig({
+      coords: { x: 0, y: 15 },
+      variants: [
+        { x: 1, y: 15 },
+        { x: 2, y: 15 },
+        { x: 3, y: 15 },
+        { x: 4, y: 15 },
+        { x: 5, y: 15 },
+        { x: 6, y: 15 },
+      ]
+    }),
   },
   forest: {
     tree: spriteConfig({
@@ -167,6 +190,7 @@ export const SPRITE_CONFIGS = {
         { x: 4, y: 17 },
       ]
     }),
+    treeStump: spriteAt(5, 17),
     floor: spriteAt(3, 0, "forestStep"),
     woodenWall: {
       light: {
@@ -178,8 +202,10 @@ export const SPRITE_CONFIGS = {
         horizontal: spriteAt(8, 1),
       },
     },
-    rock: {
-      big: spriteAt(3, 7)
+    rocks: {
+      big: spriteAt(3, 7),
+      rock1: spriteAt(0, 19),
+      writing1: spriteAt(1, 19)
     },
     fly: {
       silver: spriteConfig({
@@ -216,7 +242,8 @@ export const SPRITE_CONFIGS = {
     }
   },
   keys: {
-    silver: spriteAt(1, 8)
+    silver: spriteAt(1, 8),
+    gold: spriteAt(3, 8),
   },
   characters: {
     kim: spriteConfig({
