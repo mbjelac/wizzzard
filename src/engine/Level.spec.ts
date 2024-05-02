@@ -2,7 +2,7 @@ import { Level, LevelLocation, MoveResult, Thing, ThingProperty } from "./Level"
 import { createThingProps, LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
 import { EditorTool } from "./editor/EditorTool";
-import { Coords } from "./Errand";
+import { Coords, Errand } from "./Errand";
 
 let level: Level;
 
@@ -765,11 +765,7 @@ describe("completing level", () => {
   it("complete when both required pickups & receivers done", () => {
 
     level = new Level({
-      description: {
-        id: "testLevel",
-        description: "",
-        title: ""
-      },
+      ...dummyErrand,
       levelDimensions: { width: 3, height: 3 },
       matrix: factory.fromMatrix(
         "   ",
@@ -815,11 +811,7 @@ describe("completing level", () => {
 
   function completionRequiresInventory(...requiredInventory: string[]) {
     level = new Level({
-      description: {
-        id: "testLevel",
-        description: "",
-        title: ""
-      },
+      ...dummyErrand,
       levelDimensions: { width: 3, height: 3 },
       matrix: factory.fromMatrix(
         "   ",
@@ -836,11 +828,7 @@ describe("completing level", () => {
 
   function completionRequiresReceives(...requiredReceives: string[]) {
     level = new Level({
-      description: {
-        id: "testLevel",
-        description: "",
-        title: ""
-      },
+      ...dummyErrand,
       levelDimensions: { width: 3, height: 3 },
       matrix: factory.fromMatrix(
         "   ",
@@ -858,6 +846,22 @@ describe("completing level", () => {
   function movementToCompletedFlags(...directions: Direction[]): boolean[] {
     return directions.map(direction => level.tryToMove(direction).levelComplete);
   }
+
+  const dummyErrand: Errand = {
+    description: {
+      id: "dummyErrand",
+      description: "",
+      title: ""
+    },
+    texts:{},
+    levelDimensions: { width: 3, height: 3 },
+    matrix: factory.fromMatrix(" "),
+    startCoords: { x: 0, y: 0 },
+    completionCriteria: {
+      inventory: [],
+      receives: []
+    }
+  };
 });
 describe("reading or listening", () => {
 
