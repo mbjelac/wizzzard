@@ -341,6 +341,16 @@ export const SPRITE_CONFIGS = {
           framesPerSecond: 4
         },
       }),
+      vertical: spriteConfig({
+        coords: { x: 0, y: 25 },
+        animation: {
+          frameCount: 1
+        },
+        auxAnimation: {
+          frameCount: 4,
+          framesPerSecond: 4
+        },
+      }),
     },
   },
   keys: {
