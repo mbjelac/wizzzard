@@ -199,6 +199,7 @@ export default class LevelGui extends Phaser.Scene {
       if (this.leftButtonDown) {
         await this.applyEditorTool(location, locationPixelCoords);
       }
+      setEditorInfo(JSON.stringify(location.coords));
     });
 
     this.createdNonThings.push(voidTile);
@@ -287,7 +288,7 @@ export default class LevelGui extends Phaser.Scene {
       .setDepth(depths.infoBackground);
 
     this.messageText = this.add
-      .text(0, 0, "",{
+      .text(0, 0, "", {
           color: "#FFF03C",
           strokeThickness: 0,
           fontSize: "20px",
@@ -389,7 +390,7 @@ export default class LevelGui extends Phaser.Scene {
       y: playerLocation.y
     });
 
-    this.messagePanel.setX(pixelCoords.x );
+    this.messagePanel.setX(pixelCoords.x);
     this.messagePanel.setY(pixelCoords.y);
     this.messageText.setX(pixelCoords.x - 300);
     this.messageText.setY(pixelCoords.y - 130);
@@ -518,8 +519,8 @@ export default class LevelGui extends Phaser.Scene {
     });
 
     thingSprite.on('pointermove', async () => {
-      const text = levelLocation.things.map(thing => JSON.stringify(thing)).join("\n");
-      (document.getElementById("editor-info-panel")! as HTMLInputElement).textContent = text;
+      const text = JSON.stringify(levelLocation.coords) + "\n" + levelLocation.things.map(thing => JSON.stringify(thing)).join("\n");
+      setEditorInfo(text);
 
       if (this.leftButtonDown) {
         await this.applyEditorTool(levelLocation, pixelCoords);
@@ -603,7 +604,9 @@ export default class LevelGui extends Phaser.Scene {
 
       sprite.play({
         key: animation1,
-        startFrame: Math.floor(Math.random() * (spriteConfig.animation.frameCount - 1))
+        startFrame: spriteConfig.animation.uniformStartFrame
+          ? 0
+          : Math.floor(Math.random() * (spriteConfig.animation.frameCount - 1))
       });
     }
 
@@ -724,4 +727,8 @@ function keyToDirection(eventKey: string): Direction | undefined {
     case "ArrowLeft":
       return Direction.LEFT;
   }
+}
+
+function setEditorInfo(text: string) {
+  (document.getElementById("editor-info-panel")! as HTMLInputElement).textContent = text;
 }
