@@ -8,19 +8,19 @@
         @font-face {
             font-family: Jacquard24;
             src: url('assets/fonts/Jacquard24-Regular.ttf');
-            font-weight:normal;
+            font-weight: normal;
         }
 
         @font-face {
             font-family: BeyondWonderland;
             src: url('assets/fonts/Beyond Wonderland.ttf');
-            font-weight:normal;
+            font-weight: normal;
         }
 
         @font-face {
             font-family: VinqueRg;
             src: url('assets/fonts/vinque rg.otf');
-            font-weight:normal;
+            font-weight: normal;
         }
 
         body {
@@ -35,7 +35,7 @@
             flex: 1;
         }
 
-        #game {
+        .stretch {
             flex: auto;
         }
 
@@ -44,7 +44,7 @@
             height: auto;
         }
 
-        #editor-info-panel{
+        #editor-info-panel {
             color: white;
             font-family: "Courier New";
         }
@@ -78,7 +78,12 @@
 <body style="background-color:#444">
 
 <div class="flex-container">
-    <div id="game"></div>
+    <div class="stretch">
+        <div id="game"></div>
+        <div>
+            <pre id="editor-info-panel"></pre>
+        </div>
+    </div>
     <div>
         <div id="editor-panel">
             <label for="editor-label">Label:</label>
@@ -112,7 +117,6 @@
         </div>
     </div>
 </div>
-<pre id="editor-info-panel"></pre>
 
 </body>
 </html>
