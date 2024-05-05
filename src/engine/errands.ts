@@ -4,6 +4,36 @@ import { populateEmptyLevelMatrix } from "./game";
 const errands: Errand[] = [
   {
     description: {
+      id: "woodenDog",
+      title: "The wooden dog",
+      description: "Wooden dog description..."
+    },
+    levelDimensions: { width: 40, height: 30 },
+    startCoords: { x: 7, y: 7 },
+    matrix: [],
+    completionCriteria: {
+      inventory: ["seed"],
+      receives: []
+    },
+    texts: {}
+  },
+  {
+    description: {
+      id: "forgetfulDruid",
+      title: "The Forgetful Druid",
+      description: "description..."
+    },
+    levelDimensions: { width: 70, height: 70 },
+    startCoords: { x: 7, y: 7 },
+    matrix: [],
+    completionCriteria: {
+      inventory: ["vial", "jar", "book"],
+      receives: []
+    },
+    texts: {}
+  },
+  {
+    description: {
       id: "void",
       title: "A void",
       description: "An empty black void, suitable for trying out the level editor."
@@ -17,21 +47,6 @@ const errands: Errand[] = [
     },
     texts: {
     }
-  },
-  {
-    description: {
-      id: "woodenDog",
-      title: "The wooden dog",
-      description: "Wooden dog description..."
-    },
-    levelDimensions: { width: 40, height: 30 },
-    startCoords: { x: 7, y: 7 },
-    matrix: [],
-    completionCriteria: {
-      inventory: ["seed"],
-      receives: []
-    },
-    texts: {}
   }
 ];
 

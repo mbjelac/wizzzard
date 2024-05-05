@@ -11,6 +11,7 @@ export interface SpriteConfig {
 export interface Animation {
   frameCount: number;
   framesPerSecond?: number;
+  uniformStartFrame?: boolean;
 }
 
 
@@ -245,6 +246,14 @@ export const SPRITE_CONFIGS = {
       ]
     }),
     treeStump: spriteAt(5, 17),
+    bush: spriteConfig({
+      coords: { x: 6, y: 17 },
+      variants: [
+        { x: 7, y: 17 },
+        { x: 8, y: 17 },
+        { x: 9, y: 17 },
+      ]
+    }),
     floor: spriteAt(3, 0, "forestStep"),
     woodenWall: {
       light: {
@@ -259,7 +268,10 @@ export const SPRITE_CONFIGS = {
     rocks: {
       big: spriteAt(3, 7),
       rock1: spriteAt(0, 19),
-      writing1: spriteAt(1, 19)
+      writing1: spriteAt(1, 19),
+      pad: spriteAt(2, 19),
+      pillar: spriteAt(0, 23),
+      pillarWriting: spriteAt(1, 23)
     },
     fly: {
       silver: spriteConfig({
@@ -293,7 +305,43 @@ export const SPRITE_CONFIGS = {
       bend_w_s: spriteAt(8, 18),
       bend_e_n: spriteAt(9, 18),
       bend_w_n: spriteAt(10, 18),
-    }
+    },
+    water: {
+      surface: spriteConfig({
+        coords: { x: 0, y: 20 },
+        animation: {
+          frameCount: 6,
+          framesPerSecond: 5
+        }
+      }),
+      surfaceBobbing: spriteConfig({
+        coords: { x: 0, y: 21 },
+        animation: {
+          frameCount: 4,
+          framesPerSecond: 4,
+          uniformStartFrame: true
+        }
+      }),
+      steppingStone: spriteConfig({
+        coords: { x: 1, y: 22 },
+        animation: {
+          frameCount: 4,
+          framesPerSecond: 4,
+        }
+      })
+    },
+    floatingLog: {
+      horizontal: spriteConfig({
+        coords: { x: 0, y: 24 },
+        animation: {
+          frameCount: 1
+        },
+        auxAnimation: {
+          frameCount: 4,
+          framesPerSecond: 4
+        },
+      }),
+    },
   },
   keys: {
     silver: spriteAt(1, 8),
@@ -309,6 +357,13 @@ export const SPRITE_CONFIGS = {
   misc: {
     woodenDog: spriteAt(0, 9),
     seed: spriteAt(1, 9),
+    magicWaterVial: spriteConfig({
+      coords: { x: 3, y: 19 },
+      animation: {
+        frameCount: 4,
+        framesPerSecond: 6
+      },
+    }),
   }
 }
 

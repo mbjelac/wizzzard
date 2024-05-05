@@ -11,7 +11,9 @@ export const ALL_THING_PROPERTIES = [
   "open",
   "give",
   "pushable",
-  "ambientSound"
+  "ambientSound",
+  "bridge",
+  "bridgeable",
 ] as const;
 type ThingPropertyTuple = typeof ALL_THING_PROPERTIES;
 export type ThingProperty = ThingPropertyTuple[number];
