@@ -328,7 +328,37 @@ export const SPRITE_CONFIGS = {
           frameCount: 4,
           framesPerSecond: 4,
         }
-      })
+      }),
+      bank: {
+        south: spriteConfig({
+          coords: { x: 6, y: 20 },
+          animation: {
+            frameCount: 4,
+            framesPerSecond: 4,
+          }
+        }),
+        north: spriteConfig({
+          coords: { x: 6, y: 21 },
+          animation: {
+            frameCount: 4,
+            framesPerSecond: 4,
+          }
+        }),
+        east: spriteConfig({
+          coords: { x: 6, y: 22 },
+          animation: {
+            frameCount: 4,
+            framesPerSecond: 4,
+          }
+        }),
+        west: spriteConfig({
+          coords: { x: 6, y: 23 },
+          animation: {
+            frameCount: 4,
+            framesPerSecond: 4,
+          }
+        }),
+      }
     },
     floatingLog: {
       horizontal: spriteConfig({
