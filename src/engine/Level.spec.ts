@@ -588,11 +588,6 @@ describe("receiver put in changed-state list", () => {
       ]
     );
   });
-
-  function movementToChangedStateLists(...directions: Direction[]): Thing[][] {
-    return directions.map(direction => level.tryToMove(direction).changedState);
-  }
-
 });
 
 describe("completing level", () => {
@@ -845,7 +840,7 @@ describe("completing level", () => {
       description: "",
       title: ""
     },
-    texts:{},
+    texts: {},
     levelDimensions: { width: 3, height: 3 },
     matrix: factory.fromMatrix(" "),
     startCoords: { x: 0, y: 0 },
@@ -961,9 +956,9 @@ describe("pushing", () => {
     });
   });
 
-  describe("when wall behind", ()=> {
+  describe("when wall behind", () => {
 
-    beforeEach(()=> {
+    beforeEach(() => {
       addThing(3, 1, "wall");
     });
 
@@ -985,9 +980,9 @@ describe("pushing", () => {
     });
   });
 
-  describe("when pushable behind", ()=> {
+  describe("when pushable behind", () => {
 
-    beforeEach(()=> {
+    beforeEach(() => {
       addThing(3, 1, "pushable");
     });
 
@@ -1008,6 +1003,75 @@ describe("pushing", () => {
       });
     });
   });
+});
+
+describe("pushable bridge", () => {
+
+  let bridge: Thing;
+  let bridgeable: Thing;
+
+  beforeEach(() => {
+    level = createLevel(
+      "     ",
+      "     ",
+      "     ",
+    );
+
+    bridge = addThing(2, 1, "pushable", "bridge");
+    bridgeable = addThing(2, 0, "bridgeable", "death");
+  });
+
+  it("pushing bridge across bridgeable possible", () => {
+    expect(
+      movesToMoved(
+        Direction.DOWN,
+        Direction.RIGHT,
+        Direction.UP
+      )
+    )
+      .toEqual([
+        true,
+        true,
+        true
+      ]);
+  });
+
+  it("pushing bridge across bridgeable modifies properties", () => {
+    movesToMoved(
+      Direction.DOWN,
+      Direction.RIGHT,
+      Direction.UP
+    );
+
+    expect({
+      isBridgeStillPushable: bridge.is("pushable"),
+      isBridgeableStillDeath: bridgeable.is("death"),
+    })
+      .toEqual({
+        isBridgeStillPushable: false,
+        isBridgeableStillDeath: false
+      });
+  });
+
+  it("pushing bridge across bridgeable changes bridge state", () => {
+    expect(
+      movementToChangedStateLists(
+        Direction.DOWN,
+        Direction.RIGHT,
+        Direction.UP
+      )
+    )
+      .toEqual([
+        [],
+        [],
+        [bridge]
+      ]);
+  });
+
+  function movesToMoved(...directions: Direction[]): boolean[] {
+    return directions.map(direction => level.tryToMove(direction).moved);
+  }
+
 });
 
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
@@ -1067,4 +1131,8 @@ function getCoordsOf(thing: Thing): Coords | undefined {
       })))
     .find(loc => loc.hitCount === 1)
     ?.coords;
+}
+
+function movementToChangedStateLists(...directions: Direction[]): Thing[][] {
+  return directions.map(direction => level.tryToMove(direction).changedState);
 }

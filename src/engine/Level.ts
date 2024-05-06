@@ -162,13 +162,17 @@ export class Level {
       interactionText = this.getTextsFrom(nextLocation);
     }
 
+    const pushedThings = canMove ? this.pushThings(nextLocation, direction) : [];
+
+    changedStateThings.push(...this.bridgeBridges(pushedThings, direction));
+
     return {
       moved: canMove,
       died: this.doesLocationHaveProperty(nextLocation, "death"),
       levelComplete: this.isLevelComplete(),
       text: receiveEventText || interactionText || this.getNeighbouringTexts(),
       removedThings: thingsToRemove,
-      pushed: canMove ? this.pushThings(nextLocation, direction) : [],
+      pushed: pushedThings,
       changedState: changedStateThings
     };
   }
@@ -356,5 +360,27 @@ export class Level {
       .filter(thing => !thing.is("automatic") && thing.description.text !== undefined)
       .map(thing => thing.description.text as string)
       .join();
+  }
+
+  private bridgeBridges(pushedThings: Thing[], direction: Direction): Thing[] {
+
+    const bridge = pushedThings.find(thing => thing.is("bridge"));
+
+    if(bridge === undefined) {
+      return [];
+    }
+
+    const pushedLocation = this.getMoveLocation(this.playerCoords, direction);
+
+    const bridgeable = pushedLocation?.things.find(thing => thing.is("bridgeable"));
+
+    if(bridgeable === undefined) {
+      return [];
+    }
+
+    bridge.removeProperty("pushable");
+    bridgeable.removeProperty("death");
+
+    return [bridge];
   }
 }
