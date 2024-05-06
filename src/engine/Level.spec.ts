@@ -599,7 +599,7 @@ describe("completing level", () => {
 
       completionRequiresInventory("someLabel");
 
-      addThing(0, 0, "someLabel", "pickup");
+      addLabelledThing(0, 0, "someLabel", "pickup");
 
       expect(movementToCompletedFlags(
         Direction.UP,
@@ -614,7 +614,7 @@ describe("completing level", () => {
 
       completionRequiresInventory("someLabel");
 
-      addThing(0, 0, "someOtherLabel", "pickup");
+      addLabelledThing(0, 0, "someOtherLabel", "pickup");
 
       expect(movementToCompletedFlags(
         Direction.UP,
@@ -629,7 +629,7 @@ describe("completing level", () => {
 
       completionRequiresInventory("label1", "label2");
 
-      addThing(0, 0, "label1", "pickup");
+      addLabelledThing(0, 0, "label1", "pickup");
 
       expect(movementToCompletedFlags(
         Direction.UP,
@@ -644,8 +644,8 @@ describe("completing level", () => {
 
       completionRequiresInventory("label1", "label2");
 
-      addThing(0, 0, "label1", "pickup");
-      addThing(2, 0, "label2", "pickup");
+      addLabelledThing(0, 0, "label1", "pickup");
+      addLabelledThing(2, 0, "label2", "pickup");
 
       expect(movementToCompletedFlags(
         Direction.UP,
@@ -666,8 +666,8 @@ describe("completing level", () => {
     it("complete when required receiver receives", () => {
 
       completionRequiresReceives("label1");
-      addThing(0, 0, "label1", "pickup");
-      addThing(2, 2, "label1", "receiver");
+      addLabelledThing(0, 0, "label1", "pickup");
+      addLabelledThing(2, 2, "label1", "receiver");
 
       expect(movementToCompletedFlags(
         Direction.UP,
@@ -689,10 +689,10 @@ describe("completing level", () => {
     it("not complete when only some required receivers receive", () => {
 
       completionRequiresReceives("label1", "label2");
-      addThing(0, 0, "label1", "pickup");
-      addThing(2, 0, "label2", "pickup");
-      addThing(0, 2, "label1", "receiver");
-      addThing(2, 2, "label2", "receiver");
+      addLabelledThing(0, 0, "label1", "pickup");
+      addLabelledThing(2, 0, "label2", "pickup");
+      addLabelledThing(0, 2, "label1", "receiver");
+      addLabelledThing(2, 2, "label2", "receiver");
 
       expect(movementToCompletedFlags(
         Direction.UP,
@@ -718,10 +718,10 @@ describe("completing level", () => {
     it("complete when all required receivers receive", () => {
 
       completionRequiresReceives("label1", "label2");
-      addThing(0, 0, "label1", "pickup");
-      addThing(2, 0, "label2", "pickup");
-      addThing(0, 2, "label1", "receiver");
-      addThing(2, 2, "label2", "receiver");
+      addLabelledThing(0, 0, "label1", "pickup");
+      addLabelledThing(2, 0, "label2", "pickup");
+      addLabelledThing(0, 2, "label1", "receiver");
+      addLabelledThing(2, 2, "label2", "receiver");
 
       expect(movementToCompletedFlags(
         Direction.UP,
@@ -766,9 +766,9 @@ describe("completing level", () => {
       }
     });
 
-    addThing(0, 0, "label1", "pickup");
-    addThing(2, 0, "label2", "pickup");
-    addThing(0, 2, "label2", "receiver");
+    addLabelledThing(0, 0, "label1", "pickup");
+    addLabelledThing(2, 0, "label2", "pickup");
+    addLabelledThing(0, 2, "label2", "receiver");
 
     expect(movementToCompletedFlags(
       Direction.UP,
@@ -790,10 +790,6 @@ describe("completing level", () => {
       true,
     ]);
   });
-
-  function addThing(x: number, y: number, label: string, ...properties: ThingProperty[]) {
-    addThingWithProps({ ...defaultAddThingProps, x, y, label, properties });
-  }
 
 
   function completionRequiresInventory(...requiredInventory: string[]) {
@@ -1078,6 +1074,34 @@ describe("pushable bridge", () => {
 
 });
 
+describe("teleportation", () => {
+
+  beforeEach(() => {
+    level = createLevel(
+      "     ",
+      "     ",
+      "     ",
+    );
+
+    addLabelledThing(0, 0, "spot", "teleport");
+    addLabelledThing(2, 2, "spot");
+  });
+
+  it("teleport changes location to first location with same label", () => {
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+    expect(level.getPlayerCoords()).toEqual<Coords>({ x: 2, y: 2 });
+  });
+
+  it("teleport changes location to self if no target found", () => {
+    level.levelLocations[2][2].things = [];
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+    expect(level.getPlayerCoords()).toEqual<Coords>({ x: 0, y: 0 });
+  });
+
+});
+
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
   return addThingWithProps({
     x: x,
@@ -1116,6 +1140,10 @@ function addThingWithProps(props: AddThingProps): Thing {
   });
   level.levelLocations[props.y][props.x].things.push(thing);
   return thing;
+}
+
+function addLabelledThing(x: number, y: number, label: string, ...properties: ThingProperty[]) {
+  addThingWithProps({ ...defaultAddThingProps, x, y, label, properties });
 }
 
 function getAllThings(level: Level): Thing[] {

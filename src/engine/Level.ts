@@ -14,6 +14,7 @@ export const ALL_THING_PROPERTIES = [
   "ambientSound",
   "bridge",
   "bridgeable",
+  "teleport",
 ] as const;
 type ThingPropertyTuple = typeof ALL_THING_PROPERTIES;
 export type ThingProperty = ThingPropertyTuple[number];
@@ -156,7 +157,7 @@ export class Level {
     let interactionText: string | undefined = undefined;
 
     if (canMove) {
-      this.playerCoords = nextLocation.coords;
+      this.playerCoords = this.getNextCoords(nextLocation);
       thingsToRemove.push(...this.transferAllPickupsFromLevelToInventory(nextLocation));
     } else {
       interactionText = this.getTextsFrom(nextLocation);
@@ -384,5 +385,27 @@ export class Level {
     bridgeable.removeProperty("bridgeable");
 
     return [bridge];
+  }
+
+  private getNextCoords(nextLocation: LevelLocation): Coords {
+
+    const teleport = nextLocation.things.find(thing => thing.is("teleport"));
+
+    if (teleport === undefined) {
+      return nextLocation.coords;
+    }
+
+    const targetLocation = this
+      .levelLocations
+      .flatMap(row => row
+        .flatMap(location => ({
+          isTeleportTarget: location.things.find(levelThing => !levelThing.equals(teleport) && levelThing.description.label === teleport.description.label),
+          location: location
+        })))
+      .filter(candidate => candidate.isTeleportTarget)
+      [0]
+      ?.location;
+
+    return targetLocation ? targetLocation.coords : nextLocation.coords;
   }
 }
