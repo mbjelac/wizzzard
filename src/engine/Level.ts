@@ -379,7 +379,9 @@ export class Level {
     }
 
     bridge.removeProperty("pushable");
+    bridge.removeProperty("bridge");
     bridgeable.removeProperty("death");
+    bridgeable.removeProperty("bridgeable");
 
     return [bridge];
   }

@@ -1045,11 +1045,15 @@ describe("pushable bridge", () => {
 
     expect({
       isBridgeStillPushable: bridge.is("pushable"),
+      isBridgeStillBridge: bridge.is("bridge"),
       isBridgeableStillDeath: bridgeable.is("death"),
+      isBridgeableStillBridgeable: bridgeable.is("bridgeable")
     })
       .toEqual({
         isBridgeStillPushable: false,
-        isBridgeableStillDeath: false
+        isBridgeStillBridge: false,
+        isBridgeableStillDeath: false,
+        isBridgeableStillBridgeable: false
       });
   });
 
