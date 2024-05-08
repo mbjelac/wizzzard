@@ -152,7 +152,12 @@ export class Level {
       receiveEventText = this.findTextAt(nextLocation, atReceiver ? "preInteraction" : "postInteraction");
     }
 
-    const canMove = !this.doesLocationHaveProperty(nextLocation, "wall") && this.pushableCanBePushed(nextLocation, direction);
+    const hasNotReceivedOrReceiverOpen = receiver === undefined || changedStateThings.length === 0 || receiver.is("open");
+
+    const canMove =
+      !this.doesLocationHaveProperty(nextLocation, "wall") &&
+      this.pushableCanBePushed(nextLocation, direction) &&
+      hasNotReceivedOrReceiverOpen;
 
     let interactionText: string | undefined = undefined;
 

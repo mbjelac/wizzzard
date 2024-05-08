@@ -349,6 +349,21 @@ describe("giving a picked up item to a receiver", () => {
     expect(removedThings).toEqual([]);
   });
 
+  it("do not move when giving to receiver", () => {
+
+    addPickup(2, 1, receiverLabel);
+    addReceiver(0, 1, receiverLabel);
+
+    // move to pick up
+    level.tryToMove(Direction.RIGHT);
+
+    // move to give
+    level.tryToMove(Direction.LEFT);
+    const moved = level.tryToMove(Direction.LEFT).moved;
+
+    expect(moved).toBe(false);
+  });
+
   function addPickup(x: number, y: number, label: string): Thing {
     return addThingWithProps({ x, y, label, properties: ["pickup"], text: undefined });
   }
@@ -733,9 +748,7 @@ describe("completing level", () => {
         Direction.DOWN,
         Direction.LEFT,
         Direction.RIGHT,
-        Direction.RIGHT,
       )).toEqual([
-        false,
         false,
         false,
         false,
