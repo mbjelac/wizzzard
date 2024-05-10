@@ -51,7 +51,14 @@ export const SPRITE_CONFIGS = {
   transparent: spriteAt(1, 7),
   town: {
     wall: {
-      brown: spriteAt(4, 3)
+      brownStone: spriteAt(4, 3),
+      brick: spriteAt(4, 0),
+    },
+    stairs: {
+      brownStone: {
+        up: spriteAt(6, 3),
+        down: spriteAt(7, 3)
+      }
     },
     tree: spriteAt(0, 0),
     bush: spriteAt(3, 3),
@@ -59,7 +66,7 @@ export const SPRITE_CONFIGS = {
       coords: { x: 1, y: 0 },
       soundEffect: "grassStep"
     }),
-    brick: spriteAt(4, 0),
+    dirt: spriteAt(2, 0),
     window: {
       green: spriteAt(5, 0),
     },
@@ -81,6 +88,10 @@ export const SPRITE_CONFIGS = {
         shelveContents4: spriteAt(13, 1),
         shelveContents5: spriteAt(14, 1),
         chair: spriteAt(9, 2),
+      },
+      hearth: {
+        front: spriteAt(0, 27),
+        back: spriteAt(1, 27)
       }
     },
     pumpkin: {
@@ -386,6 +397,7 @@ export const SPRITE_CONFIGS = {
   keys: {
     silver: spriteAt(1, 8),
     gold: spriteAt(3, 8),
+    emerald: spriteAt(4, 8),
   },
   characters: {
     kim: spriteConfig({
@@ -403,6 +415,23 @@ export const SPRITE_CONFIGS = {
         frameCount: 4,
         framesPerSecond: 6
       },
+    }),
+    fire: spriteConfig({
+      coords: { x: 0, y: 26 },
+      animation: {
+        frameCount: 4,
+        framesPerSecond: 8
+      },
+      auxAnimation: {
+        frameCount: 1
+      }
+    }),
+    waterBucket: spriteConfig({
+      coords: { x: 0, y: 28 },
+      animation: {
+        frameCount: 4,
+        framesPerSecond: 4
+      }
     }),
   }
 }
