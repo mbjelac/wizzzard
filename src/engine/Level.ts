@@ -147,12 +147,14 @@ export class Level {
       }
       receiveEventText = this.findTextAt(nextLocation, "onInteraction");
       changedStateThings.push(receiver);
+      receiver.removeProperty("death");
     } else {
       const atReceiver = this.doesLocationHaveProperty(nextLocation, "receiver")
       receiveEventText = this.findTextAt(nextLocation, atReceiver ? "preInteraction" : "postInteraction");
     }
 
-    const hasNotReceivedOrReceiverOpen = receiver === undefined || changedStateThings.length === 0 || receiver.is("open");
+    const hasNotReceived = receiver === undefined || changedStateThings.length === 0;
+    const hasNotReceivedOrReceiverOpen = hasNotReceived || receiver.is("open");
 
     const canMove =
       !this.doesLocationHaveProperty(nextLocation, "wall") &&
@@ -174,7 +176,7 @@ export class Level {
 
     return {
       moved: canMove,
-      died: this.doesLocationHaveProperty(nextLocation, "death"),
+      died: this.doesLocationHaveProperty(nextLocation, "death") && hasNotReceived,
       levelComplete: this.isLevelComplete(),
       text: receiveEventText || interactionText || this.getNeighbouringTexts(),
       removedThings: thingsToRemove,

@@ -605,6 +605,55 @@ describe("receiver put in changed-state list", () => {
   });
 });
 
+describe("death receiver", ()=>{
+  const receiverLabel = "any";
+
+  beforeEach(() => {
+    level = createLevel(
+      "   ",
+      "   ",
+      "   "
+    );
+
+    addPickup(2, 1, receiverLabel);
+    addLabelledThing(0, 1, receiverLabel, "receiver", "death");
+  });
+
+
+  it("causes death when not receiving", () => {
+
+    const died = level.tryToMove(Direction.LEFT).died;
+
+    expect(died).toBe(true);
+  });
+
+  it("causes death when not receiving", () => {
+
+    const died = level.tryToMove(Direction.LEFT).died;
+
+    expect(died).toBe(true);
+  });
+
+  it("does not cause death when receiving", () => {
+
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.LEFT);
+    const died = level.tryToMove(Direction.LEFT).died;
+
+    expect(died).toBe(false);
+  });
+
+  it("no longer causes death after receiving", () => {
+
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.LEFT);
+    const died = level.tryToMove(Direction.LEFT).died;
+
+    expect(died).toBe(false);
+  });
+});
+
 describe("completing level", () => {
 
   describe("by pickup", () => {
@@ -1155,8 +1204,8 @@ function addThingWithProps(props: AddThingProps): Thing {
   return thing;
 }
 
-function addLabelledThing(x: number, y: number, label: string, ...properties: ThingProperty[]) {
-  addThingWithProps({ ...defaultAddThingProps, x, y, label, properties });
+function addLabelledThing(x: number, y: number, label: string, ...properties: ThingProperty[]): Thing {
+  return addThingWithProps({ ...defaultAddThingProps, x, y, label, properties });
 }
 
 function getAllThings(level: Level): Thing[] {
