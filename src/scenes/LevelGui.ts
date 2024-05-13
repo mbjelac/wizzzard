@@ -4,7 +4,7 @@ import { Direction } from "../engine/Direction";
 import { TILE_SIZE } from "../config";
 import { GAME } from "../engine/game";
 import { Coords, Errand, ThingDescription } from "../engine/Errand";
-import { SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION, SpriteConfig } from "./sprites";
+import { AnimationConfig, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION, SpriteConfig } from "./sprites";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
 
@@ -127,7 +127,13 @@ export default class LevelGui extends Phaser.Scene {
 
     this.player = this.addSpriteFromTileset("wizard", playerPixelCoords).setDepth(depths.player);
 
+    this.player.anims.create({
+      key: "drowning",
+
+    });
+
     this.createdNonThings.push(this.player);
+
 
     this.displayInventory();
 
@@ -575,32 +581,10 @@ export default class LevelGui extends Phaser.Scene {
 
     if (spriteConfig.animation !== undefined) {
 
-      sprite.anims.create({
-        key: animation1,
-        frameRate: spriteConfig.animation.framesPerSecond || 7,
-        frames: this.anims.generateFrameNumbers(
-          this.tilesetName,
-          {
-            start: frameIndex,
-            end: frameIndex + spriteConfig.animation.frameCount - 1
-          }
-        ),
-        repeat: -1,
-      });
+      sprite.anims.create(this.getAnimation(animation1, spriteConfig.animation, frameIndex));
 
       if (spriteConfig.auxAnimation !== undefined) {
-        sprite.anims.create({
-          key: animation2,
-          frameRate: spriteConfig.auxAnimation.framesPerSecond || 7,
-          frames: this.anims.generateFrameNumbers(
-            this.tilesetName,
-            {
-              start: frameIndex + spriteConfig.animation.frameCount,
-              end: frameIndex + spriteConfig.animation.frameCount + spriteConfig.auxAnimation.frameCount - 1
-            }
-          ),
-          repeat: -1,
-        });
+        sprite.anims.create(this.getAnimation(animation2, spriteConfig.auxAnimation, frameIndex + spriteConfig.animation.frameCount));
       }
 
       sprite.play({
@@ -616,6 +600,21 @@ export default class LevelGui extends Phaser.Scene {
     }
 
     return sprite;
+  }
+
+  private getAnimation(key: string, animationConfig: AnimationConfig, startIndex: number): Phaser.Types.Animations.Animation {
+    return {
+      key: key,
+      frameRate: animationConfig.framesPerSecond || 7,
+      frames: this.anims.generateFrameNumbers(
+        this.tilesetName,
+        {
+          start: startIndex,
+          end: startIndex + animationConfig.frameCount - 1
+        }
+      ),
+      repeat: -1,
+    };
   }
 
   private async saveLevelMatrix() {

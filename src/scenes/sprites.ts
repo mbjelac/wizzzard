@@ -2,13 +2,13 @@ import { Coords } from "../engine/Errand";
 
 export interface SpriteConfig {
   tileCoords: Coords;
-  animation?: Animation;
-  auxAnimation?: Animation;
+  animation?: AnimationConfig;
+  auxAnimation?: AnimationConfig;
   variants: Coords[];
   soundEffect?: string;
 }
 
-export interface Animation {
+export interface AnimationConfig {
   frameCount: number;
   framesPerSecond?: number;
   uniformStartFrame?: boolean;
@@ -18,8 +18,8 @@ export interface Animation {
 function spriteConfig(
   config: {
     coords: Coords;
-    animation?: Animation;
-    auxAnimation?: Animation;
+    animation?: AnimationConfig;
+    auxAnimation?: AnimationConfig;
     variants?: Coords[];
     soundEffect?: string;
   }
@@ -52,7 +52,17 @@ export const SPRITE_CONFIGS = {
   town: {
     wall: {
       brownStone: spriteAt(4, 3),
+      brownStoneDark: spriteAt(5, 3),
       brick: spriteAt(4, 0),
+      mud: spriteAt(12, 5),
+      torch:
+        spriteConfig({
+          coords: { x: 12, y: 4 },
+          animation: {
+            frameCount: 4,
+            framesPerSecond: 8
+          }
+        })
     },
     stairs: {
       brownStone: {
@@ -66,13 +76,22 @@ export const SPRITE_CONFIGS = {
       coords: { x: 1, y: 0 },
       soundEffect: "grassStep"
     }),
-    dirt: spriteAt(2, 0),
+    dirt_old: spriteAt(2, 0),
+    dirt: spriteConfig({
+      coords: { x: 12, y: 7 },
+      variants: [
+        { x: 12, y: 7 },
+        { x: 13, y: 7 },
+        { x: 14, y: 7 },
+      ]
+    }),
     window: {
       green: spriteAt(5, 0),
     },
     floor: {
       wooden: spriteAt(6, 0),
-      stone: spriteAt(6, 1)
+      stone: spriteAt(6, 1),
+      earth: spriteAt(12, 6)
     },
     furniture: {
       wooden: {
@@ -212,6 +231,36 @@ export const SPRITE_CONFIGS = {
             vertical: spriteAt(8, 7),
             horizontal: spriteAt(9, 7),
           },
+        }
+      },
+      darkBrownEmerald: {
+        keyhole: {
+          closed: {
+            vertical: spriteConfig(
+              {
+                coords: { x: 6, y: 4 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
+            horizontal: spriteConfig(
+              {
+                coords: { x: 6, y: 5 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
+          }
         }
       }
     },
@@ -433,6 +482,8 @@ export const SPRITE_CONFIGS = {
         framesPerSecond: 4
       }
     }),
+    jar: spriteAt(0,29),
+    book: spriteAt(1, 29)
   }
 }
 
