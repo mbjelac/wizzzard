@@ -4,7 +4,7 @@ import { Direction } from "../engine/Direction";
 import { TILE_SIZE } from "../config";
 import { GAME } from "../engine/game";
 import { Coords, Errand, ThingDescription } from "../engine/Errand";
-import { AnimationConfig, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION, SpriteConfig } from "./sprites";
+import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION, SpriteConfig } from "./sprites";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
 
@@ -83,6 +83,8 @@ export default class LevelGui extends Phaser.Scene {
   private ambientSound: AmbientSound | undefined;
   private soundEffectPlayed = false;
 
+  private inputEventsBlocked = false;
+
   constructor() {
     super('level');
   }
@@ -127,19 +129,43 @@ export default class LevelGui extends Phaser.Scene {
 
     this.player = this.addSpriteFromTileset("wizard", playerPixelCoords).setDepth(depths.player);
 
-    this.player.anims.create({
-      key: "drowning",
-
-    });
+    this.createPlayerAnimation(
+      "drowning",
+      {
+        frameCount: 7,
+        framesPerSecond: 10,
+        uniformStartFrame: true
+      },
+      1
+    );
+    this.createPlayerAnimation(
+      "burning",
+      {
+        frameCount: 7,
+        framesPerSecond: 10,
+        uniformStartFrame: true
+      },
+      8
+    );
 
     this.createdNonThings.push(this.player);
-
 
     this.displayInventory();
 
     this.playAmbientSound(this.level.errand.initialAmbientSound);
 
     this.cameras.main.startFollow(this.player).setFollowOffset(-3 * TILE_SIZE + tileCenterOffset, 0);
+  }
+
+  private createPlayerAnimation(playerDeath: PlayerDeath, animationConfig: AnimationConfig, playerTileOffset: number) {
+    this.player.anims.create(
+      this.getAnimation(
+        playerDeath,
+        animationConfig,
+        getSpriteFrameIndex(SPRITE_CONFIG_WIZARD.tileCoords) + playerTileOffset,
+        false
+      )
+    );
   }
 
   private playAmbientSound(soundName?: string) {
@@ -241,6 +267,10 @@ export default class LevelGui extends Phaser.Scene {
     console.log("Level create");
 
     this.input.keyboard.on('keydown', async (event: KeyboardEvent) => {
+
+      if (this.inputEventsBlocked) {
+        return;
+      }
 
       if (this.levelComplete) {
         if (event.code === "Enter") {
@@ -412,11 +442,6 @@ export default class LevelGui extends Phaser.Scene {
 
     const moveResult = this.level.tryToMove(direction);
 
-    if (moveResult.died) {
-      await this.populateLevel();
-      return;
-    }
-
     this.removeSpritesOfRemovedThings(moveResult.removedThings);
     this.updateAnimationsOfThingsWhichChangedState(moveResult.changedState);
 
@@ -452,6 +477,10 @@ export default class LevelGui extends Phaser.Scene {
 
     if (moveResult.moved) {
       this.playSoundEffectOnMove();
+    }
+
+    if (moveResult.died) {
+      await this.playerDied();
     }
 
     this.updateAmbientSound();
@@ -570,11 +599,9 @@ export default class LevelGui extends Phaser.Scene {
       throw new Error("Could not find sprite config for " + name);
     }
 
-    const tileSetWidth = 40;
-
     const tileCoords = getTileCoords(spriteConfig);
+    const frameIndex = getSpriteFrameIndex(tileCoords);
 
-    const frameIndex = tileCoords.y * tileSetWidth + tileCoords.x;
     const sprite = this.physics.add
       .sprite(coords.x, coords.y, this.tilesetName, frameIndex)
       .setDisplaySize(64, 64);
@@ -602,7 +629,7 @@ export default class LevelGui extends Phaser.Scene {
     return sprite;
   }
 
-  private getAnimation(key: string, animationConfig: AnimationConfig, startIndex: number): Phaser.Types.Animations.Animation {
+  private getAnimation(key: string, animationConfig: AnimationConfig, startIndex: number, loopsForever: boolean = true): Phaser.Types.Animations.Animation {
     return {
       key: key,
       frameRate: animationConfig.framesPerSecond || 7,
@@ -613,7 +640,7 @@ export default class LevelGui extends Phaser.Scene {
           end: startIndex + animationConfig.frameCount - 1
         }
       ),
-      repeat: -1,
+      repeat: loopsForever ? -1 : 0,
     };
   }
 
@@ -696,6 +723,30 @@ export default class LevelGui extends Phaser.Scene {
 
     this.playAmbientSound(ambientSoundThing?.description?.label);
   }
+
+  private async playerDied() {
+
+    this.inputEventsBlocked = true;
+
+    const playerDeath: PlayerDeath = this
+        .level
+        .getLocation(this.level.getPlayerCoords())
+        ?.things
+        .map(thing => SPRITE_CONFIGS_BY_LOCATION.get(thing.description.sprite))
+        .find(spriteConfig => spriteConfig?.playerDeath !== undefined)
+        ?.playerDeath
+      || "drowning";
+
+    this.player.anims.play(playerDeath);
+
+    setTimeout(
+      () => {
+        this.inputEventsBlocked = false;
+        this.populateLevel();
+      },
+      2000
+    );
+  }
 }
 
 function disableKeyEventsOnEditorWidgets() {
@@ -731,4 +782,9 @@ function keyToDirection(eventKey: string): Direction | undefined {
 
 function setEditorInfo(text: string) {
   (document.getElementById("editor-info-panel")! as HTMLInputElement).textContent = text;
+}
+
+function getSpriteFrameIndex(tileCoords: Coords): number {
+  const tileSetWidth = 40;
+  return tileCoords.y * tileSetWidth + tileCoords.x;
 }

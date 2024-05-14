@@ -6,6 +6,7 @@ export interface SpriteConfig {
   auxAnimation?: AnimationConfig;
   variants: Coords[];
   soundEffect?: string;
+  playerDeath?: PlayerDeath;
 }
 
 export interface AnimationConfig {
@@ -22,6 +23,7 @@ function spriteConfig(
     auxAnimation?: AnimationConfig;
     variants?: Coords[];
     soundEffect?: string;
+    playerDeath?: PlayerDeath;
   }
 ): SpriteConfig {
   return {
@@ -46,6 +48,8 @@ export const SPRITE_CONFIGS_BY_LOCATION: Map<string, SpriteConfig> = new Map();
 
 export const SPRITE_CONFIG_VOID = spriteAt(0, 7);
 export const SPRITE_CONFIG_WIZARD = spriteAt(0, 10);
+
+export type PlayerDeath = "drowning" | "burning" | "falling";
 
 export const SPRITE_CONFIGS = {
   transparent: spriteAt(1, 7),
@@ -372,7 +376,8 @@ export const SPRITE_CONFIGS = {
         animation: {
           frameCount: 6,
           framesPerSecond: 5
-        }
+        },
+        playerDeath: "drowning"
       }),
       surfaceBobbing: spriteConfig({
         coords: { x: 0, y: 21 },
@@ -473,7 +478,8 @@ export const SPRITE_CONFIGS = {
       },
       auxAnimation: {
         frameCount: 1
-      }
+      },
+      playerDeath: "burning"
     }),
     waterBucket: spriteConfig({
       coords: { x: 0, y: 28 },
