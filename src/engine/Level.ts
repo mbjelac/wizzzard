@@ -174,6 +174,8 @@ export class Level {
 
     changedStateThings.push(...this.bridgeBridges(pushedThings, direction));
 
+    changedStateThings.push(...nextLocation.things.filter(thing => thing.is("automatic")));
+
     return {
       moved: canMove,
       died: this.doesLocationHaveProperty(nextLocation, "death") && hasNotReceived,

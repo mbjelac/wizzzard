@@ -134,11 +134,21 @@ export const SPRITE_CONFIGS = {
       greenYellow: {
         knob: {
           closed: {
-            vertical: spriteAt(4, 1),
-            horizontal: spriteAt(5, 1),
+            vertical: spriteConfig({
+                coords: { x: 4, y: 1 },
+                animation: { frameCount: 1 },
+                auxAnimation: { frameCount: 1 },
+              }
+            ),
+            horizontal: spriteConfig({
+                coords: { x: 4, y: 2 },
+                animation: { frameCount: 1 },
+                auxAnimation: { frameCount: 1 },
+              }
+            )
           },
           open: {
-            west: spriteAt(4, 2),
+            west: spriteAt(5, 1),
             south: spriteAt(5, 2),
             east: spriteAt(6, 2),
             north: spriteAt(7, 2),
@@ -488,7 +498,7 @@ export const SPRITE_CONFIGS = {
         framesPerSecond: 4
       }
     }),
-    jar: spriteAt(0,29),
+    jar: spriteAt(0, 29),
     book: spriteAt(1, 29)
   }
 }

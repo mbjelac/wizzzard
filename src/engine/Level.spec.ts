@@ -1164,6 +1164,21 @@ describe("teleportation", () => {
 
 });
 
+it("automatic changes state on move to it's location", ()=> {
+
+  level = createLevel(
+    "     ",
+    "     ",
+    "     ",
+  );
+
+  const automaticThing = addThing(2, 1, "automatic");
+
+  const changedThings = level.tryToMove(Direction.RIGHT).changedState;
+
+  expect(changedThings).toEqual([automaticThing]);
+});
+
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
   return addThingWithProps({
     x: x,
