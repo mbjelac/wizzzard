@@ -7,6 +7,7 @@ import { Coords, Errand, ThingDescription } from "../engine/Errand";
 import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION, SpriteConfig } from "./sprites";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
+import { clearLabelText, getLabelText } from "./editor-panel";
 
 const tileCenterOffset = TILE_SIZE / 2;
 
@@ -517,6 +518,8 @@ export default class LevelGui extends Phaser.Scene {
     this.addThingSprite(locationPixelCoords, levelLocation, addResult.addedThing);
 
     await this.saveLevelMatrix();
+
+    clearLabelText();
   }
 
   private getThingDescription(): ThingDescription | undefined {
@@ -528,7 +531,7 @@ export default class LevelGui extends Phaser.Scene {
     }
 
     return {
-      label: (document.getElementById("editor-label")! as HTMLInputElement).value || undefined,
+      label: getLabelText(),
       sprite: selectedSprite,
       properties: ALL_THING_PROPERTIES.filter(property => (document.getElementById(`editor-property-${property}`)! as HTMLInputElement).checked),
       text: (document.getElementById("editor-text")! as HTMLInputElement).value || undefined

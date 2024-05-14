@@ -71,3 +71,11 @@ function loadPropertiesList() {
                 </div>\n`;
     });
 }
+
+export function getLabelText(): string | undefined {
+  return (document.getElementById("editor-label")! as HTMLInputElement).value || undefined
+}
+
+export function clearLabelText() {
+  (document.getElementById("editor-label")! as HTMLInputElement).value = "";
+}
