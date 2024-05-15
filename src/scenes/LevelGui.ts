@@ -1,23 +1,16 @@
 import Phaser from 'phaser';
 import { ALL_THING_PROPERTIES, Level, LevelLocation, Thing } from "../engine/Level";
 import { Direction } from "../engine/Direction";
-import { TILE_SIZE } from "../config";
+import { TILE_SIZE, tileCenterOffset } from "../config";
 import { GAME } from "../engine/game";
 import { Coords, Errand, ThingDescription } from "../engine/Errand";
 import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION, SpriteConfig } from "./sprites";
+import { clearLabelText, getLabelText } from "./editor-panel";
+import depths from "./depths";
+import { DialogBox } from "./DialogBox";
+import toPixelCoords from "./toPixelCoords";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
-import { clearLabelText, getLabelText } from "./editor-panel";
-
-const tileCenterOffset = TILE_SIZE / 2;
-
-const depths = {
-  void: -1,
-  decorations: 10,
-  player: 9,
-  infoBackground: 11,
-  info: 12
-};
 
 const animation1 = "animation1";
 const animation2 = "animation2";
@@ -55,17 +48,6 @@ export default class LevelGui extends Phaser.Scene {
 
   private sideTextString: string = "";
 
-  // @ts-ignore
-  private messagePanel: Phaser.GameObjects.Sprite;
-
-  // @ts-ignore
-  private messageText: Phaser.GameObjects.Text;
-
-  // @ts-ignore
-  private messageFooterText: Phaser.GameObjects.Text;
-
-  private messageTextString: string = "";
-
   // @ts-ignore undefined - has to be set before usage (fail fast)
   private level: Level;
 
@@ -86,6 +68,8 @@ export default class LevelGui extends Phaser.Scene {
 
   private inputEventsBlocked = false;
 
+  private readonly dialogBox = new DialogBox();
+
   constructor() {
     super('level');
   }
@@ -95,6 +79,7 @@ export default class LevelGui extends Phaser.Scene {
     this.load.spritesheet(this.tilesetName, "assets/tileset.png", { frameWidth: 16, frameHeight: 16 });
     this.load.image("panel", "assets/panel.png");
     this.load.image("messagePanel", "assets/message-panel.png");
+    this.load.image("button", "assets/button.png");
 
     this.load.audio("summerMeadow", "assets/sounds/ambient/summer-meadow.mp3");
     this.load.audio("forest", "assets/sounds/ambient/forest.mp3");
@@ -267,15 +252,19 @@ export default class LevelGui extends Phaser.Scene {
   create() {
     console.log("Level create");
 
+    this.dialogBox.initialize(this);
+
     this.input.keyboard.on('keydown', async (event: KeyboardEvent) => {
 
       if (this.inputEventsBlocked) {
         return;
       }
 
-      if (this.levelComplete) {
-        if (event.code === "Enter") {
-          this.exitLevel();
+      if (this.dialogBox.isShown()) {
+        const eventHandler = this.dialogBox.getEventHandler(event.code);
+        if (eventHandler !== undefined) {
+          this.dialogBox.hide();
+          eventHandler();
         }
         return;
       }
@@ -287,7 +276,16 @@ export default class LevelGui extends Phaser.Scene {
       }
 
       if (event.code === "Escape") {
-        this.exitLevel();
+        this.dialogBox.show(
+          toPixelCoords(this.level.getPlayerCoords()),
+          "Tired already, fellow traveller?\n\nChoose your path:",
+          {
+            text: "Continue", keyboardShortcutDescription: "Esc", keyEventCode: "Escape", eventHandler: () => {
+            }
+          },
+          { text: "Abandon", keyboardShortcutDescription: "Q", keyEventCode: "KeyQ", eventHandler: () => this.exitLevel() },
+          { text: "Restart", keyboardShortcutDescription: "R", keyEventCode: "KeyR", eventHandler: () => this.populateLevel() },
+        )
         return;
       }
     });
@@ -318,35 +316,6 @@ export default class LevelGui extends Phaser.Scene {
       .setDisplaySize(320, 832)
       .setDepth(depths.infoBackground);
 
-    this.messagePanel = this
-      .physics
-      .add
-      .sprite(0, 0, "messagePanel")
-      .setDisplaySize(640, 320)
-      .setDepth(depths.infoBackground);
-
-    this.messageText = this.add
-      .text(0, 0, "", {
-          color: "#FFF03C",
-          strokeThickness: 0,
-          fontSize: "20px",
-          fontFamily: "VinqueRg",
-          wordWrap: { width: 400 },
-          padding: { x: 60 }
-        }
-      )
-      .setDepth(depths.info);
-
-    this.messageFooterText = this.add
-      .text(0, 0, "Press Enter", {
-          color: "#FFCA52",
-          strokeThickness: 0,
-          fontSize: "10px",
-          wordWrap: { width: 100 },
-          padding: { x: 0 }
-        }
-      )
-      .setDepth(depths.info);
   }
 
   private exitLevel() {
@@ -360,7 +329,6 @@ export default class LevelGui extends Phaser.Scene {
     this.updateSidePanel(playerLocation);
     this.updateSideText(playerLocation);
     this.updateInventory(playerLocation);
-    this.updateMessagePanel(playerLocation);
 
     disableKeyEventsOnEditorWidgets();
 
@@ -411,32 +379,6 @@ export default class LevelGui extends Phaser.Scene {
     });
   }
 
-  private updateMessagePanel(playerLocation: Coords) {
-
-    this.messagePanel.setVisible(this.levelComplete);
-    this.messageText.setVisible(this.levelComplete);
-    this.messageFooterText.setVisible(this.levelComplete);
-
-    if (!this.levelComplete) {
-      return;
-    }
-
-    this.messageTextString = "Congratulations!\nYou have completed this errand.";
-
-    const pixelCoords = toPixelCoords({
-      x: playerLocation.x,
-      y: playerLocation.y
-    });
-
-    this.messagePanel.setX(pixelCoords.x);
-    this.messagePanel.setY(pixelCoords.y);
-    this.messageText.setX(pixelCoords.x - 300);
-    this.messageText.setY(pixelCoords.y - 130);
-    this.messageFooterText.setX(pixelCoords.x);
-    this.messageFooterText.setY(pixelCoords.y + 120);
-    this.messageText.setText(this.messageTextString);
-  }
-
   private async move(direction: Direction) {
 
     this.soundEffectPlayed = false;
@@ -449,6 +391,16 @@ export default class LevelGui extends Phaser.Scene {
     this.displayInventory();
 
     if (moveResult.levelComplete) {
+      this.dialogBox.show(
+        toPixelCoords(this.level.getPlayerCoords()),
+        "Congratulations!\n\nYou have completed this errand.",
+        {
+          text: "Exit",
+          keyboardShortcutDescription: "Enter",
+          keyEventCode: "Enter",
+          eventHandler: () => this.exitLevel()
+        }
+      );
       this.levelComplete = true;
     }
 
@@ -760,14 +712,6 @@ function disableKeyEventsOnEditorWidgets() {
       widget.blur();
     }
   });
-}
-
-
-function toPixelCoords(coords: Coords): Coords {
-  return {
-    x: coords.x * TILE_SIZE + tileCenterOffset,
-    y: coords.y * TILE_SIZE + tileCenterOffset
-  }
 }
 
 function keyToDirection(eventKey: string): Direction | undefined {

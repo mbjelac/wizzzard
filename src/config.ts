@@ -3,6 +3,8 @@ import Zoom = Phaser.Scale.Zoom;
 
 export const TILE_SIZE = 64;
 
+export const tileCenterOffset = TILE_SIZE / 2;
+
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: 'game',
