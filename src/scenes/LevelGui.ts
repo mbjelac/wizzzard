@@ -172,6 +172,16 @@ export default class LevelGui extends Phaser.Scene {
     this.ambientSound.sound.play();
   }
 
+  private stopPlayingAmbientSound() {
+    if (this.ambientSound === undefined) {
+      return;
+    }
+
+    this.ambientSound.sound.stop();
+    this.ambientSound.sound.destroy();
+    this.ambientSound = undefined;
+  }
+
   private clearLevel() {
 
     this.createdNonThings.forEach(createdObject => createdObject.destroy(true));
@@ -278,14 +288,11 @@ export default class LevelGui extends Phaser.Scene {
       if (event.code === "Escape") {
         this.dialogBox.show(
           toPixelCoords(this.level.getPlayerCoords()),
-          "Tired already, fellow traveller?\n\nChoose your path:",
-          {
-            text: "Continue", keyboardShortcutDescription: "Esc", keyEventCode: "Escape", eventHandler: () => {
-            }
-          },
-          { text: "Abandon", keyboardShortcutDescription: "Q", keyEventCode: "KeyQ", eventHandler: () => this.exitLevel() },
-          { text: "Restart", keyboardShortcutDescription: "R", keyEventCode: "KeyR", eventHandler: () => this.populateLevel() },
-        )
+          "Tired already, fellow traveller?",
+          { text: "Continue", keyboardShortcutDescription: " Esc", keyEventCode: "Escape", eventHandler: () => console.log("Nothing") },
+          { text: "Leave", keyboardShortcutDescription: "  L", keyEventCode: "KeyL", eventHandler: () => this.exitLevel() },
+          { text: "Restart", keyboardShortcutDescription: "  R", keyEventCode: "KeyR", eventHandler: () => this.populateLevel() },
+        );
         return;
       }
     });
@@ -697,7 +704,17 @@ export default class LevelGui extends Phaser.Scene {
     setTimeout(
       () => {
         this.inputEventsBlocked = false;
-        this.populateLevel();
+        this.stopPlayingAmbientSound();
+        this.dialogBox.show(
+          toPixelCoords(this.level.getPlayerCoords()),
+          playerDeath === "drowning"
+            ? "You have drowned."
+            : playerDeath === "burning"
+              ? "You have perished in the fire."
+              : "You have died.",
+          { text: "Abandon", keyboardShortcutDescription: "  A", keyEventCode: "KeyA", eventHandler: () => this.exitLevel() },
+          { text: "Restart", keyboardShortcutDescription: "  R", keyEventCode: "KeyR", eventHandler: () => this.populateLevel() }
+        );
       },
       2000
     );

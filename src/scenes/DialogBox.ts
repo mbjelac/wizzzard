@@ -1,8 +1,5 @@
-import { Scene } from "phaser";
 import depths from "./depths";
 import { Coords } from "../engine/Errand";
-import toPixelCoords from "./toPixelCoords";
-import config from "../config";
 
 const MAX_NUMBER_OF_BUTTONS = 3;
 
@@ -61,18 +58,18 @@ export class DialogBox {
             .setDepth(depths.infoBackground),
           text: scene.add
             .text(0, 0, "", {
-                color: "#FFD475",
-                strokeThickness: 0,
-                fontSize: "20px",
+              color: "#FFD475",
+              strokeThickness: 0,
+              fontSize: "20px",
               fontFamily: "VinqueRg"
             })
             .setDepth(depths.info),
           keyboardShortcutDescription: scene.add
             .text(0, 0, "", {
-                color: "#B79E69",
-                strokeThickness: 0,
-                fontSize: "10px"
-              })
+              color: "#B79E69",
+              strokeThickness: 0,
+              fontSize: "10px"
+            })
             .setDepth(depths.info)
         }
       )
@@ -82,7 +79,7 @@ export class DialogBox {
   show(
     location: Coords,
     text: string,
-       ...buttons: ButtonConfig[]
+    ...buttons: ButtonConfig[]
   ) {
     this.buttonConfigs = buttons;
     this.shown = true;
@@ -98,7 +95,48 @@ export class DialogBox {
         config.keyboardShortcutDescription.setVisible(true);
       });
 
-    this.update(location);
+    this.updateGraphics(location);
+  }
+
+  private readonly buttonXCoordsByButtonAmounts = new Map<number, number[]>()
+    .set(1, [0])
+    .set(2, [-100, 100])
+    .set(3, [-180, 0, 180]);
+
+  private updateGraphics(pixelCoords: Coords) {
+
+    if (!this.shown) {
+      return;
+    }
+
+    this.background.setX(pixelCoords.x);
+    this.background.setY(pixelCoords.y);
+    this.textSprite.setX(pixelCoords.x - 300);
+    this.textSprite.setY(pixelCoords.y - 100);
+
+    const buttonY = pixelCoords.y + 80;
+    const buttonAmount = this.buttonConfigs.length;
+
+    this
+      .buttonSpriteConfigs
+      .filter((_, index) => index < buttonAmount)
+      .forEach((config, index) => {
+
+        const buttonX = pixelCoords.x + this.buttonXCoordsByButtonAmounts.get(buttonAmount)![index];
+
+        config.background.setX(buttonX);
+        config.background.setY(buttonY);
+
+        const text = this.buttonConfigs[index].text;
+
+        config.text.setX(buttonX - 5 * text.length);
+        config.text.setY(buttonY - 9);
+        config.text.setText(text);
+
+        config.keyboardShortcutDescription.setX(buttonX - 2 * text.length);
+        config.keyboardShortcutDescription.setY(buttonY + 14);
+        config.keyboardShortcutDescription.setText(this.buttonConfigs[index].keyboardShortcutDescription);
+      });
   }
 
   isShown(): boolean {
@@ -115,44 +153,6 @@ export class DialogBox {
         config.background.setVisible(false);
         config.text.setVisible(false);
         config.keyboardShortcutDescription.setVisible(false);
-      });
-  }
-
-  private update(pixelCoords: Coords) {
-
-    if (!this.shown) {
-      return;
-    }
-
-    this.background.setX(pixelCoords.x);
-    this.background.setY(pixelCoords.y);
-    this.textSprite.setX(pixelCoords.x - 300);
-    this.textSprite.setY(pixelCoords.y - 130);
-
-    const buttonLeftX = pixelCoords.x - 200;
-    const buttonY = pixelCoords.y + 80;
-    const buttonAmount = this.buttonConfigs.length;
-    const buttonGap = buttonAmount > 0 ? 560 / buttonAmount : 0;
-
-    this
-      .buttonSpriteConfigs
-      .filter((_, index) => index < buttonAmount)
-      .forEach((config, index) => {
-
-        const buttonX = buttonLeftX + index * buttonGap
-
-        config.background.setX(buttonX);
-        config.background.setY(buttonY);
-
-        const text = this.buttonConfigs[index].text;
-
-        config.text.setX(buttonX - 5 * text.length);
-        config.text.setY(buttonY - 9);
-        config.text.setText(text);
-
-        config.keyboardShortcutDescription.setX(buttonX - 2 * text.length);
-        config.keyboardShortcutDescription.setY(buttonY + 14);
-        config.keyboardShortcutDescription.setText(this.buttonConfigs[index].keyboardShortcutDescription);
       });
   }
 
