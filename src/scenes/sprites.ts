@@ -73,6 +73,9 @@ export const SPRITE_CONFIGS = {
       brownStone: {
         up: spriteAt(6, 3),
         down: spriteAt(7, 3)
+      },
+      ladder: {
+        yellow: spriteAt(10, 3)
       }
     },
     tree: spriteAt(0, 0),
@@ -81,15 +84,24 @@ export const SPRITE_CONFIGS = {
       coords: { x: 1, y: 0 },
       soundEffect: "grassStep"
     }),
-    dirt_old: spriteAt(2, 0),
-    dirt: spriteConfig({
-      coords: { x: 12, y: 7 },
-      variants: [
-        { x: 12, y: 7 },
-        { x: 13, y: 7 },
-        { x: 14, y: 7 },
-      ]
-    }),
+    dirt: {
+      light: spriteConfig({
+        coords: { x: 12, y: 7 },
+        variants: [
+          { x: 12, y: 7 },
+          { x: 13, y: 7 },
+          { x: 14, y: 7 },
+        ]
+      }),
+      dark: spriteConfig({
+        coords: { x: 12, y: 8 },
+        variants: [
+          { x: 12, y: 8 },
+          { x: 13, y: 8 },
+          { x: 14, y: 8 },
+        ]
+      }),
+    },
     window: {
       green: spriteAt(5, 0),
     },
@@ -324,10 +336,16 @@ export const SPRITE_CONFIGS = {
     bush: spriteConfig({
       coords: { x: 6, y: 17 },
       variants: [
-        { x: 7, y: 17 },
         { x: 8, y: 17 },
-        { x: 9, y: 17 },
-      ]
+        { x: 10, y: 17 },
+        { x: 12, y: 17 },
+      ],
+      animation: {
+        frameCount: 1
+      },
+      auxAnimation: {
+        frameCount: 1
+      }
     }),
     floor: spriteAt(3, 0, "forestStep"),
     woodenWall: {
