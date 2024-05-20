@@ -31,7 +31,8 @@ function spriteConfig(
     animation: config.animation,
     auxAnimation: config.auxAnimation,
     variants: config.variants || [],
-    soundEffect: config.soundEffect
+    soundEffect: config.soundEffect,
+    playerDeath: config.playerDeath
   };
 }
 
