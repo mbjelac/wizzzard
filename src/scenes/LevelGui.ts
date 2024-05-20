@@ -438,12 +438,11 @@ export default class LevelGui extends Phaser.Scene {
       this.playSoundEffectOnMove();
     }
 
+    this.updateAmbientSound();
+
     if (moveResult.died) {
       await this.playerDied();
-      return;
     }
-
-    this.updateAmbientSound();
   }
 
   private removeSpritesOfRemovedThings(removedThings: Thing[]) {
