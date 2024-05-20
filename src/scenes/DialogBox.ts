@@ -34,7 +34,8 @@ export class DialogBox {
       .add
       .sprite(0, 0, "messagePanel")
       .setDisplaySize(640, 320)
-      .setDepth(depths.infoBackground);
+      .setDepth(depths.infoBackground)
+      .setVisible(false);
 
     this.textSprite = scene.add
       .text(0, 0, "", {
@@ -46,7 +47,8 @@ export class DialogBox {
           padding: { x: 60 }
         }
       )
-      .setDepth(depths.info);
+      .setDepth(depths.info)
+      .setVisible(false);
 
     this.buttonSpriteConfigs = Array(MAX_NUMBER_OF_BUTTONS).fill(0).map(_ => (
         {
@@ -55,7 +57,8 @@ export class DialogBox {
             .add
             .sprite(0, 0, "button")
             .setDisplaySize(124, 64)
-            .setDepth(depths.infoBackground),
+            .setDepth(depths.infoBackground)
+            .setVisible(false),
           text: scene.add
             .text(0, 0, "", {
               color: "#FFD475",
@@ -63,7 +66,8 @@ export class DialogBox {
               fontSize: "20px",
               fontFamily: "VinqueRg"
             })
-            .setDepth(depths.info),
+            .setDepth(depths.info)
+            .setVisible(false),
           keyboardShortcutDescription: scene.add
             .text(0, 0, "", {
               color: "#B79E69",
@@ -71,6 +75,7 @@ export class DialogBox {
               fontSize: "10px"
             })
             .setDepth(depths.info)
+            .setVisible(false)
         }
       )
     );
