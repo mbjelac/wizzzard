@@ -339,8 +339,7 @@ export default class LevelGui extends Phaser.Scene {
 
     disableKeyEventsOnEditorWidgets();
 
-    const collisions = (document.getElementById("editor-collisions")! as HTMLInputElement).checked;
-    this.level.collisionEnabled = collisions;
+    this.level.collisionEnabled = (document.getElementById("editor-collisions")! as HTMLInputElement).checked;
   }
 
   private updateSidePanel(playerLocation: Coords) {
@@ -441,6 +440,7 @@ export default class LevelGui extends Phaser.Scene {
 
     if (moveResult.died) {
       await this.playerDied();
+      return;
     }
 
     this.updateAmbientSound();
