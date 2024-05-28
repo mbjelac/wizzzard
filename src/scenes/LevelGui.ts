@@ -80,6 +80,7 @@ export default class LevelGui extends Phaser.Scene {
     this.load.image("panel", "assets/panel.png");
     this.load.image("messagePanel", "assets/message-panel.png");
     this.load.image("button", "assets/button.png");
+    this.load.image("buttonPressed", "assets/button_pressed.png");
 
     this.load.audio("summerMeadow", "assets/sounds/ambient/summer-meadow.mp3");
     this.load.audio("forest", "assets/sounds/ambient/forest.mp3");

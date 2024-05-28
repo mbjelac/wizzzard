@@ -30,6 +30,9 @@ export class DialogBox {
 
   private buttonConfigs: ButtonConfig[] = [];
 
+  private buttonTextColor = "#FFF03C";
+  private buttonTextColorPressed = "#CEA54F";
+
   initialize(scene: Phaser.Scene) {
     this.background = scene
       .add
@@ -40,7 +43,7 @@ export class DialogBox {
 
     this.textSprite = scene.add
       .text(0, 0, "", {
-          color: "#FFF03C",
+          color: this.buttonTextColor,
           strokeThickness: 0,
           fontSize: "20px",
           fontFamily: "VinqueRg",
@@ -62,14 +65,8 @@ export class DialogBox {
             .setVisible(false)
             .setInteractive()
             .on('pointerdown', async (pointer: Pointer) => {
-              console.log("button press", index, this.buttonConfigs[index]);
               if (pointer.leftButtonDown()) {
-                const eventHandler = this.buttonConfigs[index]?.eventHandler;
-                if (eventHandler !== undefined) {
-                  console.log("Event handler", index, eventHandler);
-                  this.hide();
-                  eventHandler();
-                }
+                this.pressButton(index);
               }
             }),
           text: scene.add
@@ -175,17 +172,49 @@ export class DialogBox {
   }
 
   handleKeyInput(code: string) {
-    const eventHandler = this.getEventHandler(code);
-    if (eventHandler !== undefined) {
-      this.hide();
-      eventHandler();
+    const buttonIndex = this.getButtonIndexFromKeyCode(code);
+    if (buttonIndex !== undefined) {
+      this.pressButton(buttonIndex);
     }
   }
 
-  private getEventHandler(keyCode: string): (() => void) | undefined {
-    return this
+  private getButtonIndexFromKeyCode(keyCode: string): number | undefined {
+    const index = this
       .buttonConfigs
-      .find(buttonConfig => buttonConfig.keyEventCode === keyCode)
-      ?.eventHandler;
+      .findIndex(buttonConfig => buttonConfig.keyEventCode === keyCode);
+
+    return index === -1 ? undefined : index;
+  }
+
+  private blockButtons = false;
+
+  private pressButton(buttonIndex: number) {
+
+    if (this.blockButtons) {
+      return;
+    }
+
+    this.blockButtons = true;
+
+    const eventHandler = this.buttonConfigs[buttonIndex].eventHandler;
+
+    const buttonSpriteConfig = this.buttonSpriteConfigs[buttonIndex];
+
+    this.buttonSpriteConfigs.forEach(config => config.background.setInteractive(false));
+    buttonSpriteConfig!.background.setTexture("buttonPressed");
+    buttonSpriteConfig!.text.setColor(this.buttonTextColorPressed);
+    buttonSpriteConfig!.keyboardShortcutDescription.setColor(this.buttonTextColorPressed);
+
+    setTimeout(
+      () => {
+        this.hide();
+        this.buttonSpriteConfigs.forEach(config => config.background.setInteractive(true));
+        buttonSpriteConfig!.background.setTexture("button");
+        buttonSpriteConfig!.text.setColor(this.buttonTextColor);
+        buttonSpriteConfig!.keyboardShortcutDescription.setColor(this.buttonTextColor);
+        eventHandler();
+        this.blockButtons = false;
+      },
+      200);
   }
 }
