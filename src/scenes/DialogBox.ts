@@ -1,5 +1,6 @@
 import depths from "./depths";
 import { Coords } from "../engine/Errand";
+import Pointer = Phaser.Input.Pointer;
 
 const MAX_NUMBER_OF_BUTTONS = 3;
 
@@ -50,7 +51,7 @@ export class DialogBox {
       .setDepth(depths.info)
       .setVisible(false);
 
-    this.buttonSpriteConfigs = Array(MAX_NUMBER_OF_BUTTONS).fill(0).map(_ => (
+    this.buttonSpriteConfigs = Array(MAX_NUMBER_OF_BUTTONS).fill(0).map((_, index) => (
         {
           background: scene
             .physics
@@ -58,7 +59,19 @@ export class DialogBox {
             .sprite(0, 0, "button")
             .setDisplaySize(124, 64)
             .setDepth(depths.infoBackground)
-            .setVisible(false),
+            .setVisible(false)
+            .setInteractive()
+            .on('pointerdown', async (pointer: Pointer) => {
+              console.log("button press", index, this.buttonConfigs[index]);
+              if (pointer.leftButtonDown()) {
+                const eventHandler = this.buttonConfigs[index]?.eventHandler;
+                if (eventHandler !== undefined) {
+                  console.log("Event handler", index, eventHandler);
+                  this.hide();
+                  eventHandler();
+                }
+              }
+            }),
           text: scene.add
             .text(0, 0, "", {
               color: "#FFD475",
@@ -161,7 +174,15 @@ export class DialogBox {
       });
   }
 
-  getEventHandler(keyCode: string): (() => void) | undefined {
+  handleKeyInput(code: string) {
+    const eventHandler = this.getEventHandler(code);
+    if (eventHandler !== undefined) {
+      this.hide();
+      eventHandler();
+    }
+  }
+
+  private getEventHandler(keyCode: string): (() => void) | undefined {
     return this
       .buttonConfigs
       .find(buttonConfig => buttonConfig.keyEventCode === keyCode)

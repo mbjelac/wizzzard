@@ -271,11 +271,7 @@ export default class LevelGui extends Phaser.Scene {
       }
 
       if (this.dialogBox.isShown()) {
-        const eventHandler = this.dialogBox.getEventHandler(event.code);
-        if (eventHandler !== undefined) {
-          this.dialogBox.hide();
-          eventHandler();
-        }
+        this.dialogBox.handleKeyInput(event.code);
         return;
       }
 
