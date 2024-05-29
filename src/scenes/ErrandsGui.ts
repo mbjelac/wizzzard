@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { ErrandDescription } from "../engine/Errand";
 import { GAME } from "../engine/game";
+import config from "../config";
 
 
 const depths = {
@@ -29,7 +30,8 @@ export default class ErrandsGui extends Phaser.Scene {
 
     console.log("Errands preload")
 
-    this.load.image('errandGo', 'assets/errand_go.png');
+    this.load.image('errandGo', 'assets/map_errand_marker.png');
+    this.load.image('map', 'assets/map.png');
 
     this.events.on("create", async () => this.sceneActive());
     this.events.on("wake", async () => this.sceneActive());
@@ -56,7 +58,7 @@ export default class ErrandsGui extends Phaser.Scene {
       slot.description.setText(errand.description);
       slot.description.setVisible(true);
       slot.goButton.setVisible(true);
-      slot.goButton.on('pointerup', ()=> {
+      slot.goButton.on('pointerup', () => {
         console.log("Go to errand: " + errand.id);
         GAME.goToErrand(errand.id);
         this.scene.switch("level");
@@ -72,6 +74,14 @@ export default class ErrandsGui extends Phaser.Scene {
 
   create() {
     console.log("Errands create")
+
+
+    const screenWidth = config.scale!.width! as number;
+    const screenHeight = config.scale!.height! as number
+
+    this.add
+      .sprite(screenWidth / 2, screenHeight / 2, "map")
+      .setDisplaySize(screenWidth, screenHeight);
 
     this.errandSlots = Array(maxErrandAmount).fill(null).map((_, index) => this.createErrandSlot(index));
   }
@@ -119,6 +129,7 @@ export default class ErrandsGui extends Phaser.Scene {
       yOffset + errandIndex * errandHeight + 30,
       'errandGo'
     )
+      .setDisplaySize(7 * 4, 8 * 4)
       .setInteractive()
       .setVisible(false);
 
