@@ -33,7 +33,16 @@ export class DialogBox {
   private buttonTextColor = "#FFF03C";
   private buttonTextColorPressed = "#CEA54F";
 
+  // @ts-ignore
+  private playClickSound: () => void;
+  // @ts-ignore
+  private playSwipeSound: () => void;
+
   initialize(scene: Phaser.Scene) {
+
+    this.playClickSound = () => scene.sound.play("buttonClick");
+    this.playSwipeSound = () => scene.sound.play("swipe");
+
     this.background = scene
       .add
       .sprite(0, 0, "messagePanel")
@@ -111,6 +120,8 @@ export class DialogBox {
       });
 
     this.updateGraphics(location);
+
+    this.playSwipeSound();
   }
 
   private readonly buttonXCoordsByButtonAmounts = new Map<number, number[]>()
@@ -204,6 +215,8 @@ export class DialogBox {
     buttonSpriteConfig!.background.setTexture("buttonPressed");
     buttonSpriteConfig!.text.setColor(this.buttonTextColorPressed);
     buttonSpriteConfig!.keyboardShortcutDescription.setColor(this.buttonTextColorPressed);
+
+    this.playClickSound();
 
     setTimeout(
       () => {
