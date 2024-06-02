@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ErrandDescription } from "../engine/Errand";
+import { Coords, ErrandDescription } from "../engine/Errand";
 import { GAME } from "../engine/game";
 import config from "../config";
 
@@ -10,16 +10,15 @@ const depths = {
 
 const maxErrandAmount = 8;
 
-interface ErrandSlot {
-  title: Phaser.GameObjects.Text,
-  description: Phaser.GameObjects.Text,
-  goButton: Phaser.GameObjects.Sprite
+interface ErrandMarker {
+  description: ErrandDescription,
+  sprite: Phaser.GameObjects.Sprite
 }
 
 export default class ErrandsGui extends Phaser.Scene {
 
   // @ts-ignore
-  private errandSlots: ErrandSlot[] = [];
+  private errandMarkers: ErrandMarker[] = [];
 
   constructor() {
     super('errands');
@@ -30,7 +29,7 @@ export default class ErrandsGui extends Phaser.Scene {
 
     console.log("Errands preload")
 
-    this.load.image('errandGo', 'assets/map_errand_marker.png');
+    this.load.image('errandMarker', 'assets/map_errand_marker.png');
     this.load.image('map', 'assets/map.png');
 
     this.events.on("create", async () => this.sceneActive());
@@ -41,40 +40,34 @@ export default class ErrandsGui extends Phaser.Scene {
 
     const descriptions = await GAME.getErrandDescriptions();
 
-    this.addErrands(descriptions);
+    this.clearErrandMarkers();
+    this.addErrandMarkers(descriptions);
   }
 
-  private addErrands(errands: ErrandDescription[]) {
-    this.errandSlots.forEach((slot, index) => this.setErrand(slot, errands[index]));
+  private clearErrandMarkers() {
+    this.errandMarkers.forEach(marker => marker.sprite.destroy(true));
+    this.errandMarkers.length = 0;
   }
 
-  private setErrand(slot: ErrandSlot, errand?: ErrandDescription) {
+  private addErrandMarkers(errands: ErrandDescription[]) {
 
-    slot.goButton.removeAllListeners();
-
-    if (errand) {
-      slot.title.setText(errand.title);
-      slot.title.setVisible(true);
-      slot.description.setText(errand.description);
-      slot.description.setVisible(true);
-      slot.goButton.setVisible(true);
-      slot.goButton.on('pointerup', () => {
-        console.log("Go to errand: " + errand.id);
-        GAME.goToErrand(errand.id);
-        this.scene.switch("level");
-      })
-    } else {
-      slot.title.setText("");
-      slot.title.setVisible(false);
-      slot.description.setText("");
-      slot.description.setVisible(false);
-      slot.goButton.setVisible(false);
-    }
+    this.errandMarkers.push(...errands.map(errandDescription => {
+      const mapPixelCoords = this.getMapPixelCoords(errandDescription.mapMarkerLocation);
+      return {
+        description: errandDescription,
+        sprite: this.add.sprite(
+          mapPixelCoords.x,
+          mapPixelCoords.y,
+          'errandMarker'
+        )
+          .setDisplaySize(7 * 4, 8 * 4)
+          .setInteractive()
+      };
+    }));
   }
 
   create() {
     console.log("Errands create")
-
 
     const screenWidth = config.scale!.width! as number;
     const screenHeight = config.scale!.height! as number
@@ -82,66 +75,18 @@ export default class ErrandsGui extends Phaser.Scene {
     this.add
       .sprite(screenWidth / 2, screenHeight / 2, "map")
       .setDisplaySize(screenWidth, screenHeight);
-
-    this.errandSlots = Array(maxErrandAmount).fill(null).map((_, index) => this.createErrandSlot(index));
-  }
-
-  private createErrandSlot(errandIndex: number): ErrandSlot {
-
-    const xOffset = 20;
-    const yOffset = 100;
-    const errandHeight = 80;
-    const titleHeight = 28;
-    const descriptionIndent = 10;
-
-    const title = this.add.text(
-      xOffset,
-      errandIndex * errandHeight + yOffset,
-      "yWq",
-      {
-        color: "#fff",
-        strokeThickness: 0,
-        font: "22px Georgia",
-        wordWrap: { width: 200 },
-        padding: { x: 10 }
-      }
-    )
-      .setDepth(depths.errandText)
-      .setVisible(false);
-
-    const description = this.add.text(
-      xOffset + descriptionIndent,
-      errandIndex * errandHeight + titleHeight + yOffset,
-      "blah blah",
-      {
-        color: "#eee",
-        strokeThickness: 0,
-        font: "14px Georgia",
-        wordWrap: { width: 500 },
-        padding: { x: 10 }
-      }
-    )
-      .setDepth(depths.errandText)
-      .setVisible(false);
-
-    const goButton = this.add.sprite(
-      xOffset + 550,
-      yOffset + errandIndex * errandHeight + 30,
-      'errandGo'
-    )
-      .setDisplaySize(7 * 4, 8 * 4)
-      .setInteractive()
-      .setVisible(false);
-
-    return {
-      title,
-      description,
-      goButton
-    };
   }
 
   update(time: number, delta: number) {
 
+  }
 
+  private getMapPixelCoords(location: Coords): Coords {
+    const coordinateSystemCoefficient = 8;
+    const stretchCoefficient = 4;
+    return {
+      x: (location.x + 1) * coordinateSystemCoefficient * stretchCoefficient,
+      y: (location.y + 1) * coordinateSystemCoefficient * stretchCoefficient,
+    };
   }
 }

@@ -6,7 +6,8 @@ const errands: Errand[] = [
     description: {
       id: "woodenDog",
       title: "The wooden dog",
-      description: "Wooden dog description..."
+      description: "Wooden dog description...",
+      mapMarkerLocation: {x: 8, y: 17}
     },
     levelDimensions: { width: 40, height: 30 },
     startCoords: { x: 7, y: 7 },
@@ -21,7 +22,8 @@ const errands: Errand[] = [
     description: {
       id: "forgetfulDruid",
       title: "The Forgetful Druid",
-      description: "description..."
+      description: "description...",
+      mapMarkerLocation: {x: 10, y: 15}
     },
     levelDimensions: { width: 70, height: 70 },
     startCoords: { x: 7, y: 7 },
@@ -36,7 +38,8 @@ const errands: Errand[] = [
     description: {
       id: "void",
       title: "A void",
-      description: "An empty black void, suitable for trying out the level editor."
+      description: "An empty black void, suitable for trying out the level editor.",
+      mapMarkerLocation: {x: 0, y: 0}
     },
     levelDimensions: { width: 10, height: 10 },
     startCoords: { x: 5, y: 5 },

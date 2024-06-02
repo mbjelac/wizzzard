@@ -31,9 +31,9 @@ export interface LevelDimensions {
 
 export interface ErrandDescription {
   readonly id: string,
-
   readonly title: string,
   readonly description: string
+  readonly mapMarkerLocation: Coords
 }
 
 export interface Errand {
