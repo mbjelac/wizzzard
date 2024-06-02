@@ -76,11 +76,10 @@ export default class LevelGui extends Phaser.Scene {
 
   preload() {
 
+    this.dialogBox.loadImages(this);
+
     this.load.spritesheet(this.tilesetName, "assets/tileset.png", { frameWidth: 16, frameHeight: 16 });
     this.load.image("panel", "assets/panel.png");
-    this.load.image("messagePanel", "assets/message-panel.png");
-    this.load.image("button", "assets/button.png");
-    this.load.image("buttonPressed", "assets/button_pressed.png");
 
     this.load.audio("summerMeadow", "assets/sounds/ambient/summer-meadow.mp3");
     this.load.audio("forest", "assets/sounds/ambient/forest.mp3");
@@ -264,7 +263,7 @@ export default class LevelGui extends Phaser.Scene {
   create() {
     console.log("Level create");
 
-    this.dialogBox.initialize(this);
+    this.dialogBox.create(this);
 
     this.input.keyboard.on('keydown', async (event: KeyboardEvent) => {
 
@@ -287,7 +286,7 @@ export default class LevelGui extends Phaser.Scene {
         this.dialogBox.show(
           toPixelCoords(this.level.getPlayerCoords()),
           "Tired already, fellow traveller?",
-          { text: "Continue", keyboardShortcutDescription: " Esc", keyEventCode: "Escape", eventHandler: () => console.log("Nothing") },
+          true,
           { text: "Leave", keyboardShortcutDescription: "  L", keyEventCode: "KeyL", eventHandler: () => this.exitLevel() },
           { text: "Restart", keyboardShortcutDescription: "  R", keyEventCode: "KeyR", eventHandler: () => this.populateLevel() },
         );
@@ -398,6 +397,7 @@ export default class LevelGui extends Phaser.Scene {
       this.dialogBox.show(
         toPixelCoords(this.level.getPlayerCoords()),
         "Congratulations!\n\nYou have completed this errand.",
+        false,
         {
           text: "Exit",
           keyboardShortcutDescription: "Enter",
@@ -709,6 +709,7 @@ export default class LevelGui extends Phaser.Scene {
             : playerDeath === "burning"
               ? "You have perished in the fire."
               : "You have died.",
+          false,
           { text: "Abandon", keyboardShortcutDescription: "  A", keyEventCode: "KeyA", eventHandler: () => this.exitLevel() },
           { text: "Restart", keyboardShortcutDescription: "  R", keyEventCode: "KeyR", eventHandler: () => this.populateLevel() }
         );

@@ -1,6 +1,7 @@
 import depths from "./depths";
 import { Coords } from "../engine/Errand";
 import Pointer = Phaser.Input.Pointer;
+import { Scene } from "phaser";
 
 const MAX_NUMBER_OF_BUTTONS = 3;
 
@@ -30,6 +31,9 @@ export class DialogBox {
 
   private buttonConfigs: ButtonConfig[] = [];
 
+  // @ts-ignore
+  private xButtonSprite: Phaser.GameObjects.Sprite;
+
   private buttonTextColor = "#FFF03C";
   private buttonTextColorPressed = "#CEA54F";
 
@@ -38,7 +42,7 @@ export class DialogBox {
   // @ts-ignore
   private playSwipeSound: () => void;
 
-  initialize(scene: Phaser.Scene) {
+  create(scene: Phaser.Scene) {
 
     this.playClickSound = () => scene.sound.play("buttonClick");
     this.playSwipeSound = () => scene.sound.play("swipe");
@@ -61,6 +65,18 @@ export class DialogBox {
         }
       )
       .setDepth(depths.info)
+      .setVisible(false);
+
+    this.xButtonSprite = scene.add
+      .sprite(0, 0, "xButton")
+      .setDisplaySize(48, 48)
+      .setDepth(depths.infoBackground)
+      .setInteractive()
+      .on('pointerdown', async (pointer: Pointer)=> {
+        if (pointer.leftButtonDown()) {
+          this.pressXButton();
+        }
+      })
       .setVisible(false);
 
     this.buttonSpriteConfigs = Array(MAX_NUMBER_OF_BUTTONS).fill(0).map((_, index) => (
@@ -103,6 +119,7 @@ export class DialogBox {
   show(
     location: Coords,
     text: string,
+    cancellable: boolean,
     ...buttons: ButtonConfig[]
   ) {
     this.buttonConfigs = buttons;
@@ -111,6 +128,7 @@ export class DialogBox {
 
     this.background.setVisible(true);
     this.textSprite.setVisible(true);
+    this.xButtonSprite.setVisible(cancellable);
     buttons
       .map((_, index) => this.buttonSpriteConfigs[index])
       .forEach(config => {
@@ -139,6 +157,9 @@ export class DialogBox {
     this.background.setY(pixelCoords.y);
     this.textSprite.setX(pixelCoords.x - 300);
     this.textSprite.setY(pixelCoords.y - 100);
+
+    this.xButtonSprite.setX(pixelCoords.x + 265);
+    this.xButtonSprite.setY(pixelCoords.y - 121);
 
     const buttonY = pixelCoords.y + 80;
     const buttonAmount = this.buttonConfigs.length;
@@ -174,6 +195,7 @@ export class DialogBox {
 
     this.background.setVisible(false);
     this.textSprite.setVisible(false);
+    this.xButtonSprite.setVisible(false);
     this.buttonSpriteConfigs
       .forEach(config => {
         config.background.setVisible(false);
@@ -229,5 +251,35 @@ export class DialogBox {
         this.blockButtons = false;
       },
       200);
+  }
+
+  private pressXButton() {
+
+    if (this.blockButtons) {
+      return;
+    }
+
+    this.blockButtons = true;
+
+    this.xButtonSprite.setTexture("xButtonPressed");
+
+    this.playClickSound();
+
+    setTimeout(
+      () => {
+        this.hide();
+        this.buttonSpriteConfigs.forEach(config => config.background.setInteractive(true));
+        this.xButtonSprite.setTexture("xButton");
+        this.blockButtons = false;
+      },
+      200);
+  }
+
+  loadImages(scene: Scene) {
+    scene.load.image("messagePanel", "assets/message-panel.png");
+    scene.load.image("button", "assets/button.png");
+    scene.load.image("buttonPressed", "assets/button_pressed.png");
+    scene.load.image("xButton", "assets/x-button.png");
+    scene.load.image("xButtonPressed", "assets/x-button_pressed.png");
   }
 }

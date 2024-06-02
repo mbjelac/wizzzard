@@ -62,6 +62,11 @@ export default class ErrandsGui extends Phaser.Scene {
         )
           .setDisplaySize(7 * 4, 8 * 4)
           .setInteractive()
+        // TODO: move to errand dialog
+          .on('pointerup', () => {
+            GAME.goToErrand(errandDescription.id);
+            this.scene.switch("level");
+          })
       };
     }));
   }
