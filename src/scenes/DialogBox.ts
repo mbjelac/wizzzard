@@ -1,7 +1,7 @@
 import depths from "./depths";
 import { Coords } from "../engine/Errand";
-import Pointer = Phaser.Input.Pointer;
 import { Scene } from "phaser";
+import Pointer = Phaser.Input.Pointer;
 
 const MAX_NUMBER_OF_BUTTONS = 3;
 
@@ -37,6 +37,8 @@ export class DialogBox {
   private buttonTextColor = "#FFF03C";
   private buttonTextColorPressed = "#CEA54F";
 
+  private cancellable = false;
+
   // @ts-ignore
   private playClickSound: () => void;
   // @ts-ignore
@@ -50,7 +52,7 @@ export class DialogBox {
     this.background = scene
       .add
       .sprite(0, 0, "messagePanel")
-      .setDisplaySize(640, 320)
+      .setDisplaySize(656, 336)
       .setDepth(depths.infoBackground)
       .setVisible(false);
 
@@ -72,7 +74,7 @@ export class DialogBox {
       .setDisplaySize(48, 48)
       .setDepth(depths.infoBackground)
       .setInteractive()
-      .on('pointerdown', async (pointer: Pointer)=> {
+      .on('pointerdown', async (pointer: Pointer) => {
         if (pointer.leftButtonDown()) {
           this.pressXButton();
         }
@@ -122,6 +124,7 @@ export class DialogBox {
     cancellable: boolean,
     ...buttons: ButtonConfig[]
   ) {
+    this.cancellable = cancellable;
     this.buttonConfigs = buttons;
     this.shown = true;
     this.textSprite.setText(text);
@@ -158,8 +161,8 @@ export class DialogBox {
     this.textSprite.setX(pixelCoords.x - 300);
     this.textSprite.setY(pixelCoords.y - 100);
 
-    this.xButtonSprite.setX(pixelCoords.x + 265);
-    this.xButtonSprite.setY(pixelCoords.y - 121);
+    this.xButtonSprite.setX(pixelCoords.x + 268);
+    this.xButtonSprite.setY(pixelCoords.y - 124);
 
     const buttonY = pixelCoords.y + 80;
     const buttonAmount = this.buttonConfigs.length;
@@ -205,6 +208,12 @@ export class DialogBox {
   }
 
   handleKeyInput(code: string) {
+
+    if (code == "Escape" && this.cancellable) {
+      this.pressXButton();
+      return;
+    }
+
     const buttonIndex = this.getButtonIndexFromKeyCode(code);
     if (buttonIndex !== undefined) {
       this.pressButton(buttonIndex);
