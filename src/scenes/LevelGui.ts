@@ -76,7 +76,7 @@ export default class LevelGui extends Phaser.Scene {
 
   preload() {
 
-    this.dialogBox.loadImages(this);
+    this.dialogBox.preload(this);
 
     this.load.spritesheet(this.tilesetName, "assets/tileset.png", { frameWidth: 16, frameHeight: 16 });
     this.load.image("panel", "assets/panel.png");
@@ -92,7 +92,6 @@ export default class LevelGui extends Phaser.Scene {
     this.load.audio("slide1", "assets/sounds/effect/slide-1.mp3");
     this.load.audio("slide2", "assets/sounds/effect/slide-2.mp3");
     this.load.audio("swipe", "assets/sounds/effect/swipe.mp3");
-    this.load.audio("buttonClick", "assets/sounds/effect/click.mp3");
 
     this.events.on("create", async () => this.populateLevel());
     this.events.on("wake", async () => this.populateLevel());

@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { Coords, ErrandDescription } from "../engine/Errand";
 import { GAME } from "../engine/game";
 import config from "../config";
+import { DialogBox } from "./DialogBox";
 
 
 const depths = {
@@ -20,6 +21,8 @@ export default class ErrandsGui extends Phaser.Scene {
   // @ts-ignore
   private errandMarkers: ErrandMarker[] = [];
 
+  private readonly dialogBox = new DialogBox();
+
   constructor() {
     super('errands');
     console.log("Errands constructor")
@@ -34,6 +37,8 @@ export default class ErrandsGui extends Phaser.Scene {
 
     this.events.on("create", async () => this.sceneActive());
     this.events.on("wake", async () => this.sceneActive());
+
+    this.dialogBox.preload(this);
   }
 
   private async sceneActive() {
@@ -62,10 +67,19 @@ export default class ErrandsGui extends Phaser.Scene {
         )
           .setDisplaySize(7 * 4, 8 * 4)
           .setInteractive()
-        // TODO: move to errand dialog
           .on('pointerup', () => {
-            GAME.goToErrand(errandDescription.id);
-            this.scene.switch("level");
+            this.dialogBox.show(
+              {x: 576, y: 416},
+              "Blaaaah!",
+              true,
+                {
+                  text: "Begin",
+                  eventHandler: ()=> {
+                    GAME.goToErrand(errandDescription.id);
+                    this.scene.switch("level");
+                  }
+                }
+            )
           })
       };
     }));
@@ -73,6 +87,8 @@ export default class ErrandsGui extends Phaser.Scene {
 
   create() {
     console.log("Errands create")
+
+    this.dialogBox.create(this);
 
     const screenWidth = config.scale!.width! as number;
     const screenHeight = config.scale!.height! as number

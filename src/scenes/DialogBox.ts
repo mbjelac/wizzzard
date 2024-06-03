@@ -7,8 +7,8 @@ const MAX_NUMBER_OF_BUTTONS = 3;
 
 export interface ButtonConfig {
   readonly text: string,
-  readonly keyboardShortcutDescription: string,
-  readonly keyEventCode: string,
+  readonly keyboardShortcutDescription?: string,
+  readonly keyEventCode?: string,
   readonly eventHandler: () => void
 }
 
@@ -71,7 +71,7 @@ export class DialogBox {
 
     this.xButtonSprite = scene.add
       .sprite(0, 0, "xButton")
-      .setDisplaySize(48, 48)
+      .setDisplaySize(36, 36)
       .setDepth(depths.infoBackground)
       .setInteractive()
       .on('pointerdown', async (pointer: Pointer) => {
@@ -119,7 +119,7 @@ export class DialogBox {
   }
 
   show(
-    location: Coords,
+    pixelCoords: Coords,
     text: string,
     cancellable: boolean,
     ...buttons: ButtonConfig[]
@@ -140,7 +140,7 @@ export class DialogBox {
         config.keyboardShortcutDescription.setVisible(true);
       });
 
-    this.updateGraphics(location);
+    this.updateGraphics(pixelCoords);
 
     this.playSwipeSound();
   }
@@ -161,8 +161,8 @@ export class DialogBox {
     this.textSprite.setX(pixelCoords.x - 300);
     this.textSprite.setY(pixelCoords.y - 100);
 
-    this.xButtonSprite.setX(pixelCoords.x + 268);
-    this.xButtonSprite.setY(pixelCoords.y - 124);
+    this.xButtonSprite.setX(pixelCoords.x + 270);
+    this.xButtonSprite.setY(pixelCoords.y - 126);
 
     const buttonY = pixelCoords.y + 80;
     const buttonAmount = this.buttonConfigs.length;
@@ -185,7 +185,7 @@ export class DialogBox {
 
         config.keyboardShortcutDescription.setX(buttonX - 2 * text.length);
         config.keyboardShortcutDescription.setY(buttonY + 14);
-        config.keyboardShortcutDescription.setText(this.buttonConfigs[index].keyboardShortcutDescription);
+        config.keyboardShortcutDescription.setText(this.buttonConfigs[index].keyboardShortcutDescription || "");
       });
   }
 
@@ -284,11 +284,13 @@ export class DialogBox {
       200);
   }
 
-  loadImages(scene: Scene) {
+  preload(scene: Scene) {
     scene.load.image("messagePanel", "assets/message-panel.png");
     scene.load.image("button", "assets/button.png");
     scene.load.image("buttonPressed", "assets/button_pressed.png");
     scene.load.image("xButton", "assets/x-button.png");
     scene.load.image("xButtonPressed", "assets/x-button_pressed.png");
+    scene.load.audio("swipe", "assets/sounds/effect/swipe.mp3");
+    scene.load.audio("buttonClick", "assets/sounds/effect/click.mp3");
   }
 }
