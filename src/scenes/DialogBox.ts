@@ -23,7 +23,7 @@ export class DialogBox {
   // @ts-ignore
   private background: Phaser.GameObjects.Sprite;
   // @ts-ignore
-  private textSprite: Phaser.GameObjects.Text;
+  private textSprite: Phaser.GameObjects.BitmapText;
   // @ts-ignore
   private buttonSpriteConfigs: ButtonSpriteConfig[];
 
@@ -44,6 +44,8 @@ export class DialogBox {
   // @ts-ignore
   private playSwipeSound: () => void;
 
+  private font = "unnamed";
+
   create(scene: Phaser.Scene) {
 
     this.playClickSound = () => scene.sound.play("buttonClick");
@@ -57,15 +59,9 @@ export class DialogBox {
       .setVisible(false);
 
     this.textSprite = scene.add
-      .text(0, 0, "", {
-          color: this.buttonTextColor,
-          strokeThickness: 0,
-          fontSize: "20px",
-          fontFamily: "VinqueRg",
-          wordWrap: { width: 400 },
-          padding: { x: 60 }
-        }
-      )
+      .bitmapText(0, 0, this.font, "")
+      .setScale(4)
+      .setMaxWidth(550)
       .setDepth(depths.info)
       .setVisible(false);
 
@@ -100,10 +96,12 @@ export class DialogBox {
             .text(0, 0, "", {
               color: "#FFD475",
               strokeThickness: 0,
-              fontSize: "20px",
-              fontFamily: "VinqueRg"
+              fontSize: "10px",
+              stroke: "0px",
+              fontFamily: this.font,
             })
             .setDepth(depths.info)
+            .setScale(4)
             .setVisible(false),
           keyboardShortcutDescription: scene.add
             .text(0, 0, "", {

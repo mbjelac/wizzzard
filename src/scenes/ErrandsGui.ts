@@ -35,6 +35,9 @@ export default class ErrandsGui extends Phaser.Scene {
     this.load.image('errandMarker', 'assets/map_errand_marker.png');
     this.load.image('map', 'assets/map.png');
 
+    this.load.bitmapFont('unnamed', 'assets/fonts/Unnamed.png', 'assets/fonts/Unnamed.xml');
+
+
     this.events.on("create", async () => this.sceneActive());
     this.events.on("wake", async () => this.sceneActive());
 
@@ -70,7 +73,7 @@ export default class ErrandsGui extends Phaser.Scene {
           .on('pointerup', () => {
             this.dialogBox.show(
               {x: 576, y: 416},
-              "Blaaaah!",
+              errandDescription.description,
               true,
                 {
                   text: "Begin",
