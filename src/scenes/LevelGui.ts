@@ -44,7 +44,7 @@ export default class LevelGui extends Phaser.Scene {
   private sidePanel: Phaser.GameObjects.Sprite;
 
   // @ts-ignore
-  private sideText: Phaser.GameObjects.Text;
+  private sideText: Phaser.GameObjects.BitmapText;
 
   private sideTextString: string = "";
 
@@ -80,6 +80,9 @@ export default class LevelGui extends Phaser.Scene {
 
     this.load.spritesheet(this.tilesetName, "assets/tileset.png", { frameWidth: 16, frameHeight: 16 });
     this.load.image("panel", "assets/panel.png");
+
+    this.load.bitmapFont('blackRobotoSmall', 'assets/fonts/black-roboto-small.png', 'assets/fonts/roboto-small.xml');
+
 
     this.load.audio("summerMeadow", "assets/sounds/ambient/summer-meadow.mp3");
     this.load.audio("forest", "assets/sounds/ambient/forest.mp3");
@@ -301,15 +304,9 @@ export default class LevelGui extends Phaser.Scene {
     const sidePanelWidth = 5 * TILE_SIZE;
 
     this.sideText = this.add
-      .text(0, 0, "", {
-          color: "#000",
-          strokeThickness: 0,
-          fontSize: "18px",
-          fontFamily: "VinqueRg",
-          wordWrap: { width: sidePanelWidth - 60 },
-          padding: { x: 30 }
-        }
-      )
+      .bitmapText(0, 0, "blackRobotoSmall", "")
+      .setMaxWidth(sidePanelWidth - 100)
+      .setScale(4)
       .setDepth(depths.info);
 
     this.sidePanel = this
@@ -352,12 +349,12 @@ export default class LevelGui extends Phaser.Scene {
 
     const sideTextCoords: Coords = {
       x: playerLocation.x + 7,
-      y: playerLocation.y + 1,
+      y: playerLocation.y,
     };
 
     const sideTextPixels = toPixelCoords(sideTextCoords);
-    this.sideText.x = sideTextPixels.x - tileCenterOffset;
-    this.sideText.y = sideTextPixels.y - tileCenterOffset;
+    this.sideText.x = sideTextPixels.x - tileCenterOffset + 28;
+    this.sideText.y = sideTextPixels.y - tileCenterOffset + 16;
     this.sideText.setText(this.sideTextString);
   }
 
@@ -709,7 +706,7 @@ export default class LevelGui extends Phaser.Scene {
               ? "You have perished in the fire."
               : "You have died.",
           false,
-          { text: "Abandon", keyboardShortcutDescription: "  A", keyEventCode: "KeyA", eventHandler: () => this.exitLevel() },
+          { text: "Leave", keyboardShortcutDescription: "  L", keyEventCode: "KeyL", eventHandler: () => this.exitLevel() },
           { text: "Restart", keyboardShortcutDescription: "  R", keyEventCode: "KeyR", eventHandler: () => this.populateLevel() }
         );
       },

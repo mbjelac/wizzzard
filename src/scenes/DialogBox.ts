@@ -14,7 +14,7 @@ export interface ButtonConfig {
 
 interface ButtonSpriteConfig {
   readonly background: Phaser.GameObjects.Sprite;
-  readonly text: Phaser.GameObjects.Text;
+  readonly text: Phaser.GameObjects.BitmapText;
   readonly keyboardShortcutDescription: Phaser.GameObjects.Text;
 }
 
@@ -44,7 +44,8 @@ export class DialogBox {
   // @ts-ignore
   private playSwipeSound: () => void;
 
-  private font = "unnamed";
+  private font = "goldRobotoSmall";
+  private fontPressed = "darkGoldRobotoSmall";
 
   create(scene: Phaser.Scene) {
 
@@ -83,7 +84,7 @@ export class DialogBox {
             .physics
             .add
             .sprite(0, 0, "button")
-            .setDisplaySize(124, 64)
+            .setDisplaySize(152, 64)
             .setDepth(depths.infoBackground)
             .setVisible(false)
             .setInteractive()
@@ -93,13 +94,7 @@ export class DialogBox {
               }
             }),
           text: scene.add
-            .text(0, 0, "", {
-              color: "#FFD475",
-              strokeThickness: 0,
-              fontSize: "10px",
-              stroke: "0px",
-              fontFamily: this.font,
-            })
+            .bitmapText(0, 0, this.font, "")
             .setDepth(depths.info)
             .setScale(4)
             .setVisible(false),
@@ -177,8 +172,8 @@ export class DialogBox {
 
         const text = this.buttonConfigs[index].text;
 
-        config.text.setX(buttonX - 5 * text.length);
-        config.text.setY(buttonY - 9);
+        config.text.setX(buttonX - 9 * text.length - 4);
+        config.text.setY(buttonY - 24);
         config.text.setText(text);
 
         config.keyboardShortcutDescription.setX(buttonX - 2 * text.length);
@@ -242,7 +237,7 @@ export class DialogBox {
 
     this.buttonSpriteConfigs.forEach(config => config.background.setInteractive(false));
     buttonSpriteConfig!.background.setTexture("buttonPressed");
-    buttonSpriteConfig!.text.setColor(this.buttonTextColorPressed);
+    buttonSpriteConfig!.text.setTexture(this.fontPressed);
     buttonSpriteConfig!.keyboardShortcutDescription.setColor(this.buttonTextColorPressed);
 
     this.playClickSound();
@@ -252,7 +247,7 @@ export class DialogBox {
         this.hide();
         this.buttonSpriteConfigs.forEach(config => config.background.setInteractive(true));
         buttonSpriteConfig!.background.setTexture("button");
-        buttonSpriteConfig!.text.setColor(this.buttonTextColor);
+        buttonSpriteConfig!.text.setTexture(this.font);
         buttonSpriteConfig!.keyboardShortcutDescription.setColor(this.buttonTextColor);
         eventHandler();
         this.blockButtons = false;
@@ -290,5 +285,7 @@ export class DialogBox {
     scene.load.image("xButtonPressed", "assets/x-button_pressed.png");
     scene.load.audio("swipe", "assets/sounds/effect/swipe.mp3");
     scene.load.audio("buttonClick", "assets/sounds/effect/click.mp3");
+    scene.load.bitmapFont(this.font, "assets/fonts/gold-roboto-small.png", "assets/fonts/roboto-small.xml");
+    scene.load.bitmapFont(this.fontPressed, "assets/fonts/dark-gold-roboto-small.png", "assets/fonts/roboto-small.xml");
   }
 }

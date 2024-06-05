@@ -36,6 +36,7 @@ export default class ErrandsGui extends Phaser.Scene {
     this.load.image('map', 'assets/map.png');
 
     this.load.bitmapFont('unnamed', 'assets/fonts/Unnamed.png', 'assets/fonts/Unnamed.xml');
+    this.load.bitmapFont('redRobotoSmall', 'assets/fonts/red-roboto-small.png', 'assets/fonts/roboto-small.xml');
 
 
     this.events.on("create", async () => this.sceneActive());
