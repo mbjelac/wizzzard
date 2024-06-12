@@ -70,7 +70,7 @@
         <char id="55" x="250" y="0" width="3" height="7" xoffset="0" yoffset="0" xadvance="4" page="0" chnl="15" /><!-- 7 -->
         <char id="56" x="254" y="0" width="3" height="7" xoffset="0" yoffset="0" xadvance="4" page="0" chnl="15" /><!-- 8 -->
         <char id="57" x="258" y="0" width="3" height="7" xoffset="0" yoffset="0" xadvance="4" page="0" chnl="15" /><!-- 9 -->
-        <char id="46" x="262" y="0" width="1" height="7" xoffset="0" yoffset="0" xadvance="1" page="0" chnl="15" /><!-- . -->
+        <char id="46" x="262" y="0" width="1" height="7" xoffset="0" yoffset="0" xadvance="2" page="0" chnl="15" /><!-- . -->
         <char id="44" x="264" y="0" width="2" height="7" xoffset="0" yoffset="0" xadvance="2" page="0" chnl="15" /><!-- , -->
         <char id="33" x="267" y="0" width="1" height="7" xoffset="0" yoffset="0" xadvance="2" page="0" chnl="15" /><!-- ! -->
         <char id="63" x="269" y="0" width="3" height="7" xoffset="0" yoffset="0" xadvance="4" page="0" chnl="15" /><!-- ? -->

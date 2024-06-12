@@ -130,7 +130,7 @@ export class DialogBox {
       .forEach(config => {
         config.background.setVisible(true);
         config.text.setVisible(true);
-        config.keyboardShortcutDescription.setVisible(true);
+        // config.keyboardShortcutDescription.setVisible(true);
       });
 
     this.updateGraphics(pixelCoords);
@@ -172,8 +172,8 @@ export class DialogBox {
 
         const text = this.buttonConfigs[index].text;
 
-        config.text.setX(buttonX - 9 * text.length + 4);
-        config.text.setY(buttonY - 12);
+        config.text.setX(buttonX - 8 * text.length + 4);
+        config.text.setY(buttonY - 8);
         config.text.setText(text);
 
         config.keyboardShortcutDescription.setX(buttonX - 2 * text.length);
