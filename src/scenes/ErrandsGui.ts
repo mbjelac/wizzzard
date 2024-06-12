@@ -74,6 +74,7 @@ export default class ErrandsGui extends Phaser.Scene {
           .on('pointerup', () => {
             this.dialogBox.show(
               {x: 576, y: 416},
+              errandDescription.title,
               errandDescription.description,
               true,
                 {

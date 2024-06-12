@@ -287,6 +287,7 @@ export default class LevelGui extends Phaser.Scene {
       if (event.code === "Escape") {
         this.dialogBox.show(
           toPixelCoords(this.level.getPlayerCoords()),
+          "",
           "Tired already, fellow traveller?",
           true,
           { text: "Leave", keyboardShortcutDescription: "  L", keyEventCode: "KeyL", eventHandler: () => this.exitLevel() },
@@ -392,7 +393,8 @@ export default class LevelGui extends Phaser.Scene {
     if (moveResult.levelComplete) {
       this.dialogBox.show(
         toPixelCoords(this.level.getPlayerCoords()),
-        "Congratulations!\n\nYou have completed this errand.",
+        "Congratulations!",
+        "You have completed this errand.",
         false,
         {
           text: "Exit",
@@ -700,6 +702,7 @@ export default class LevelGui extends Phaser.Scene {
         this.stopPlayingAmbientSound();
         this.dialogBox.show(
           toPixelCoords(this.level.getPlayerCoords()),
+          "",
           playerDeath === "drowning"
             ? "You have drowned."
             : playerDeath === "burning"

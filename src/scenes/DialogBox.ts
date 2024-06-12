@@ -23,6 +23,8 @@ export class DialogBox {
   // @ts-ignore
   private background: Phaser.GameObjects.Sprite;
   // @ts-ignore
+  private titleSprite: Phaser.GameObjects.BitmapText;
+  // @ts-ignore
   private textSprite: Phaser.GameObjects.BitmapText;
   // @ts-ignore
   private buttonSpriteConfigs: ButtonSpriteConfig[];
@@ -47,6 +49,8 @@ export class DialogBox {
   private font = "goldRobotoSmall";
   private fontPressed = "darkGoldRobotoSmall";
 
+  private titleLength = 0;
+
   create(scene: Phaser.Scene) {
 
     this.playClickSound = () => scene.sound.play("buttonClick");
@@ -57,6 +61,13 @@ export class DialogBox {
       .sprite(0, 0, "messagePanel")
       .setDisplaySize(656, 336)
       .setDepth(depths.infoBackground)
+      .setVisible(false);
+
+    this.titleSprite = scene.add
+      .bitmapText(0, 0, this.font, "")
+      .setScale(4)
+      .setMaxWidth(300)
+      .setDepth(depths.info)
       .setVisible(false);
 
     this.textSprite = scene.add
@@ -113,6 +124,7 @@ export class DialogBox {
 
   show(
     pixelCoords: Coords,
+    title: string,
     text: string,
     cancellable: boolean,
     ...buttons: ButtonConfig[]
@@ -120,9 +132,13 @@ export class DialogBox {
     this.cancellable = cancellable;
     this.buttonConfigs = buttons;
     this.shown = true;
+    this.titleSprite.setText(title);
     this.textSprite.setText(text);
 
+    this.titleLength = title.length;
+
     this.background.setVisible(true);
+    this.titleSprite.setVisible(true);
     this.textSprite.setVisible(true);
     this.xButtonSprite.setVisible(cancellable);
     buttons
@@ -151,6 +167,8 @@ export class DialogBox {
 
     this.background.setX(pixelCoords.x);
     this.background.setY(pixelCoords.y);
+    this.titleSprite.setX(pixelCoords.x - this.titleLength * 8);
+    this.titleSprite.setY(pixelCoords.y - 140);
     this.textSprite.setX(pixelCoords.x - 300);
     this.textSprite.setY(pixelCoords.y - 100);
 
@@ -190,6 +208,7 @@ export class DialogBox {
     this.shown = false;
 
     this.background.setVisible(false);
+    this.titleSprite.setVisible(false);
     this.textSprite.setVisible(false);
     this.xButtonSprite.setVisible(false);
     this.buttonSpriteConfigs
