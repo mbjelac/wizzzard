@@ -172,8 +172,8 @@ export class DialogBox {
 
         const text = this.buttonConfigs[index].text;
 
-        config.text.setX(buttonX - 9 * text.length - 4);
-        config.text.setY(buttonY - 24);
+        config.text.setX(buttonX - 9 * text.length + 4);
+        config.text.setY(buttonY - 12);
         config.text.setText(text);
 
         config.keyboardShortcutDescription.setX(buttonX - 2 * text.length);
@@ -285,7 +285,7 @@ export class DialogBox {
     scene.load.image("xButtonPressed", "assets/x-button_pressed.png");
     scene.load.audio("swipe", "assets/sounds/effect/swipe.mp3");
     scene.load.audio("buttonClick", "assets/sounds/effect/click.mp3");
-    scene.load.bitmapFont(this.font, "assets/fonts/gold-roboto-small.png", "assets/fonts/roboto-small.xml");
-    scene.load.bitmapFont(this.fontPressed, "assets/fonts/dark-gold-roboto-small.png", "assets/fonts/roboto-small.xml");
+    scene.load.bitmapFont(this.font, 'assets/fonts/roboto-micro-gold.png', 'assets/fonts/roboto-micro.xml');
+    scene.load.bitmapFont(this.fontPressed, 'assets/fonts/roboto-micro-dark-gold.png', 'assets/fonts/roboto-micro.xml');
   }
 }

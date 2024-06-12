@@ -81,7 +81,7 @@ export default class LevelGui extends Phaser.Scene {
     this.load.spritesheet(this.tilesetName, "assets/tileset.png", { frameWidth: 16, frameHeight: 16 });
     this.load.image("panel", "assets/panel.png");
 
-    this.load.bitmapFont('blackRobotoSmall', 'assets/fonts/black-roboto-small.png', 'assets/fonts/roboto-small.xml');
+    this.load.bitmapFont('blackRobotoMicro', 'assets/fonts/roboto-micro.png', 'assets/fonts/roboto-micro.xml');
 
 
     this.load.audio("summerMeadow", "assets/sounds/ambient/summer-meadow.mp3");
@@ -304,8 +304,8 @@ export default class LevelGui extends Phaser.Scene {
     const sidePanelWidth = 5 * TILE_SIZE;
 
     this.sideText = this.add
-      .bitmapText(0, 0, "blackRobotoSmall", "")
-      .setMaxWidth(sidePanelWidth - 100)
+      .bitmapText(0, 0, "blackRobotoMicro", "")
+      .setMaxWidth(sidePanelWidth - 60)
       .setScale(4)
       .setDepth(depths.info);
 
@@ -354,7 +354,7 @@ export default class LevelGui extends Phaser.Scene {
 
     const sideTextPixels = toPixelCoords(sideTextCoords);
     this.sideText.x = sideTextPixels.x - tileCenterOffset + 28;
-    this.sideText.y = sideTextPixels.y - tileCenterOffset + 16;
+    this.sideText.y = sideTextPixels.y - tileCenterOffset + 24;
     this.sideText.setText(this.sideTextString);
   }
 
