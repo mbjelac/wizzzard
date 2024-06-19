@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import Zoom = Phaser.Scale.Zoom;
+import jestConfig from "../jest.config";
+import Pointer = Phaser.Input.Pointer;
 
 export const TILE_SIZE = 64;
 
@@ -26,4 +28,20 @@ const config: Phaser.Types.Core.GameConfig = {
   antialias: false
 };
 
+const screenSize = {
+  width: config!.scale!.width as number,
+  height: config!.scale!.height as number,
+}
+
+const screenCenter = {
+  x: screenSize.width / 2,
+  y: screenSize.height! / 2
+}
+
+export const screen = {
+  size: screenSize,
+  center: screenCenter
+}
+
 export default config;
+

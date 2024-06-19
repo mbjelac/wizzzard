@@ -71,7 +71,7 @@ export default class LevelGui extends Phaser.Scene {
   private readonly dialogBox = new DialogBox();
 
   constructor() {
-    super('level');
+    super("level");
   }
 
   preload() {

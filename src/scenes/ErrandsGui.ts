@@ -72,19 +72,23 @@ export default class ErrandsGui extends Phaser.Scene {
           .setDisplaySize(7 * 4, 8 * 4)
           .setInteractive()
           .on('pointerup', () => {
-            this.dialogBox.show(
-              {x: 576, y: 416},
-              errandDescription.title,
-              errandDescription.description,
-              true,
-                {
-                  text: "Begin",
-                  eventHandler: ()=> {
-                    GAME.goToErrand(errandDescription.id);
-                    this.scene.switch("level");
-                  }
-                }
-            )
+
+            GAME.goToErrand(errandDescription.id);
+            this.scene.switch("journal");
+
+            // this.dialogBox.show(
+            //   {x: 576, y: 416},
+            //   errandDescription.title,
+            //   errandDescription.description,
+            //   true,
+            //     {
+            //       text: "Begin",
+            //       eventHandler: ()=> {
+            //         GAME.goToErrand(errandDescription.id);
+            //         this.scene.switch("level");
+            //       }
+            //     }
+            // )
           })
       };
     }));

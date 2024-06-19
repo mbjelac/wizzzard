@@ -28,6 +28,10 @@ export class Game {
   async setErrand(errand: Errand) {
     await setErrand(errand);
   }
+
+  async getSelectedErrand(): Promise<Errand | undefined> {
+    return this.currentErrandId ? await getErrand(this.currentErrandId) : undefined;
+  }
 }
 
 export const GAME = new Game();

@@ -3,6 +3,7 @@ import Phaser from "phaser";
 import config from "./config";
 import ErrandsGui from "./scenes/ErrandsGui";
 import LevelGui from "./scenes/LevelGui";
+import JournalGui from "./scenes/JournalGui";
 
 loadEditorPanel();
 
@@ -11,6 +12,7 @@ new Phaser.Game(
     scene: [
       ErrandsGui,
       LevelGui,
+      JournalGui,
     ]
   })
 );
