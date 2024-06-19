@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { Coords, ErrandDescription } from "../engine/Errand";
 import { GAME } from "../engine/game";
 import config from "../config";
-import { DialogBox } from "./DialogBox";
+import { DialogBox } from "./widgets/DialogBox";
 
 
 const depths = {

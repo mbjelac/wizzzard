@@ -7,7 +7,7 @@ import { Coords, Errand, ThingDescription } from "../engine/Errand";
 import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION, SpriteConfig } from "./sprites";
 import { clearLabelText, getLabelText } from "./editor-panel";
 import depths from "./depths";
-import { DialogBox } from "./DialogBox";
+import { DialogBox } from "./widgets/DialogBox";
 import toPixelCoords from "./toPixelCoords";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
