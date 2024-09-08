@@ -94,6 +94,8 @@ export class Button {
 
     this.background.setVisible(true);
     this.text.setVisible(true);
+
+    this.onPress = onPress;
   }
 
   hide() {
