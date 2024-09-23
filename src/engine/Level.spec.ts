@@ -87,8 +87,16 @@ describe("moving", () => {
       [Direction.RIGHT, Direction.DOWN]
     ]
       .forEach(directions =>
-        it(directions.map(direction => direction.name).join(","), () => {
-          expect(directions.map(direction => level.tryToMove(direction))).toEqual([moved, stayed]);
+        it(
+        directions
+        .map(direction => direction.name)
+        .join(","),
+        () => {
+          expect(
+          directions
+          .map(direction => level.tryToMove(direction))
+          )
+          .toEqual([moved, stayed]);
         })
       );
   });
