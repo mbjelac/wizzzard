@@ -523,22 +523,22 @@ export const SPRITE_CONFIGS = {
       brown: spriteConfig({
         coords: { x: 20, y: 0 },
         animation: { frameCount: 1 },
-        auxAnimation: { frameCount: 4, framesPerSecond: 2 }
+        auxAnimation: { frameCount: 4, framesPerSecond: 4 }
       }),
       red: spriteConfig({
         coords: { x: 20, y: 1 },
         animation: { frameCount: 1 },
-        auxAnimation: { frameCount: 4, framesPerSecond: 2 }
+        auxAnimation: { frameCount: 4, framesPerSecond: 4 }
       }),
       green: spriteConfig({
         coords: { x: 20, y: 2 },
         animation: { frameCount: 1 },
-        auxAnimation: { frameCount: 4, framesPerSecond: 2 }
+        auxAnimation: { frameCount: 4, framesPerSecond: 4 }
       }),
       purple: spriteConfig({
         coords: { x: 20, y: 3 },
         animation: { frameCount: 1 },
-        auxAnimation: { frameCount: 4, framesPerSecond: 2 }
+        auxAnimation: { frameCount: 4, framesPerSecond: 4 }
       }),
     }
   },

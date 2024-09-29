@@ -176,6 +176,7 @@ export class Level {
     changedStateThings.push(...this.bridgeBridges(pushedThings, direction));
 
     changedStateThings.push(...nextLocation.things.filter(thing => thing.is("automatic")));
+    changedStateThings.push(...nextLocation.things.filter(thing => thing.is("remember")));
 
     return {
       moved: canMove,

@@ -1189,6 +1189,8 @@ it("automatic changes state on move to it's location", () => {
 
 describe("remembering stone", () => {
 
+  let rememberingStone: Thing;
+
   beforeEach(() => {
 
     level = createLevel(
@@ -1197,7 +1199,7 @@ describe("remembering stone", () => {
       "     ",
     );
 
-    addThing(0, 0, "remember", "wall");
+    rememberingStone = addThing(0, 0, "remember", "wall");
   });
 
   it("says something when touched", () => {
@@ -1210,6 +1212,19 @@ describe("remembering stone", () => {
     expect(texts).toEqual([
       undefined,
       "remembering"
+    ]);
+  });
+
+  it("changes state when touched", () => {
+
+    const changeStateLists = movementToChangedStateLists(
+      Direction.UP,
+      Direction.LEFT,
+    );
+
+    expect(changeStateLists).toEqual([
+      [],
+      [rememberingStone]
     ]);
   });
 
