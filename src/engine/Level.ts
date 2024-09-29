@@ -84,6 +84,10 @@ export interface LevelLocation {
   things: Thing[],
 }
 
+interface SavedGame {
+  readonly playerCoords: Coords;
+}
+
 export class Level {
 
   public readonly editor = new LevelEditor();
@@ -96,7 +100,7 @@ export class Level {
   private inventory: Thing[] = [];
   private doneReceivers: string[] = [];
 
-  private savedGame = false;
+  private savedGame? : SavedGame;
 
   constructor(
     public readonly errand: Errand,
@@ -176,7 +180,9 @@ export class Level {
       if (rememberingStone !== undefined) {
         interactionText = "remembering";
         changedStateThings.push(rememberingStone);
-        this.savedGame = true;
+        this.savedGame = {
+          playerCoords: this.playerCoords
+        };
       }
     }
 
@@ -430,6 +436,15 @@ export class Level {
   }
 
   canRemember() {
-    return this.savedGame;
+    return this.savedGame !== undefined;
+  }
+
+  remember() {
+    if (this.savedGame == undefined) {
+      return;
+    }
+
+    this.playerCoords = this.savedGame.playerCoords;
+
   }
 }

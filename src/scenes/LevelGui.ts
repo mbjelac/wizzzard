@@ -734,7 +734,13 @@ export default class LevelGui extends Phaser.Scene {
   }
 
   private rememberLevel() {
-    console.log("loading saved game...");
+
+    this.level.remember();
+
+    const playerPixelCoords = toPixelCoords(this.level.getPlayerCoords());
+    this.player.setX(playerPixelCoords.x);
+    this.player.setY(playerPixelCoords.y);
+
   }
 }
 

@@ -1254,6 +1254,22 @@ describe("remembering stone", () => {
 
     expect(level.canRemember()).toBe(true);
   });
+
+  it("remembers player location", () => {
+
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+
+    const rememberedLocation = level.getPlayerCoords();
+
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.RIGHT);
+
+    level.remember();
+
+    expect(level.getPlayerCoords()).toEqual(rememberedLocation);
+  });
 });
 
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
