@@ -96,20 +96,22 @@ export class Level {
   private inventory: Thing[] = [];
   private doneReceivers: string[] = [];
 
+  private savedGame = false;
+
   constructor(
-  public readonly errand: Errand,
+    public readonly errand: Errand,
   ) {
     this.playerCoords = { ...errand.startCoords };
     this.levelLocations = this
     .errand
     .matrix
     .map((row, rowIndex) => row
-    .map((location, columnIndex) => ({
-      coords: { x: columnIndex, y: rowIndex },
-      things: location.things
-      .map(thingProps => new Thing(thingProps))
-    })
-    )
+      .map((location, columnIndex) => ({
+          coords: { x: columnIndex, y: rowIndex },
+          things: location.things
+          .map(thingProps => new Thing(thingProps))
+        })
+      )
     );
   }
 
@@ -158,9 +160,9 @@ export class Level {
     const hasNotReceivedOrReceiverOpen = hasNotReceived || receiver.is("open");
 
     const canMove =
-    !this.doesLocationHaveProperty(nextLocation, "wall") &&
-    this.pushableCanBePushed(nextLocation, direction) &&
-    hasNotReceivedOrReceiverOpen;
+      !this.doesLocationHaveProperty(nextLocation, "wall") &&
+      this.pushableCanBePushed(nextLocation, direction) &&
+      hasNotReceivedOrReceiverOpen;
 
     let interactionText: string | undefined = undefined;
 
@@ -169,6 +171,13 @@ export class Level {
       thingsToRemove.push(...this.transferAllPickupsFromLevelToInventory(nextLocation));
     } else {
       interactionText = this.getTextsFrom(nextLocation);
+
+      const rememberingStone = nextLocation.things.filter(thing => thing.is("remember"))[0];
+      if (rememberingStone !== undefined) {
+        interactionText = "remembering";
+        changedStateThings.push(rememberingStone);
+        this.savedGame = true;
+      }
     }
 
     const pushedThings = canMove ? this.pushThings(nextLocation, direction) : [];
@@ -176,7 +185,7 @@ export class Level {
     changedStateThings.push(...this.bridgeBridges(pushedThings, direction));
 
     changedStateThings.push(...nextLocation.things.filter(thing => thing.is("automatic")));
-    changedStateThings.push(...nextLocation.things.filter(thing => thing.is("remember")));
+
 
     return {
       moved: canMove,
@@ -281,8 +290,8 @@ export class Level {
     .map(thing => thing.description.text);
 
     return neighbouringTexts.length === 0
-    ? undefined
-    : neighbouringTexts.join();
+      ? undefined
+      : neighbouringTexts.join();
   }
 
   private getNeighbours(): LevelLocation[] {
@@ -300,8 +309,8 @@ export class Level {
     return location
     .things
     .find(thing =>
-    thing.is("receiver")
-    && this.inventoryContainsLabel(thing.description.label)
+      thing.is("receiver")
+      && this.inventoryContainsLabel(thing.description.label)
     );
   }
 
@@ -319,8 +328,8 @@ export class Level {
     return location
     .things
     .find(thing => thing.description.label === label)
-    ?.description
-    .text;
+      ?.description
+      .text;
   }
 
   private pushThings(location: LevelLocation, direction: Direction): Thing[] {
@@ -352,7 +361,7 @@ export class Level {
       location: location
     })))
     .find(result => result.hitCount === 1)
-    ?.location;
+      ?.location;
   }
 
   private pushableCanBePushed(location: LevelLocation, direction: Direction): boolean {
@@ -360,22 +369,13 @@ export class Level {
     const pushLocation = this.getMoveLocation(location.coords, direction);
 
     return !this.doesLocationHaveProperty(location, "pushable")
-    || (
-    pushLocation !== undefined
-    && !this.doesLocationHaveProperty(pushLocation, "wall", "pushable")
-    );
+      || (
+        pushLocation !== undefined
+        && !this.doesLocationHaveProperty(pushLocation, "wall", "pushable")
+      );
   }
 
   private getTextsFrom(location: LevelLocation): string {
-
-    const isRemembering = location
-    .things
-    .some(thing => thing.is("remember"));
-
-    if (isRemembering) {
-      return "remembering";
-    }
-
     return location
     .things
     .filter(thing => !thing.is("automatic") && thing.description.text !== undefined)
@@ -423,9 +423,13 @@ export class Level {
       location: location
     })))
     .filter(candidate => candidate.isTeleportTarget)
-    [0]
-    ?.location;
+      [0]
+      ?.location;
 
     return targetLocation ? targetLocation.coords : nextLocation.coords;
+  }
+
+  canRemember() {
+    return this.savedGame;
   }
 }

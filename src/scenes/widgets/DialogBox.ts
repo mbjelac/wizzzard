@@ -127,7 +127,7 @@ export class DialogBox {
     title: string,
     text: string,
     cancellable: boolean,
-    ...buttons: ButtonConfig[]
+    buttons: ButtonConfig[]
   ) {
     this.cancellable = cancellable;
     this.buttonConfigs = buttons;

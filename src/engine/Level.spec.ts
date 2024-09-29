@@ -1228,6 +1228,32 @@ describe("remembering stone", () => {
     ]);
   });
 
+  it("can not remember until touched", () => {
+
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.RIGHT);
+
+    expect(level.canRemember()).toBe(false);
+  });
+
+  it("can remember when touched", () => {
+
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+
+    expect(level.canRemember()).toBe(true);
+  });
+
+  it("can remember when touched again", () => {
+
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.LEFT);
+
+    expect(level.canRemember()).toBe(true);
+  });
 });
 
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {

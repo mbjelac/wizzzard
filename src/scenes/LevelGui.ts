@@ -7,7 +7,7 @@ import { Coords, Errand, ThingDescription } from "../engine/Errand";
 import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION, SpriteConfig } from "./sprites";
 import { clearLabelText, getLabelText } from "./editor-panel";
 import depths from "./depths";
-import { DialogBox } from "./widgets/DialogBox";
+import { ButtonConfig, DialogBox } from "./widgets/DialogBox";
 import toPixelCoords from "./toPixelCoords";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
@@ -207,8 +207,8 @@ export default class LevelGui extends Phaser.Scene {
     });
 
     const voidTile = this.addSpriteFromTileset("void", locationPixelCoords)
-      .setDepth(depths.void)
-      .setInteractive();
+    .setDepth(depths.void)
+    .setInteractive();
 
     voidTile.on('pointerup', async (pointer: Pointer) => {
       if (pointer.leftButtonReleased()) {
@@ -290,8 +290,7 @@ export default class LevelGui extends Phaser.Scene {
           "",
           "Tired already, fellow traveller?",
           true,
-          { text: "Leave", keyboardShortcutDescription: "  L", keyEventCode: "KeyL", eventHandler: () => this.exitLevel() },
-          { text: "Restart", keyboardShortcutDescription: "  R", keyEventCode: "KeyR", eventHandler: () => this.populateLevel() },
+          this.getTerminationButtons(),
         );
         return;
       }
@@ -305,18 +304,30 @@ export default class LevelGui extends Phaser.Scene {
     const sidePanelWidth = 5 * TILE_SIZE;
 
     this.sideText = this.add
-      .bitmapText(0, 0, "blackRobotoMicro", "")
-      .setMaxWidth(sidePanelWidth - 60)
-      .setScale(4)
-      .setDepth(depths.info);
+    .bitmapText(0, 0, "blackRobotoMicro", "")
+    .setMaxWidth(sidePanelWidth - 60)
+    .setScale(4)
+    .setDepth(depths.info);
 
     this.sidePanel = this
-      .physics
-      .add
-      .sprite(0, 0, "panel")
-      .setDisplaySize(320, 832)
-      .setDepth(depths.infoBackground);
+    .physics
+    .add
+    .sprite(0, 0, "panel")
+    .setDisplaySize(320, 832)
+    .setDepth(depths.infoBackground);
 
+  }
+
+  private getTerminationButtons(): ButtonConfig[] {
+    return [
+      { text: "Leave", keyboardShortcutDescription: "  L", keyEventCode: "KeyL", eventHandler: () => this.exitLevel() },
+      { text: "Restart", keyboardShortcutDescription: "  R", keyEventCode: "KeyR", eventHandler: () => this.populateLevel() },
+      ...(
+        this.level.canRemember()
+          ? [{ text: "Remember", keyboardShortcutDescription: "  B", keyEventCode: "KeyB", eventHandler: () => this.rememberLevel() }]
+          : []
+      )
+    ];
   }
 
   private exitLevel() {
@@ -396,12 +407,14 @@ export default class LevelGui extends Phaser.Scene {
         "Congratulations!",
         "You have completed this errand.",
         false,
-        {
-          text: "Exit",
-          keyboardShortcutDescription: "Enter",
-          keyEventCode: "Enter",
-          eventHandler: () => this.exitLevel()
-        }
+        [
+          {
+            text: "Exit",
+            keyboardShortcutDescription: "Enter",
+            keyEventCode: "Enter",
+            eventHandler: () => this.exitLevel()
+          }
+        ]
       );
       this.levelComplete = true;
     }
@@ -497,8 +510,8 @@ export default class LevelGui extends Phaser.Scene {
     const thingDepth = levelLocation.things.indexOf(thing);
 
     const thingSprite = this.addSpriteFromTileset(thing.description.sprite, pixelCoords)
-      .setDepth(thingDepth)
-      .setInteractive();
+    .setDepth(thingDepth)
+    .setInteractive();
 
     thingSprite.on('pointerup', async (pointer: Pointer) => {
       if (pointer.rightButtonReleased()) {
@@ -560,8 +573,8 @@ export default class LevelGui extends Phaser.Scene {
     const frameIndex = getSpriteFrameIndex(tileCoords);
 
     const sprite = this.physics.add
-      .sprite(coords.x, coords.y, this.tilesetName, frameIndex)
-      .setDisplaySize(64, 64);
+    .sprite(coords.x, coords.y, this.tilesetName, frameIndex)
+    .setDisplaySize(64, 64);
 
     if (spriteConfig.animation !== undefined) {
 
@@ -608,7 +621,7 @@ export default class LevelGui extends Phaser.Scene {
       matrix: this.level.levelLocations.map(row => row
         .map(location => ({
             things: location.things
-              .map(thing => thing.description)
+            .map(thing => thing.description)
           })
         )
       )
@@ -649,10 +662,10 @@ export default class LevelGui extends Phaser.Scene {
   private playSoundEffectOnMove() {
 
     const spriteName = this
-      .level
-      .getLocation(this.level.getPlayerCoords())!
-      .things
-      .map(thing => thing.description.sprite)[0];
+    .level
+    .getLocation(this.level.getPlayerCoords())!
+    .things
+    .map(thing => thing.description.sprite)[0];
 
     this.playSpriteSoundEffect(spriteName);
   }
@@ -677,9 +690,9 @@ export default class LevelGui extends Phaser.Scene {
   private updateAmbientSound() {
 
     const ambientSoundThing = this
-      .level
-      .getLocation(this.level.getPlayerCoords())
-      ?.things.filter(thing => thing.is("ambientSound"))
+    .level
+    .getLocation(this.level.getPlayerCoords())
+    ?.things.filter(thing => thing.is("ambientSound"))
       [0];
 
     this.playAmbientSound(ambientSoundThing?.description?.label);
@@ -690,11 +703,11 @@ export default class LevelGui extends Phaser.Scene {
     this.inputEventsBlocked = true;
 
     const playerDeath: PlayerDeath = this
-        .level
-        .getLocation(this.level.getPlayerCoords())
-        ?.things
-        .map(thing => SPRITE_CONFIGS_BY_LOCATION.get(thing.description.sprite))
-        .find(spriteConfig => spriteConfig?.playerDeath !== undefined)
+      .level
+      .getLocation(this.level.getPlayerCoords())
+      ?.things
+      .map(thing => SPRITE_CONFIGS_BY_LOCATION.get(thing.description.sprite))
+      .find(spriteConfig => spriteConfig?.playerDeath !== undefined)
         ?.playerDeath
       || "drowning";
 
@@ -713,12 +726,15 @@ export default class LevelGui extends Phaser.Scene {
               ? "You have perished in the fire."
               : "You have died.",
           false,
-          { text: "Leave", keyboardShortcutDescription: "  L", keyEventCode: "KeyL", eventHandler: () => this.exitLevel() },
-          { text: "Restart", keyboardShortcutDescription: "  R", keyEventCode: "KeyR", eventHandler: () => this.populateLevel() }
+          this.getTerminationButtons()
         );
       },
       2000
     );
+  }
+
+  private rememberLevel() {
+    console.log("loading saved game...");
   }
 }
 
