@@ -1270,6 +1270,31 @@ describe("remembering stone", () => {
 
     expect(level.getPlayerCoords()).toEqual(rememberedLocation);
   });
+
+  it("remembers inventory", () => {
+
+    const item1 = addPickup(2, 2, "1st item");
+    const item2 = addPickup(0, 2, "2nd item");
+
+    // pick up 1
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.RIGHT);
+
+    // touch remembering stone
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.LEFT);
+
+    // pick up 2
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.DOWN);
+
+    level.remember();
+
+    expect(level.getInventory()).toEqual([item1]);
+  });
 });
 
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {

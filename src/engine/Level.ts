@@ -85,6 +85,7 @@ export interface LevelLocation {
 }
 
 interface SavedGame {
+  readonly inventory: Thing[];
   readonly playerCoords: Coords;
 }
 
@@ -181,7 +182,8 @@ export class Level {
         interactionText = "remembering";
         changedStateThings.push(rememberingStone);
         this.savedGame = {
-          playerCoords: this.playerCoords
+          playerCoords: this.playerCoords,
+          inventory: [...this.inventory]
         };
       }
     }
@@ -445,6 +447,7 @@ export class Level {
     }
 
     this.playerCoords = this.savedGame.playerCoords;
+    this.inventory = this.savedGame.inventory;
 
   }
 }

@@ -741,6 +741,8 @@ export default class LevelGui extends Phaser.Scene {
     this.player.setX(playerPixelCoords.x);
     this.player.setY(playerPixelCoords.y);
 
+    this.displayInventory();
+
   }
 }
 
