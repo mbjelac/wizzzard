@@ -109,7 +109,7 @@ export default class LevelGui extends Phaser.Scene {
 
     for (const x of Array(this.level.errand.levelDimensions.width).keys()) {
       for (const y of Array(this.level.errand.levelDimensions.height).keys()) {
-        this.addLocation(x, y);
+        this.addLocation({ x, y });
       }
     }
 
@@ -198,13 +198,14 @@ export default class LevelGui extends Phaser.Scene {
     this.sound.stopAll();
   }
 
-  private addLocation(x: number, y: number) {
-    const location = this.level.levelLocations[y][x];
+  private addLocation(coords: Coords) {
+    const location = this.level.getLocation(coords);
 
-    const locationPixelCoords = toPixelCoords({
-      x: x,
-      y: y
-    });
+    if (location === undefined) {
+      return;
+    }
+
+    const locationPixelCoords = toPixelCoords(coords);
 
     const voidTile = this.addSpriteFromTileset("void", locationPixelCoords)
     .setDepth(depths.void)
@@ -618,7 +619,7 @@ export default class LevelGui extends Phaser.Scene {
 
     const errand: Errand = {
       ...this.level.errand,
-      matrix: this.level.levelLocations.map(row => row
+      matrix: this.level.getLevelLocations().map(row => row
         .map(location => ({
             things: location.things
             .map(thing => thing.description)

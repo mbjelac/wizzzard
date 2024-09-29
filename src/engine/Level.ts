@@ -85,15 +85,16 @@ export interface LevelLocation {
 }
 
 interface SavedGame {
-  readonly inventory: Thing[];
   readonly playerCoords: Coords;
+  readonly inventory: Thing[];
+  readonly levelLocations: LevelLocation[][];
 }
 
 export class Level {
 
   public readonly editor = new LevelEditor();
 
-  public readonly levelLocations: LevelLocation[][];
+  private levelLocations: LevelLocation[][];
   private playerCoords: Coords;
 
   public collisionEnabled = true;
@@ -183,7 +184,8 @@ export class Level {
         changedStateThings.push(rememberingStone);
         this.savedGame = {
           playerCoords: this.playerCoords,
-          inventory: [...this.inventory]
+          inventory: [...this.inventory],
+          levelLocations: this.levelLocations
         };
       }
     }
@@ -449,5 +451,10 @@ export class Level {
     this.playerCoords = this.savedGame.playerCoords;
     this.inventory = this.savedGame.inventory;
 
+    this.levelLocations = this.savedGame.levelLocations;
+  }
+
+  getLevelLocations() {
+    return [...this.levelLocations.map(row => [...row])];
   }
 }

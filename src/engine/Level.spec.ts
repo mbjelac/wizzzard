@@ -35,7 +35,8 @@ function createLevel(...rows: string[]): Level {
     description: {
       id: "testLevel",
       description: "",
-      title: ""
+      title: "",
+      mapMarkerLocation: { x: 0, y: 0 }
     },
     texts: {},
     levelDimensions: { width: rows[0].length, height: rows.length },
@@ -151,7 +152,7 @@ describe("picking up things", () => {
       "# ."
     );
 
-    pickupLocation = level.levelLocations[2][2];
+    pickupLocation = level.getLocation({ x: 2, y: 2 })!;
     pickupLocationFloor = pickupLocation.things[0];
     pickupItem = pickupLocation.things[1];
   });
@@ -904,7 +905,8 @@ describe("completing level", () => {
     description: {
       id: "dummyErrand",
       description: "",
-      title: ""
+      title: "",
+      mapMarkerLocation: { x: 0, y: 0 }
     },
     texts: {},
     levelDimensions: { width: 3, height: 3 },
@@ -913,7 +915,7 @@ describe("completing level", () => {
     completionCriteria: {
       inventory: [],
       receives: []
-    }
+    },
   };
 });
 describe("reading or listening", () => {
@@ -1164,7 +1166,7 @@ describe("teleportation", () => {
   });
 
   it("teleport changes location to self if no target found", () => {
-    level.levelLocations[2][2].things = [];
+    level.getLocation({ x: 2, y: 2 })!.things = [];
     level.tryToMove(Direction.UP);
     level.tryToMove(Direction.LEFT);
     expect(level.getPlayerCoords()).toEqual<Coords>({ x: 0, y: 0 });
@@ -1276,25 +1278,59 @@ describe("remembering stone", () => {
     const item1 = addPickup(2, 2, "1st item");
     const item2 = addPickup(0, 2, "2nd item");
 
-    // pick up 1
-    level.tryToMove(Direction.DOWN);
-    level.tryToMove(Direction.RIGHT);
-
-    // touch remembering stone
-    level.tryToMove(Direction.UP);
-    level.tryToMove(Direction.UP);
-    level.tryToMove(Direction.LEFT);
-    level.tryToMove(Direction.LEFT);
-
-    // pick up 2
-    level.tryToMove(Direction.DOWN);
-    level.tryToMove(Direction.LEFT);
-    level.tryToMove(Direction.DOWN);
+    pickUpItem1();
+    touchRememberingStone();
+    pickUpItem2();
 
     level.remember();
 
     expect(level.getInventory()).toEqual([item1]);
   });
+
+  it("remembers things", () => {
+
+    const item1 = addPickup(2, 2, "1st item");
+    const item2 = addPickup(0, 2, "2nd item");
+
+    pickUpItem1();
+    touchRememberingStone();
+    pickUpItem2();
+
+    level.remember();
+
+    expect(
+      level
+      .getLevelLocations()
+      .map(row =>
+        row.map(location =>
+          location.things.filter(thing => thing.description.sprite !== "floor")
+        )
+      )
+    )
+    .toEqual<Thing[][][]>([
+      [[rememberingStone], [], []],
+      [[], [], []],
+      [[item2], [], []]
+    ]);
+  });
+
+  function pickUpItem1() {
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.RIGHT);
+  }
+
+  function pickUpItem2() {
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.DOWN);
+  }
+
+  function touchRememberingStone() {
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.LEFT);
+  }
 });
 
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
@@ -1333,7 +1369,7 @@ function addThingWithProps(props: AddThingProps): Thing {
     text: props.text,
     sprite: "",
   });
-  level.levelLocations[props.y][props.x].things.push(thing);
+  level.getLocation({ x: props.x, y: props.y })!.things.push(thing);
   return thing;
 }
 
@@ -1342,15 +1378,15 @@ function addLabelledThing(x: number, y: number, label: string, ...properties: Th
 }
 
 function getAllThings(level: Level): Thing[] {
-  return level.levelLocations.flatMap(row => row.flatMap(loc => loc.things));
+  return level.getLevelLocations().flatMap(row => row.flatMap(loc => loc.things));
 }
 
 function getThingsAt(x: number, y: number, skipInitialThings: boolean = true): Thing[] {
-  return level.levelLocations[y][x].things.slice(skipInitialThings ? 1 : 0);
+  return level.getLocation({ x, y })!.things.slice(skipInitialThings ? 1 : 0);
 }
 
 function getCoordsOf(thing: Thing): Coords | undefined {
-  return level.levelLocations
+  return level.getLevelLocations()
   .flatMap((row, rowIndex) => row
   .flatMap((col, colIndex) => ({
     hitCount: col.things.filter(levelThing => levelThing.equals(thing)).length,
