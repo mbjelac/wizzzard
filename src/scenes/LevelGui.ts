@@ -637,6 +637,10 @@ export default class LevelGui extends Phaser.Scene {
 
   private getText(text: string): string {
 
+    if (text === "remembering") {
+      return "I will remember you.";
+    }
+
     const longText = this.level.errand.texts[text];
 
     return longText ? longText.text : text;

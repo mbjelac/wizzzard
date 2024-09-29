@@ -15,6 +15,7 @@ export const ALL_THING_PROPERTIES = [
   "bridge",
   "bridgeable",
   "teleport",
+  "remember"
 ] as const;
 type ThingPropertyTuple = typeof ALL_THING_PROPERTIES;
 export type ThingProperty = ThingPropertyTuple[number];
@@ -41,8 +42,8 @@ export class Thing {
     return JSON.stringify(this.description) === JSON.stringify(description);
   }
 
-  is(thingFunction: ThingProperty): boolean {
-    return this.description.properties.find(tf => tf === thingFunction) !== undefined;
+  is(thingProperty: ThingProperty): boolean {
+    return this.description.properties.some(thisThingProperty => thisThingProperty === thingProperty);
   }
 
   removeProperty(propertyToRemove: ThingProperty) {
@@ -96,20 +97,20 @@ export class Level {
   private doneReceivers: string[] = [];
 
   constructor(
-    public readonly errand: Errand,
+  public readonly errand: Errand,
   ) {
     this.playerCoords = { ...errand.startCoords };
     this.levelLocations = this
-      .errand
-      .matrix
-      .map((row, rowIndex) => row
-        .map((location, columnIndex) => ({
-            coords: { x: columnIndex, y: rowIndex },
-            things: location.things
-              .map(thingProps => new Thing(thingProps))
-          })
-        )
-      );
+    .errand
+    .matrix
+    .map((row, rowIndex) => row
+    .map((location, columnIndex) => ({
+      coords: { x: columnIndex, y: rowIndex },
+      things: location.things
+      .map(thingProps => new Thing(thingProps))
+    })
+    )
+    );
   }
 
   public tryToMove(direction: Direction): MoveResult {
@@ -132,7 +133,7 @@ export class Level {
 
     const receiver = this.getReceiverForAnInventoryItem(nextLocation);
 
-    let receiveEventText: string | undefined = undefined;
+    let receiveEventText: string | undefined;
 
     const changedStateThings: Thing[] = [];
 
@@ -157,9 +158,9 @@ export class Level {
     const hasNotReceivedOrReceiverOpen = hasNotReceived || receiver.is("open");
 
     const canMove =
-      !this.doesLocationHaveProperty(nextLocation, "wall") &&
-      this.pushableCanBePushed(nextLocation, direction) &&
-      hasNotReceivedOrReceiverOpen;
+    !this.doesLocationHaveProperty(nextLocation, "wall") &&
+    this.pushableCanBePushed(nextLocation, direction) &&
+    hasNotReceivedOrReceiverOpen;
 
     let interactionText: string | undefined = undefined;
 
@@ -253,8 +254,8 @@ export class Level {
     }
 
     const collectedLabels = this
-      .inventory
-      .map(thing => thing.description.label);
+    .inventory
+    .map(thing => thing.description.label);
 
     return requiredLabels.every(requiredLabel => collectedLabels.some(collectedLabel => collectedLabel === requiredLabel));
   }
@@ -273,14 +274,14 @@ export class Level {
   private getNeighbouringTexts(): string | undefined {
 
     const neighbouringTexts = this
-      .getNeighbours()
-      .flatMap(neighbourLocation => neighbourLocation.things)
-      .filter(thing => thing.is("automatic") && thing.description.text !== undefined)
-      .map(thing => thing.description.text);
+    .getNeighbours()
+    .flatMap(neighbourLocation => neighbourLocation.things)
+    .filter(thing => thing.is("automatic") && thing.description.text !== undefined)
+    .map(thing => thing.description.text);
 
     return neighbouringTexts.length === 0
-      ? undefined
-      : neighbouringTexts.join();
+    ? undefined
+    : neighbouringTexts.join();
   }
 
   private getNeighbours(): LevelLocation[] {
@@ -290,23 +291,23 @@ export class Level {
       { y: this.playerCoords.y, x: this.playerCoords.x - 1 },
       { y: this.playerCoords.y, x: this.playerCoords.x + 1 },
     ]
-      .filter(coords => coords.x >= 0 && coords.y >= 0 && coords.x < this.errand.levelDimensions.width && coords.y < this.errand.levelDimensions.height)
-      .map(coords => this.levelLocations[coords.y][coords.x]);
+    .filter(coords => coords.x >= 0 && coords.y >= 0 && coords.x < this.errand.levelDimensions.width && coords.y < this.errand.levelDimensions.height)
+    .map(coords => this.levelLocations[coords.y][coords.x]);
   }
 
   private getReceiverForAnInventoryItem(location: LevelLocation): Thing | undefined {
     return location
-      .things
-      .find(thing =>
-        thing.is("receiver")
-        && this.inventoryContainsLabel(thing.description.label)
-      );
+    .things
+    .find(thing =>
+    thing.is("receiver")
+    && this.inventoryContainsLabel(thing.description.label)
+    );
   }
 
   private inventoryContainsLabel(label: string | undefined): boolean {
     return this.inventory.map(thing => thing.description.label)
-      .filter(inventoryLabel => inventoryLabel !== undefined)
-      .some(inventoryLabel => inventoryLabel === label);
+    .filter(inventoryLabel => inventoryLabel !== undefined)
+    .some(inventoryLabel => inventoryLabel === label);
   }
 
   private removeFromLocation(location: LevelLocation, thing: Thing) {
@@ -315,10 +316,10 @@ export class Level {
 
   private findTextAt(location: LevelLocation, label: string): string | undefined {
     return location
-      .things
-      .find(thing => thing.description.label === label)
-      ?.description
-      .text;
+    .things
+    .find(thing => thing.description.label === label)
+    ?.description
+    .text;
   }
 
   private pushThings(location: LevelLocation, direction: Direction): Thing[] {
@@ -343,14 +344,14 @@ export class Level {
 
   private getLocationOfThing(thing: Thing): LevelLocation | undefined {
     return this
-      .levelLocations
-      .flatMap(row => row
-        .flatMap(location => ({
-          hitCount: location.things.filter(levelThing => levelThing.equals(thing)).length,
-          location: location
-        })))
-      .find(result => result.hitCount === 1)
-      ?.location;
+    .levelLocations
+    .flatMap(row => row
+    .flatMap(location => ({
+      hitCount: location.things.filter(levelThing => levelThing.equals(thing)).length,
+      location: location
+    })))
+    .find(result => result.hitCount === 1)
+    ?.location;
   }
 
   private pushableCanBePushed(location: LevelLocation, direction: Direction): boolean {
@@ -358,25 +359,34 @@ export class Level {
     const pushLocation = this.getMoveLocation(location.coords, direction);
 
     return !this.doesLocationHaveProperty(location, "pushable")
-      || (
-        pushLocation !== undefined
-        && !this.doesLocationHaveProperty(pushLocation, "wall", "pushable")
-      );
+    || (
+    pushLocation !== undefined
+    && !this.doesLocationHaveProperty(pushLocation, "wall", "pushable")
+    );
   }
 
   private getTextsFrom(location: LevelLocation): string {
+
+    const isRemembering = location
+    .things
+    .some(thing => thing.is("remember"));
+
+    if (isRemembering) {
+      return "remembering";
+    }
+
     return location
-      .things
-      .filter(thing => !thing.is("automatic") && thing.description.text !== undefined)
-      .map(thing => thing.description.text as string)
-      .join();
+    .things
+    .filter(thing => !thing.is("automatic") && thing.description.text !== undefined)
+    .map(thing => thing.description.text as string)
+    .join();
   }
 
   private bridgeBridges(pushedThings: Thing[], direction: Direction): Thing[] {
 
     const bridge = pushedThings.find(thing => thing.is("bridge"));
 
-    if(bridge === undefined) {
+    if (bridge === undefined) {
       return [];
     }
 
@@ -384,7 +394,7 @@ export class Level {
 
     const bridgeable = pushedLocation?.things.find(thing => thing.is("bridgeable"));
 
-    if(bridgeable === undefined) {
+    if (bridgeable === undefined) {
       return [];
     }
 
@@ -405,15 +415,15 @@ export class Level {
     }
 
     const targetLocation = this
-      .levelLocations
-      .flatMap(row => row
-        .flatMap(location => ({
-          isTeleportTarget: location.things.find(levelThing => !levelThing.equals(teleport) && levelThing.description.label === teleport.description.label),
-          location: location
-        })))
-      .filter(candidate => candidate.isTeleportTarget)
-      [0]
-      ?.location;
+    .levelLocations
+    .flatMap(row => row
+    .flatMap(location => ({
+      isTeleportTarget: location.things.find(levelThing => !levelThing.equals(teleport) && levelThing.description.label === teleport.description.label),
+      location: location
+    })))
+    .filter(candidate => candidate.isTeleportTarget)
+    [0]
+    ?.location;
 
     return targetLocation ? targetLocation.coords : nextLocation.coords;
   }

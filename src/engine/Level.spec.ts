@@ -60,19 +60,19 @@ describe("moving", () => {
 
   describe("can move ", () => {
     Direction.getAllDirections()
-      .forEach(direction =>
-        it(direction.name, () => {
-          expect(level.tryToMove(direction)).toStrictEqual(moved);
-        }));
+    .forEach(direction =>
+      it(direction.name, () => {
+        expect(level.tryToMove(direction)).toStrictEqual(moved);
+      }));
   });
 
   describe("can not move outside level", () => {
     Direction.getAllDirections()
-      .forEach(direction =>
-        it(direction.name, () => {
-          level.tryToMove(direction);
-          expect(level.tryToMove(direction)).toStrictEqual(stayed);
-        }));
+    .forEach(direction =>
+      it(direction.name, () => {
+        level.tryToMove(direction);
+        expect(level.tryToMove(direction)).toStrictEqual(stayed);
+      }));
   });
 
   describe("can not move into walls", () => {
@@ -86,19 +86,19 @@ describe("moving", () => {
       [Direction.RIGHT, Direction.UP],
       [Direction.RIGHT, Direction.DOWN]
     ]
-      .forEach(directions =>
-        it(
+    .forEach(directions =>
+      it(
         directions
         .map(direction => direction.name)
         .join(","),
         () => {
           expect(
-          directions
-          .map(direction => level.tryToMove(direction))
+            directions
+            .map(direction => level.tryToMove(direction))
           )
           .toEqual([moved, stayed]);
         })
-      );
+    );
   });
 });
 
@@ -114,9 +114,9 @@ describe("dying", () => {
 
   describe("can move next to fire without dying", () => {
     Direction.getAllDirections()
-      .forEach(direction => it(direction.name, () => {
-        expect(level.tryToMove(direction)).toStrictEqual(moved);
-      }));
+    .forEach(direction => it(direction.name, () => {
+      expect(level.tryToMove(direction)).toStrictEqual(moved);
+    }));
   });
 
   describe("dies when moving into fire", () => {
@@ -130,11 +130,11 @@ describe("dying", () => {
       [Direction.RIGHT, Direction.UP],
       [Direction.RIGHT, Direction.DOWN]
     ]
-      .forEach(directions =>
-        it(directions.map(direction => direction.name).join(","), () => {
-          expect(directions.map(direction => level.tryToMove(direction))).toEqual([moved, movedAndDied]);
-        })
-      );
+    .forEach(directions =>
+      it(directions.map(direction => direction.name).join(","), () => {
+        expect(directions.map(direction => level.tryToMove(direction))).toEqual([moved, movedAndDied]);
+      })
+    );
   });
 });
 
@@ -613,7 +613,7 @@ describe("receiver put in changed-state list", () => {
   });
 });
 
-describe("death receiver", ()=>{
+describe("death receiver", () => {
   const receiverLabel = "any";
 
   beforeEach(() => {
@@ -1095,11 +1095,11 @@ describe("pushable bridge", () => {
         Direction.UP
       )
     )
-      .toEqual([
-        true,
-        true,
-        true
-      ]);
+    .toEqual([
+      true,
+      true,
+      true
+    ]);
   });
 
   it("pushing bridge across bridgeable modifies properties", () => {
@@ -1115,12 +1115,12 @@ describe("pushable bridge", () => {
       isBridgeableStillDeath: bridgeable.is("death"),
       isBridgeableStillBridgeable: bridgeable.is("bridgeable")
     })
-      .toEqual({
-        isBridgeStillPushable: false,
-        isBridgeStillBridge: false,
-        isBridgeableStillDeath: false,
-        isBridgeableStillBridgeable: false
-      });
+    .toEqual({
+      isBridgeStillPushable: false,
+      isBridgeStillBridge: false,
+      isBridgeableStillDeath: false,
+      isBridgeableStillBridgeable: false
+    });
   });
 
   it("pushing bridge across bridgeable changes bridge state", () => {
@@ -1131,11 +1131,11 @@ describe("pushable bridge", () => {
         Direction.UP
       )
     )
-      .toEqual([
-        [],
-        [],
-        [bridge]
-      ]);
+    .toEqual([
+      [],
+      [],
+      [bridge]
+    ]);
   });
 
   function movesToMoved(...directions: Direction[]): boolean[] {
@@ -1172,7 +1172,7 @@ describe("teleportation", () => {
 
 });
 
-it("automatic changes state on move to it's location", ()=> {
+it("automatic changes state on move to it's location", () => {
 
   level = createLevel(
     "     ",
@@ -1185,6 +1185,34 @@ it("automatic changes state on move to it's location", ()=> {
   const changedThings = level.tryToMove(Direction.RIGHT).changedState;
 
   expect(changedThings).toEqual([automaticThing]);
+});
+
+describe("remembering stone", () => {
+
+  beforeEach(() => {
+
+    level = createLevel(
+      "     ",
+      "     ",
+      "     ",
+    );
+
+    addThing(0, 0, "remember", "wall");
+  });
+
+  it("says something when touched", () => {
+
+    const texts = textAfterMove(
+      Direction.UP,
+      Direction.LEFT,
+    );
+
+    expect(texts).toEqual([
+      undefined,
+      "remembering"
+    ]);
+  });
+
 });
 
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
@@ -1241,15 +1269,19 @@ function getThingsAt(x: number, y: number, skipInitialThings: boolean = true): T
 
 function getCoordsOf(thing: Thing): Coords | undefined {
   return level.levelLocations
-    .flatMap((row, rowIndex) => row
-      .flatMap((col, colIndex) => ({
-        hitCount: col.things.filter(levelThing => levelThing.equals(thing)).length,
-        coords: { x: colIndex, y: rowIndex }
-      })))
-    .find(loc => loc.hitCount === 1)
+  .flatMap((row, rowIndex) => row
+  .flatMap((col, colIndex) => ({
+    hitCount: col.things.filter(levelThing => levelThing.equals(thing)).length,
+    coords: { x: colIndex, y: rowIndex }
+  })))
+  .find(loc => loc.hitCount === 1)
     ?.coords;
 }
 
 function movementToChangedStateLists(...directions: Direction[]): Thing[][] {
   return directions.map(direction => level.tryToMove(direction).changedState);
+}
+
+function textAfterMove(...directions: Direction[]): (string | undefined)[] {
+  return directions.map(direction => level.tryToMove(direction).text);
 }
