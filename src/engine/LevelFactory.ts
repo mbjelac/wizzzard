@@ -44,21 +44,26 @@ function charToThingProps(char: string, handleMissingCase: () => void): ThingDes
   }
 }
 
+const defaultThingDescription: ThingDescription = {
+  properties: [],
+  sprite: "floor",
+};
+
 export function createThingProps(editorTool: EditorTool, label?: string): ThingDescription | undefined {
   switch (editorTool) {
     case EditorTool.NONE:
       return undefined;
     case EditorTool.FLOOR:
-      return Thing.defaultThingDescription;
+      return defaultThingDescription;
     case EditorTool.WALL:
-      return { ...Thing.defaultThingDescription, properties: ["wall"], label: label, sprite: "wall" };
+      return { ...defaultThingDescription, properties: ["wall"], label: label, sprite: "wall" };
     case EditorTool.FIRE:
-      return { ...Thing.defaultThingDescription, properties: ["death"], label: label, sprite: "fire" };
+      return { ...defaultThingDescription, properties: ["death"], label: label, sprite: "fire" };
     case EditorTool.KEY:
-      return { ...Thing.defaultThingDescription, properties: ["pickup"], label: label, sprite: "key" };
+      return { ...defaultThingDescription, properties: ["pickup"], label: label, sprite: "key" };
     case EditorTool.KEY_GREEN:
-      return { ...Thing.defaultThingDescription, properties: ["pickup"], label: label, sprite: "key_green" };
+      return { ...defaultThingDescription, properties: ["pickup"], label: label, sprite: "key_green" };
     case EditorTool.RECEIVER:
-      return { ...Thing.defaultThingDescription, properties: ["wall", "receiver"], label: label, sprite: "lock" };
+      return { ...defaultThingDescription, properties: ["wall", "receiver"], label: label, sprite: "lock" };
   }
 }

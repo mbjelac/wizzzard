@@ -2,7 +2,7 @@ import { Level, LevelLocation, MoveResult, Thing, ThingProperty } from "./Level"
 import { createThingProps, LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
 import { EditorTool } from "./editor/EditorTool";
-import { Coords, Errand } from "./Errand";
+import { Coords, Errand, ThingDescription } from "./Errand";
 
 let level: Level;
 
@@ -1019,7 +1019,7 @@ describe("pushing", () => {
   it("pushable is relocated within level", () => {
     level.tryToMove(Direction.RIGHT);
 
-    expect(getCoordsOf(pushable)).toEqual<Coords>({
+    expect(getCoordsOf(pushable.id)).toEqual<Coords>({
       x: 3, y: 1
     });
   });
@@ -1042,7 +1042,7 @@ describe("pushing", () => {
 
     it("pushable is not relocated within level", () => {
       level.tryToMove(Direction.RIGHT);
-      expect(getCoordsOf(pushable)).toEqual<Coords>({
+      expect(getCoordsOf(pushable.id)).toEqual<Coords>({
         x: 2, y: 1
       });
     });
@@ -1066,7 +1066,7 @@ describe("pushing", () => {
 
     it("pushable is not relocated within level", () => {
       level.tryToMove(Direction.RIGHT);
-      expect(getCoordsOf(pushable)).toEqual<Coords>({
+      expect(getCoordsOf(pushable.id)).toEqual<Coords>({
         x: 2, y: 1
       });
     });
@@ -1196,9 +1196,9 @@ describe("remembering stone", () => {
   beforeEach(() => {
 
     level = createLevel(
-      "     ",
-      "     ",
-      "     ",
+      "   ",
+      "   ",
+      "   ",
     );
 
     rememberingStone = addThing(0, 0, "remember", "wall");
@@ -1273,6 +1273,24 @@ describe("remembering stone", () => {
     expect(level.getPlayerCoords()).toEqual(rememberedLocation);
   });
 
+  it("remembers another player location", () => {
+
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+
+    const rememberedLocation = level.getPlayerCoords();
+
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.UP);
+
+    const secondRememberedLocation = level.getPlayerCoords();
+
+    level.remember();
+
+    expect(level.getPlayerCoords()).toEqual(secondRememberedLocation);
+  });
+
   it("remembers inventory", () => {
 
     const item1 = addPickup(2, 2, "1st item");
@@ -1303,14 +1321,16 @@ describe("remembering stone", () => {
       .getLevelLocations()
       .map(row =>
         row.map(location =>
-          location.things.filter(thing => thing.description.sprite !== "floor")
+          location.things
+          .filter(thing => thing.description.sprite !== "floor")
+          .map(thing => thing.description)
         )
       )
     )
-    .toEqual<Thing[][][]>([
-      [[rememberingStone], [], []],
+    .toEqual<ThingDescription[][][]>([
+      [[rememberingStone.description], [], []],
       [[], [], []],
-      [[item2], [], []]
+      [[item2.description], [], []]
     ]);
   });
 
@@ -1331,6 +1351,98 @@ describe("remembering stone", () => {
     level.tryToMove(Direction.LEFT);
     level.tryToMove(Direction.LEFT);
   }
+
+  it("remembers ambient sound", () => {
+
+    addThingWithProps({
+      x: 2,
+      y: 2,
+      properties: ["ambientSound"],
+      label: "foo",
+      text: undefined
+    });
+
+    // trigger ambient sound
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.DOWN);
+
+    // touch remembering stone
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.LEFT);
+
+    level.remember();
+
+    expect(level.getAmbientSound()).toEqual("foo");
+  });
+
+  it("triggering another ambient sound overrides current one", () => {
+
+    addThingWithProps({
+      x: 2,
+      y: 2,
+      properties: ["ambientSound"],
+      label: "foo",
+      text: undefined
+    });
+
+    addThingWithProps({
+      x: 0,
+      y: 2,
+      properties: ["ambientSound"],
+      label: "bar",
+      text: undefined
+    });
+
+    // trigger ambient sound
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.DOWN);
+
+    // trigger another ambient sound
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.LEFT);
+
+    expect(level.getAmbientSound()).toEqual("bar");
+  });
+
+  it("remembering ambient sound overrides current one", () => {
+
+    addThingWithProps({
+      x: 2,
+      y: 2,
+      properties: ["ambientSound"],
+      label: "foo",
+      text: undefined
+    });
+
+    addThingWithProps({
+      x: 0,
+      y: 2,
+      properties: ["ambientSound"],
+      label: "bar",
+      text: undefined
+    });
+
+    // trigger ambient sound
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.DOWN);
+
+    // touch remembering stone
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.LEFT);
+
+    // trigger another ambient sound
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.DOWN);
+
+    level.remember();
+
+    expect(level.getAmbientSound()).toEqual("foo");
+  });
 });
 
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
@@ -1385,15 +1497,8 @@ function getThingsAt(x: number, y: number, skipInitialThings: boolean = true): T
   return level.getLocation({ x, y })!.things.slice(skipInitialThings ? 1 : 0);
 }
 
-function getCoordsOf(thing: Thing): Coords | undefined {
-  return level.getLevelLocations()
-  .flatMap((row, rowIndex) => row
-  .flatMap((col, colIndex) => ({
-    hitCount: col.things.filter(levelThing => levelThing.equals(thing)).length,
-    coords: { x: colIndex, y: rowIndex }
-  })))
-  .find(loc => loc.hitCount === 1)
-    ?.coords;
+function getCoordsOf(thingId: number): Coords | undefined {
+  return level.findLocationByThingId(thingId);
 }
 
 function movementToChangedStateLists(...directions: Direction[]): Thing[][] {

@@ -190,12 +190,16 @@ export default class LevelGui extends Phaser.Scene {
     this.createdNonThings.forEach(createdObject => createdObject.destroy(true));
     this.createdNonThings = [];
 
+    this.clearAllThings();
+
+    this.sound.stopAll();
+  }
+
+  private clearAllThings() {
     this.createdSpritesByThingId.forEach(sprite => {
       sprite.destroy(true)
     });
     this.createdSpritesByThingId.clear();
-
-    this.sound.stopAll();
   }
 
   private addLocation(coords: Coords) {
@@ -619,13 +623,7 @@ export default class LevelGui extends Phaser.Scene {
 
     const errand: Errand = {
       ...this.level.errand,
-      matrix: this.level.getLevelLocations().map(row => row
-        .map(location => ({
-            things: location.things
-            .map(thing => thing.description)
-          })
-        )
-      )
+      matrix: this.level.getErrandMatrix()
     }
 
     await GAME.setErrand(errand);
@@ -744,6 +742,17 @@ export default class LevelGui extends Phaser.Scene {
 
     this.displayInventory();
 
+    this.clearAllThings();
+
+    this.sound.stopAll();
+
+    for (const x of Array(this.level.errand.levelDimensions.width).keys()) {
+      for (const y of Array(this.level.errand.levelDimensions.height).keys()) {
+        this.addLocation({ x, y });
+      }
+    }
+
+    this.playAmbientSound(this.level.getAmbientSound());
   }
 }
 

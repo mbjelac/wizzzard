@@ -1,6 +1,6 @@
 import { LevelEditor } from "./editor/LevelEditor";
 import { Direction } from "./Direction";
-import { Coords, Errand, ThingDescription } from "./Errand";
+import { Coords, Errand, ErrandMatrix, ThingDescription } from "./Errand";
 
 export const ALL_THING_PROPERTIES = [
   "wall",
@@ -25,11 +25,6 @@ export class Thing {
   private static nextId = 0;
 
   public readonly id = Thing.nextId++;
-
-  public static defaultThingDescription: ThingDescription = {
-    properties: [],
-    sprite: "floor",
-  };
 
   constructor(public readonly description: ThingDescription) {
   }
@@ -88,6 +83,7 @@ interface SavedGame {
   readonly playerCoords: Coords;
   readonly inventory: Thing[];
   readonly levelLocations: LevelLocation[][];
+  readonly ambientSound: string;
 }
 
 export class Level {
@@ -102,7 +98,9 @@ export class Level {
   private inventory: Thing[] = [];
   private doneReceivers: string[] = [];
 
-  private savedGame? : SavedGame;
+  private ambientSound: string = "";
+
+  private savedGame?: SavedGame;
 
   constructor(
     public readonly errand: Errand,
@@ -175,6 +173,16 @@ export class Level {
     if (canMove) {
       this.playerCoords = this.getNextCoords(nextLocation);
       thingsToRemove.push(...this.transferAllPickupsFromLevelToInventory(nextLocation));
+
+      const ambientSound = nextLocation
+      .things
+      .filter(thing => thing.is("ambientSound"))
+      .map(thing => thing.description.label)[0];
+
+      if (ambientSound !== undefined) {
+        this.ambientSound = ambientSound;
+      }
+
     } else {
       interactionText = this.getTextsFrom(nextLocation);
 
@@ -185,7 +193,8 @@ export class Level {
         this.savedGame = {
           playerCoords: this.playerCoords,
           inventory: [...this.inventory],
-          levelLocations: this.levelLocations
+          levelLocations: this.getLevelLocations(),
+          ambientSound: this.ambientSound
         };
       }
     }
@@ -450,11 +459,41 @@ export class Level {
 
     this.playerCoords = this.savedGame.playerCoords;
     this.inventory = this.savedGame.inventory;
-
     this.levelLocations = this.savedGame.levelLocations;
+    this.ambientSound = this.savedGame.ambientSound;
   }
 
-  getLevelLocations() {
-    return [...this.levelLocations.map(row => [...row])];
+  getLevelLocations(): LevelLocation[][] {
+    return [...this.levelLocations.map(row => [...row.map(location => ({
+      coords: location.coords,
+      things: [...location.things.map(thing => new Thing({ ...thing.description }))]
+    }))])];
+  }
+
+  findLocationByThingId(thingId: number): Coords | undefined {
+    return this
+    .levelLocations
+    .flatMap((row, rowIndex) => row
+    .flatMap((col, colIndex) => ({
+      hitCount: col.things.filter(levelThing => levelThing.id == thingId).length,
+      coords: { x: colIndex, y: rowIndex }
+    })))
+    .find(loc => loc.hitCount === 1)
+      ?.coords;
+  }
+
+  getErrandMatrix(): ErrandMatrix {
+    return this.levelLocations
+    .map(row => row
+      .map(location => ({
+          things: location.things
+          .map(thing => thing.description)
+        })
+      )
+    );
+  }
+
+  getAmbientSound() {
+    return this.ambientSound;
   }
 }
