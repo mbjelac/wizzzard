@@ -84,6 +84,7 @@ interface SavedGame {
   readonly inventory: Thing[];
   readonly levelLocations: LevelLocation[][];
   readonly ambientSound: string;
+  readonly thingsThatChangedState: Thing[];
 }
 
 export class Level {
@@ -101,6 +102,8 @@ export class Level {
   private ambientSound: string = "";
 
   private savedGame?: SavedGame;
+
+  private thingsThatChangedState: Thing[] = [];
 
   constructor(
     public readonly errand: Errand,
@@ -194,7 +197,8 @@ export class Level {
           playerCoords: this.playerCoords,
           inventory: [...this.inventory],
           levelLocations: this.getLevelLocations(),
-          ambientSound: this.ambientSound
+          ambientSound: this.ambientSound,
+          thingsThatChangedState: [...this.thingsThatChangedState, rememberingStone]
         };
       }
     }
@@ -205,6 +209,7 @@ export class Level {
 
     changedStateThings.push(...nextLocation.things.filter(thing => thing.is("automatic")));
 
+    this.thingsThatChangedState.push(...changedStateThings);
 
     return {
       moved: canMove,
@@ -461,12 +466,13 @@ export class Level {
     this.inventory = this.savedGame.inventory;
     this.levelLocations = this.savedGame.levelLocations;
     this.ambientSound = this.savedGame.ambientSound;
+    this.thingsThatChangedState = this.savedGame.thingsThatChangedState;
   }
 
   getLevelLocations(): LevelLocation[][] {
     return [...this.levelLocations.map(row => [...row.map(location => ({
       coords: location.coords,
-      things: [...location.things.map(thing => new Thing({ ...thing.description }))]
+      things: [...location.things]
     }))])];
   }
 
@@ -495,5 +501,9 @@ export class Level {
 
   getAmbientSound() {
     return this.ambientSound;
+  }
+
+  getThingsThatChangedState() {
+    return this.thingsThatChangedState;
   }
 }

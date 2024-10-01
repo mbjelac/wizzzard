@@ -1443,6 +1443,41 @@ describe("remembering stone", () => {
 
     expect(level.getAmbientSound()).toEqual("foo");
   });
+
+  it("remember things which changed state", () => {
+
+    const receiverLabel1 = "blah";
+    const receiverLabel2 = "anotherBlah";
+
+    addPickup(2, 1, receiverLabel1);
+    addPickup(2, 2, receiverLabel2);
+    const receiver1 = addReceiver(0, 1, receiverLabel1);
+    const receiver2 = addReceiver(0, 2, receiverLabel2);
+
+    // pick up 1
+    level.tryToMove(Direction.RIGHT);
+
+    // give to receiver 1
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.LEFT);
+
+    // touch remembering stone
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+
+    // pick up 2
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.RIGHT);
+
+    // give to receiver
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.LEFT);
+
+    level.remember();
+
+    expect(level.getThingsThatChangedState()).toEqual([receiver1, rememberingStone]);
+  });
 });
 
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {

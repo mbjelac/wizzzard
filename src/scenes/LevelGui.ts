@@ -630,7 +630,7 @@ export default class LevelGui extends Phaser.Scene {
 
   }
 
-  private updateAnimationsOfThingsWhichChangedState(things: Thing[]) {
+  private updateAnimationsOfThingsWhichChangedState(things: Thing[], quietly: boolean = false) {
 
     things.forEach(thing => {
 
@@ -643,7 +643,9 @@ export default class LevelGui extends Phaser.Scene {
       sprite.stop();
       sprite.play(animation2);
 
-      this.playSpriteSoundEffect(thing.description.sprite);
+      if (!quietly) {
+        this.playSpriteSoundEffect(thing.description.sprite);
+      }
     });
   }
 
@@ -751,6 +753,8 @@ export default class LevelGui extends Phaser.Scene {
         this.addLocation({ x, y });
       }
     }
+
+    this.updateAnimationsOfThingsWhichChangedState(this.level.getThingsThatChangedState(), true);
 
     this.playAmbientSound(this.level.getAmbientSound());
   }
