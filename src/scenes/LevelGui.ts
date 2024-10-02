@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ALL_THING_PROPERTIES, Level, LevelLocation, Thing } from "../engine/Level";
+import { Level, LevelLocation } from "../engine/Level";
 import { Direction } from "../engine/Direction";
 import { TILE_SIZE, tileCenterOffset } from "../config";
 import { GAME } from "../engine/game";
@@ -11,6 +11,7 @@ import { ButtonConfig, DialogBox } from "./widgets/DialogBox";
 import toPixelCoords from "./toPixelCoords";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
+import { ALL_THING_PROPERTIES, Thing } from "../engine/Thing";
 
 const animation1 = "animation1";
 const animation2 = "animation2";

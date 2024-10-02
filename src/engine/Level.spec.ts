@@ -1,8 +1,9 @@
-import { Level, LevelLocation, MoveResult, Thing, ThingProperty } from "./Level";
+import { Level, LevelLocation, MoveResult } from "./Level";
 import { createThingProps, LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
 import { EditorTool } from "./editor/EditorTool";
 import { Coords, Errand, ThingDescription } from "./Errand";
+import { SavedThing, Thing, ThingProperty } from "./Thing";
 
 let level: Level;
 
@@ -210,7 +211,7 @@ describe("picking up things", () => {
     let additionalItem: Thing;
 
     beforeEach(() => {
-      additionalItem = new Thing(createThingProps(EditorTool.KEY)!);
+      additionalItem = Thing.create(createThingProps(EditorTool.KEY)!);
       pickupLocation.things.push(additionalItem);
     });
 
@@ -506,7 +507,7 @@ describe("giving receiver", () => {
     level.tryToMove(Direction.RIGHT);
     level.tryToMove(Direction.RIGHT);
 
-    expect(getAllThings(level).every(thing => !thing.equals(gift))).toBe(true);
+    expect(getAllThings(level).every(thing => thing.id !== gift.id)).toBe(true);
   });
 
   it("giving receiver gives all pickups under it on receiving", () => {
@@ -1307,7 +1308,7 @@ describe("remembering stone", () => {
 
   function getThingDescriptions() {
     return level
-    .getLevelLocations()
+    .getSavedLocations()
     .map(row =>
       row.map(location =>
         location.things
@@ -1613,7 +1614,7 @@ function addPickup(x: number, y: number, label: string): Thing {
 }
 
 function addThingWithProps(props: AddThingProps): Thing {
-  const thing = new Thing({
+  const thing = Thing.create({
     label: props.label,
     properties: props.properties,
     text: props.text,
@@ -1627,8 +1628,8 @@ function addLabelledThing(x: number, y: number, label: string, ...properties: Th
   return addThingWithProps({ ...defaultAddThingProps, x, y, label, properties });
 }
 
-function getAllThings(level: Level): Thing[] {
-  return level.getLevelLocations().flatMap(row => row.flatMap(loc => loc.things));
+function getAllThings(level: Level): SavedThing[] {
+  return level.getSavedLocations().flatMap(row => row.flatMap(loc => loc.things));
 }
 
 function getThingsAt(x: number, y: number, skipInitialThings: boolean = true): Thing[] {

@@ -1,58 +1,7 @@
 import { LevelEditor } from "./editor/LevelEditor";
 import { Direction } from "./Direction";
-import { Coords, Errand, ErrandMatrix, ThingDescription } from "./Errand";
-
-export const ALL_THING_PROPERTIES = [
-  "wall",
-  "death",
-  "pickup",
-  "receiver",
-  "automatic",
-  "open",
-  "give",
-  "pushable",
-  "ambientSound",
-  "bridge",
-  "bridgeable",
-  "teleport",
-  "remember"
-] as const;
-type ThingPropertyTuple = typeof ALL_THING_PROPERTIES;
-export type ThingProperty = ThingPropertyTuple[number];
-
-export class Thing {
-
-  private static nextId = 0;
-
-  public readonly id = Thing.nextId++;
-
-  constructor(public readonly description: ThingDescription) {
-  }
-
-  equals(thing: Thing): boolean {
-    return this.id === thing.id;
-  }
-
-  descriptionEquals(description: ThingDescription): boolean {
-    return JSON.stringify(this.description) === JSON.stringify(description);
-  }
-
-  is(thingProperty: ThingProperty): boolean {
-    return this.description.properties.some(thisThingProperty => thisThingProperty === thingProperty);
-  }
-
-  removeProperty(propertyToRemove: ThingProperty) {
-    const properties = this.description.properties;
-
-    const index = properties.findIndex(property => property === propertyToRemove);
-
-    if (index === -1) {
-      return;
-    }
-
-    properties.splice(index, 1);
-  }
-}
+import { Coords, Errand, ErrandMatrix } from "./Errand";
+import { SavedThing, Thing, ThingProperty } from "./Thing";
 
 export interface MoveResult {
   moved: boolean,
@@ -81,10 +30,15 @@ export interface LevelLocation {
 
 interface SavedGame {
   readonly playerCoords: Coords;
-  readonly inventory: Thing[];
-  readonly levelLocations: LevelLocation[][];
+  readonly inventory: SavedThing[];
+  readonly locations: SavedLocation[][];
   readonly ambientSound: string | undefined;
-  readonly thingsThatChangedState: Thing[];
+  readonly idsThatChangedState: number[];
+}
+
+interface SavedLocation {
+  readonly coords: Coords;
+  readonly things: SavedThing[];
 }
 
 export class Level {
@@ -116,7 +70,7 @@ export class Level {
       .map((location, columnIndex) => ({
           coords: { x: columnIndex, y: rowIndex },
           things: location.things
-          .map(thingProps => new Thing(thingProps))
+          .map(thingProps => Thing.create(thingProps))
         })
       )
     );
@@ -195,10 +149,10 @@ export class Level {
         changedStateThings.push(rememberingStone);
         this.savedGame = {
           playerCoords: this.playerCoords,
-          inventory: [...this.inventory],
-          levelLocations: this.getLevelLocations(),
+          inventory: this.inventory.map(thing => thing.save()),
+          locations: this.getSavedLocations(),
           ambientSound: this.ambientSound,
-          thingsThatChangedState: [...this.thingsThatChangedState, rememberingStone]
+          idsThatChangedState: [...this.thingsThatChangedState.map(thing => thing.id), rememberingStone.id]
         };
       }
     }
@@ -463,19 +417,38 @@ export class Level {
     }
 
     this.playerCoords = this.savedGame.playerCoords;
-    this.inventory = this.savedGame.inventory;
-    this.levelLocations = this.savedGame.levelLocations;
+
+    const thingsById = new Map<number, Thing>();
+
+    this.levelLocations = this.savedGame.locations.map(
+      row => row.map(
+        savedLocation => (
+          {
+            coords: savedLocation.coords,
+            things: savedLocation.things.map(savedThing => {
+              const thing = Thing.load(savedThing);
+              thingsById.set(savedThing.id, thing);
+              return thing;
+            })
+          }
+        )
+      )
+    );
+    this.inventory = this.savedGame.inventory.map(savedThing => Thing.load(savedThing));
     this.ambientSound = this.savedGame.ambientSound;
-    this.thingsThatChangedState = this.savedGame.thingsThatChangedState;
+    this.thingsThatChangedState = this.savedGame.idsThatChangedState.map(id => thingsById.get(id)!);
   }
 
-  getLevelLocations(): LevelLocation[][] {
+  getSavedLocations(): SavedLocation[][] {
     return this.levelLocations.map(
       row => row.map(
         location => (
           {
             coords: location.coords,
-            things: [...location.things]
+            things: location.things.map(thing => ({
+              id: thing.id,
+              description: thing.description,
+            }))
           }
         )
       )

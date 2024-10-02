@@ -1,4 +1,4 @@
-import { ThingProperty } from "./Level";
+import { ThingProperty } from "./Thing";
 
 export interface Coords {
   readonly x: number,
