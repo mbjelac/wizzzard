@@ -1305,6 +1305,18 @@ describe("remembering stone", () => {
     expect(level.getInventory()).toEqual([item1]);
   });
 
+  function getThingDescriptions() {
+    return level
+    .getLevelLocations()
+    .map(row =>
+      row.map(location =>
+        location.things
+        .filter(thing => thing.description.sprite !== "floor")
+        .map(thing => thing.description)
+      )
+    );
+  }
+
   it("remembers things", () => {
 
     const item1 = addPickup(2, 2, "1st item");
@@ -1316,17 +1328,7 @@ describe("remembering stone", () => {
 
     level.remember();
 
-    expect(
-      level
-      .getLevelLocations()
-      .map(row =>
-        row.map(location =>
-          location.things
-          .filter(thing => thing.description.sprite !== "floor")
-          .map(thing => thing.description)
-        )
-      )
-    )
+    expect(getThingDescriptions())
     .toEqual<ThingDescription[][][]>([
       [[rememberingStone.description], [], []],
       [[], [], []],
@@ -1477,6 +1479,53 @@ describe("remembering stone", () => {
     level.remember();
 
     expect(level.getThingsThatChangedState()).toEqual([receiver1, rememberingStone]);
+  });
+
+  it("remember inventory after giving", () => {
+
+    const receiverLabel = "blah";
+
+    const pickup = addPickup(2, 1, receiverLabel);
+    addReceiver(0, 1, receiverLabel);
+
+    // pick up
+    level.tryToMove(Direction.RIGHT);
+
+    // touch remembering stone
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+    level.tryToMove(Direction.LEFT);
+
+    // give to receiver
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.LEFT);
+
+    level.remember();
+
+    expect(level.getInventory()).toEqual([pickup]);
+  });
+
+  it("remember pushed things", () => {
+
+    const box = addThing(1, 2, "pushable");
+
+    // touch remembering stone
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+
+    // push
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.LEFT);
+
+    level.remember();
+
+    expect(getThingDescriptions()).toEqual<ThingDescription[][][]>([
+      [[rememberingStone.description], [], []],
+      [[], [], []],
+      [[], [box.description], []],
+    ]);
   });
 });
 
