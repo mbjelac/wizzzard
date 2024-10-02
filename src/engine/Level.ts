@@ -99,7 +99,7 @@ export class Level {
   private inventory: Thing[] = [];
   private doneReceivers: string[] = [];
 
-  private ambientSound: string = "";
+  private ambientSound: string | undefined;
 
   private savedGame?: SavedGame;
 
@@ -470,10 +470,16 @@ export class Level {
   }
 
   getLevelLocations(): LevelLocation[][] {
-    return [...this.levelLocations.map(row => [...row.map(location => ({
-      coords: location.coords,
-      things: [...location.things]
-    }))])];
+    return this.levelLocations.map(
+      row => row.map(
+        location => (
+          {
+            coords: location.coords,
+            things: [...location.things]
+          }
+        )
+      )
+    );
   }
 
   findLocationByThingId(thingId: number): Coords | undefined {
@@ -499,7 +505,7 @@ export class Level {
     );
   }
 
-  getAmbientSound() {
+  getAmbientSound(): string | undefined {
     return this.ambientSound;
   }
 
