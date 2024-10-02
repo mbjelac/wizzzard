@@ -1527,6 +1527,37 @@ describe("remembering stone", () => {
       [[], [box.description], []],
     ]);
   });
+
+  it("remember pushed things again", () => {
+
+    const box = addThing(1, 2, "pushable");
+
+    // touch remembering stone
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+
+    // push
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.LEFT);
+
+    level.remember();
+
+    // push again
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.DOWN);
+    level.tryToMove(Direction.LEFT);
+
+    level.remember();
+
+    expect(getThingDescriptions()).toEqual<ThingDescription[][][]>([
+      [[rememberingStone.description], [], []],
+      [[], [], []],
+      [[], [box.description], []],
+    ]);
+  });
 });
 
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
