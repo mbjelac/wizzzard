@@ -47,7 +47,12 @@ export class Thing {
   save(): SavedThing {
     return {
       id: this.id,
-      description: this.description,
+      description: {
+        label: this.description.label,
+        sprite: this.description.sprite,
+        text: this.description.text,
+        properties: [...this.description.properties]
+      },
     };
   }
 }

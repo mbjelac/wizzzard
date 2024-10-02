@@ -445,10 +445,7 @@ export class Level {
         location => (
           {
             coords: location.coords,
-            things: location.things.map(thing => ({
-              id: thing.id,
-              description: thing.description,
-            }))
+            things: location.things.map(thing => thing.save())
           }
         )
       )

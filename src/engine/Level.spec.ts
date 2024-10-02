@@ -3,7 +3,7 @@ import { createThingProps, LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
 import { EditorTool } from "./editor/EditorTool";
 import { Coords, Errand, ThingDescription } from "./Errand";
-import { SavedThing, Thing, ThingProperty } from "./Thing";
+import { ALL_THING_PROPERTIES, SavedThing, Thing, ThingProperty } from "./Thing";
 
 let level: Level;
 
@@ -1580,6 +1580,34 @@ describe("remembering stone", () => {
       [[rememberingStone.description], [], []],
       [[], [], []],
       [[], [box.description], []],
+    ]);
+  });
+
+  it("remember properties", () => {
+
+    const thing = addThingWithProps({
+      x: 2, y: 2,
+      properties: ["pushable", "teleport"],
+      text: undefined,
+      label: "foo"
+    });
+
+    // touch remembering stone
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+
+    thing.description.properties.push("wall");
+
+    level.remember();
+
+    const rememberedThing = level
+    .getLocation({ x: 2, y: 2 })!
+    .things
+    .filter(thing => thing.description.label === "foo")[0];
+
+    expect(rememberedThing.description.properties).toEqual<ThingProperty[]>([
+      "pushable",
+      "teleport"
     ]);
   });
 });
