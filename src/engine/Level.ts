@@ -83,7 +83,7 @@ interface SavedGame {
   readonly playerCoords: Coords;
   readonly inventory: Thing[];
   readonly levelLocations: LevelLocation[][];
-  readonly ambientSound: string;
+  readonly ambientSound: string | undefined;
   readonly thingsThatChangedState: Thing[];
 }
 
