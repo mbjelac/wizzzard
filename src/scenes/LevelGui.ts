@@ -53,7 +53,7 @@ export default class LevelGui extends Phaser.Scene {
 
   private levelComplete = false;
 
-  private createdNonThings: Sprite[] = [];
+  private voidTiles: Sprite[] = [];
   private readonly createdSpritesByThingId: Map<number, Sprite> = new Map();
   private readonly soundEffectsBySpriteName: Map<string, string> = new Map();
   private inventorySprites: Sprite[] = [];
@@ -137,8 +137,6 @@ export default class LevelGui extends Phaser.Scene {
       8
     );
 
-    this.createdNonThings.push(this.player);
-
     this.displayInventory();
 
     this.playAmbientSound(this.level.errand.initialAmbientSound);
@@ -185,21 +183,21 @@ export default class LevelGui extends Phaser.Scene {
     this.ambientSound = undefined;
   }
 
-  private clearLevel() {
+  private clearLevel(includingPlayer: boolean = true) {
 
-    this.createdNonThings.forEach(createdObject => createdObject.destroy(true));
-    this.createdNonThings = [];
+    this.voidTiles.forEach(voidTile => voidTile.destroy(true));
+    this.voidTiles = [];
 
-    this.clearAllThings();
+    if (includingPlayer && this.player !== undefined) {
+      this.player.destroy(true);
+    }
 
-    this.sound.stopAll();
-  }
-
-  private clearAllThings() {
     this.createdSpritesByThingId.forEach(sprite => {
       sprite.destroy(true)
     });
     this.createdSpritesByThingId.clear();
+
+    this.sound.stopAll();
   }
 
   private addLocation(coords: Coords) {
@@ -214,6 +212,8 @@ export default class LevelGui extends Phaser.Scene {
     const voidTile = this.addSpriteFromTileset("void", locationPixelCoords)
     .setDepth(depths.void)
     .setInteractive();
+
+    this.voidTiles.push(voidTile);
 
     voidTile.on('pointerup', async (pointer: Pointer) => {
       if (pointer.leftButtonReleased()) {
@@ -238,8 +238,6 @@ export default class LevelGui extends Phaser.Scene {
       }
       setEditorInfo(JSON.stringify(location.coords));
     });
-
-    this.createdNonThings.push(voidTile);
 
     location.things.forEach(thing => {
       this.addThingSprite(locationPixelCoords, location, thing);
@@ -466,11 +464,13 @@ export default class LevelGui extends Phaser.Scene {
         return;
       }
 
-      this.playSoundEffect("swipe");
-
       sprite.destroy(true);
       this.createdSpritesByThingId.delete(thing.id);
     });
+
+    if (removedThings.length > 0) {
+      this.playSoundEffect("swipe");
+    }
   }
 
   private async applyEditorTool(levelLocation: LevelLocation, locationPixelCoords: Coords) {
@@ -736,6 +736,8 @@ export default class LevelGui extends Phaser.Scene {
 
   private rememberLevel() {
 
+    this.clearLevel(false);
+
     this.level.remember();
 
     const playerPixelCoords = toPixelCoords(this.level.getPlayerCoords());
@@ -743,10 +745,6 @@ export default class LevelGui extends Phaser.Scene {
     this.player.setY(playerPixelCoords.y);
 
     this.displayInventory();
-
-    this.clearAllThings();
-
-    this.sound.stopAll();
 
     for (const x of Array(this.level.errand.levelDimensions.width).keys()) {
       for (const y of Array(this.level.errand.levelDimensions.height).keys()) {
