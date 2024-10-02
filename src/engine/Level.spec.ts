@@ -1336,6 +1336,29 @@ describe("remembering stone", () => {
     ]);
   });
 
+  it("remembers things again", () => {
+
+    const item1 = addPickup(2, 2, "1st item");
+    const item2 = addPickup(0, 2, "2nd item");
+
+    pickUpItem1();
+    touchRememberingStone();
+    pickUpItem2();
+
+    level.remember();
+
+    pickUpItem2();
+
+    level.remember();
+
+    expect(getThingDescriptions())
+    .toEqual<ThingDescription[][][]>([
+      [[rememberingStone.description], [], []],
+      [[], [], []],
+      [[item2.description], [], []]
+    ]);
+  });
+
   function pickUpItem1() {
     level.tryToMove(Direction.DOWN);
     level.tryToMove(Direction.RIGHT);
