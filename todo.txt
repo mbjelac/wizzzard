@@ -1,0 +1,9 @@
+- fix map/journal
+    - map visuals
+    - journal (errand info + Go!) location/layout?
+- put remembering stones on existing levels
+- simplify levels
+- rethink ingredients
+- spell list/screen
+- make laboratory level (research level for Strength spell)
+- make level which uses Strength spell (old castle, push heavy wall blocks)
