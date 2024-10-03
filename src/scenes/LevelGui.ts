@@ -12,24 +12,12 @@ import toPixelCoords from "./toPixelCoords";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
 import { ALL_THING_PROPERTIES, Thing } from "../engine/Thing";
+import { VariantTiles } from "./VariantTiles";
+import V = Phaser.Input.Keyboard.KeyCodes.V;
 
 const animation1 = "animation1";
 const animation2 = "animation2";
 
-function getTileCoords(spriteConfig: SpriteConfig) {
-
-  if (spriteConfig.variants.length === 0) {
-    return spriteConfig.tileCoords;
-  }
-
-  const randomIndex = Math.floor(Math.random() * (spriteConfig.variants.length + 1)) - 1;
-
-  if (randomIndex === -1) {
-    return spriteConfig.tileCoords;
-  }
-
-  return spriteConfig.variants[randomIndex];
-}
 
 interface AmbientSound {
   readonly name: string;
@@ -71,6 +59,8 @@ export default class LevelGui extends Phaser.Scene {
 
   private readonly dialogBox = new DialogBox();
 
+  private variantTiles!: VariantTiles;
+
   constructor() {
     super("level");
   }
@@ -105,6 +95,8 @@ export default class LevelGui extends Phaser.Scene {
   private async populateLevel() {
 
     this.clearLevel();
+
+    this.variantTiles = new VariantTiles();
 
     this.level = await GAME.getCurrentLevel();
 
@@ -575,7 +567,7 @@ export default class LevelGui extends Phaser.Scene {
       throw new Error("Could not find sprite config for " + name);
     }
 
-    const tileCoords = getTileCoords(spriteConfig);
+    const tileCoords = this.variantTiles.getTileCoords(spriteConfig, coords);
     const frameIndex = getSpriteFrameIndex(tileCoords);
 
     const sprite = this.physics.add
