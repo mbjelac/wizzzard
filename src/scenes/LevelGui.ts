@@ -4,16 +4,15 @@ import { Direction } from "../engine/Direction";
 import { TILE_SIZE, tileCenterOffset } from "../config";
 import { GAME } from "../engine/game";
 import { Coords, Errand, ThingDescription } from "../engine/Errand";
-import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION, SpriteConfig } from "./sprites";
+import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION } from "./sprites";
 import { clearLabelText, getLabelText } from "./editor-panel";
 import depths from "./depths";
 import { ButtonConfig, DialogBox } from "./widgets/DialogBox";
 import toPixelCoords from "./toPixelCoords";
-import Pointer = Phaser.Input.Pointer;
-import Sprite = Phaser.Physics.Arcade.Sprite;
 import { ALL_THING_PROPERTIES, Thing } from "../engine/Thing";
 import { VariantTiles } from "./VariantTiles";
-import V = Phaser.Input.Keyboard.KeyCodes.V;
+import Pointer = Phaser.Input.Pointer;
+import Sprite = Phaser.Physics.Arcade.Sprite;
 
 const animation1 = "animation1";
 const animation2 = "animation2";
@@ -395,8 +394,6 @@ export default class LevelGui extends Phaser.Scene {
     this.removeSpritesOfRemovedThings(moveResult.removedThings);
     this.updateAnimationsOfThingsWhichChangedState(moveResult.changedState);
 
-    this.displayInventory();
-
     if (moveResult.levelComplete) {
       this.dialogBox.show(
         toPixelCoords(this.level.getPlayerCoords()),
@@ -447,6 +444,8 @@ export default class LevelGui extends Phaser.Scene {
 
     if (moveResult.died) {
       await this.playerDied();
+    } else {
+      this.displayInventory();
     }
   }
 
