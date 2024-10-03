@@ -13,6 +13,7 @@ import { ALL_THING_PROPERTIES, Thing } from "../engine/Thing";
 import { VariantTiles } from "./VariantTiles";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
+import Texture = Phaser.Textures.Texture;
 
 const animation1 = "animation1";
 const animation2 = "animation2";
@@ -106,9 +107,16 @@ export default class LevelGui extends Phaser.Scene {
     }
 
     const startCoords: Coords = { x: this.level.errand.startCoords.x, y: this.level.errand.startCoords.y };
-    const playerPixelCoords = toPixelCoords(startCoords);
 
-    this.player = this.addSpriteFromTileset("wizard", playerPixelCoords).setDepth(depths.player);
+    this.createPlayerSprite(startCoords);
+
+    this.displayInventory();
+
+    this.playAmbientSound(this.level.errand.initialAmbientSound);
+  }
+
+  private createPlayerSprite(startCoords: Coords) {
+    this.player = this.addSpriteFromTileset("wizard", startCoords).setDepth(depths.player);
 
     this.createPlayerAnimation(
       "drowning",
@@ -128,11 +136,6 @@ export default class LevelGui extends Phaser.Scene {
       },
       8
     );
-
-    this.displayInventory();
-
-    this.playAmbientSound(this.level.errand.initialAmbientSound);
-
     this.cameras.main.startFollow(this.player).setFollowOffset(-3 * TILE_SIZE + tileCenterOffset, 0);
   }
 
@@ -175,12 +178,12 @@ export default class LevelGui extends Phaser.Scene {
     this.ambientSound = undefined;
   }
 
-  private clearLevel(includingPlayer: boolean = true) {
+  private clearLevel() {
 
     this.voidTiles.forEach(voidTile => voidTile.destroy(true));
     this.voidTiles = [];
 
-    if (includingPlayer && this.player !== undefined) {
+    if (this.player !== undefined) {
       this.player.destroy(true);
     }
 
@@ -199,9 +202,7 @@ export default class LevelGui extends Phaser.Scene {
       return;
     }
 
-    const locationPixelCoords = toPixelCoords(coords);
-
-    const voidTile = this.addSpriteFromTileset("void", locationPixelCoords)
+    const voidTile = this.addSpriteFromTileset("void", coords)
     .setDepth(depths.void)
     .setInteractive();
 
@@ -210,7 +211,7 @@ export default class LevelGui extends Phaser.Scene {
     voidTile.on('pointerup', async (pointer: Pointer) => {
       if (pointer.leftButtonReleased()) {
         this.leftButtonDown = false;
-        await this.applyEditorTool(location, locationPixelCoords);
+        await this.applyEditorTool(location, coords);
       }
       if (pointer.rightButtonReleased()) {
         this.rightButtonDown = false;
@@ -226,15 +227,16 @@ export default class LevelGui extends Phaser.Scene {
     });
     voidTile.on('pointermove', async () => {
       if (this.leftButtonDown) {
-        await this.applyEditorTool(location, locationPixelCoords);
+        await this.applyEditorTool(location, coords);
       }
       setEditorInfo(JSON.stringify(location.coords));
     });
 
     location.things.forEach(thing => {
-      this.addThingSprite(locationPixelCoords, location, thing);
+      this.addThingSprite(coords, location, thing);
     });
   }
+
 
   private displayInventory() {
 
@@ -255,7 +257,6 @@ export default class LevelGui extends Phaser.Scene {
       this.inventorySprites.push(inventorySprite);
     });
   }
-
 
   create() {
     console.log("Level create");
@@ -502,11 +503,11 @@ export default class LevelGui extends Phaser.Scene {
     }
   }
 
-  private addThingSprite(pixelCoords: Coords, levelLocation: LevelLocation, thing: Thing) {
+  private addThingSprite(locationCoords: Coords, levelLocation: LevelLocation, thing: Thing) {
 
     const thingDepth = levelLocation.things.indexOf(thing);
 
-    const thingSprite = this.addSpriteFromTileset(thing.description.sprite, pixelCoords)
+    const thingSprite = this.addSpriteFromTileset(thing.description.sprite, locationCoords)
     .setDepth(thingDepth)
     .setInteractive();
 
@@ -517,7 +518,7 @@ export default class LevelGui extends Phaser.Scene {
       }
       if (pointer.leftButtonReleased()) {
         this.leftButtonDown = false;
-        await this.applyEditorTool(levelLocation, pixelCoords);
+        await this.applyEditorTool(levelLocation, locationCoords);
       }
     });
 
@@ -526,7 +527,7 @@ export default class LevelGui extends Phaser.Scene {
       setEditorInfo(text);
 
       if (this.leftButtonDown) {
-        await this.applyEditorTool(levelLocation, pixelCoords);
+        await this.applyEditorTool(levelLocation, locationCoords);
       }
       if (this.rightButtonDown) {
         await this.removeThing(levelLocation, thing, thingSprite);
@@ -547,14 +548,15 @@ export default class LevelGui extends Phaser.Scene {
     this.createdSpritesByThingId.set(thing.id, thingSprite);
   }
 
+
   private async removeThing(levelLocation: LevelLocation, thing: Thing, thingSprite: Phaser.Physics.Arcade.Sprite) {
     this.level.editor.removeThing(levelLocation, thing);
     thingSprite.destroy(true);
+    this.variantTiles.remove(thing.description.sprite, levelLocation.coords);
     await this.saveLevelMatrix();
   }
 
-
-  private addSpriteFromTileset(name: string, coords: Coords): Sprite {
+  private addSpriteFromTileset(name: string, locationCoords: Coords): Sprite {
 
     const spriteConfig = name === "void"
       ? SPRITE_CONFIG_VOID
@@ -566,11 +568,13 @@ export default class LevelGui extends Phaser.Scene {
       throw new Error("Could not find sprite config for " + name);
     }
 
-    const tileCoords = this.variantTiles.getTileCoords(spriteConfig, coords);
+    const tileCoords = this.variantTiles.getTileCoords(spriteConfig, name, locationCoords);
     const frameIndex = getSpriteFrameIndex(tileCoords);
 
+    const pixelCoords = toPixelCoords(locationCoords);
+
     const sprite = this.physics.add
-    .sprite(coords.x, coords.y, this.tilesetName, frameIndex)
+    .sprite(pixelCoords.x, pixelCoords.y, this.tilesetName, frameIndex)
     .setDisplaySize(64, 64);
 
     if (spriteConfig.animation !== undefined) {
@@ -728,13 +732,11 @@ export default class LevelGui extends Phaser.Scene {
 
   private rememberLevel() {
 
-    this.clearLevel(false);
+    this.clearLevel();
 
     this.level.remember();
 
-    const playerPixelCoords = toPixelCoords(this.level.getPlayerCoords());
-    this.player.setX(playerPixelCoords.x);
-    this.player.setY(playerPixelCoords.y);
+    this.createPlayerSprite(this.level.getPlayerCoords());
 
     this.displayInventory();
 
