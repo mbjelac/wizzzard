@@ -1175,19 +1175,36 @@ describe("teleportation", () => {
 
 });
 
-it("automatic changes state on move to it's location", () => {
+describe("automatic", ()=> {
+  it("changes state on move to it's location", () => {
 
-  level = createLevel(
-    "     ",
-    "     ",
-    "     ",
-  );
+    level = createLevel(
+      "     ",
+      "     ",
+      "     ",
+    );
 
-  const automaticThing = addThing(2, 1, "automatic");
+    const automaticThing = addThing(2, 1, "automatic");
 
-  const changedThings = level.tryToMove(Direction.RIGHT).changedState;
+    const changedThings = level.tryToMove(Direction.RIGHT).changedState;
 
-  expect(changedThings).toEqual([automaticThing]);
+    expect(changedThings).toEqual([automaticThing]);
+  });
+
+  it("is no longer automatic on move to it's location", () => {
+
+    level = createLevel(
+      "     ",
+      "     ",
+      "     ",
+    );
+
+    const automaticThing = addThing(2, 1, "automatic");
+
+    level.tryToMove(Direction.RIGHT).changedState;
+
+    expect(automaticThing.description.properties).toEqual<ThingProperty[]>([]);
+  });
 });
 
 describe("remembering stone", () => {

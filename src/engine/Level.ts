@@ -140,6 +140,12 @@ export class Level {
         this.ambientSound = ambientSound;
       }
 
+      const automatics = nextLocation.things.filter(thing => thing.is("automatic"));
+
+      changedStateThings.push(...automatics);
+
+      automatics.forEach(thing => thing.removeProperty("automatic"));
+
     } else {
       interactionText = this.getTextsFrom(nextLocation);
 
@@ -161,7 +167,6 @@ export class Level {
 
     changedStateThings.push(...this.bridgeBridges(pushedThings, direction));
 
-    changedStateThings.push(...nextLocation.things.filter(thing => thing.is("automatic")));
 
     this.thingsThatChangedState.push(...changedStateThings);
 
