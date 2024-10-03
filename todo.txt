@@ -1,3 +1,4 @@
+- fix remembered random sprites
 - fix map/journal
     - map visuals
     - journal (errand info + Go!) location/layout?
