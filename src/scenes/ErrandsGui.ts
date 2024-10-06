@@ -32,11 +32,11 @@ export default class ErrandsGui extends Phaser.Scene {
 
     console.log("Errands preload")
 
-    this.load.image('errandMarker', 'assets/map_errand_marker.png');
-    this.load.image('map', 'assets/map.png');
+    this.load.image("errandMarker", "assets/map_errand_marker.png");
+    this.load.image("map", "assets/map.png");
 
-    this.load.bitmapFont('unnamed', 'assets/fonts/Unnamed.png', 'assets/fonts/Unnamed.xml');
-    this.load.bitmapFont('redRobotoSmall', 'assets/fonts/red-roboto-small.png', 'assets/fonts/roboto-small.xml');
+    this.load.bitmapFont("unnamed", "assets/fonts/Unnamed.png", "assets/fonts/Unnamed.xml");
+    this.load.bitmapFont("redRobotoSmall", "assets/fonts/red-roboto-small.png", "assets/fonts/roboto-small.xml");
 
 
     this.events.on("create", async () => this.sceneActive());
@@ -69,13 +69,13 @@ export default class ErrandsGui extends Phaser.Scene {
           mapPixelCoords.y,
           'errandMarker'
         )
-          .setDisplaySize(7 * 4, 8 * 4)
-          .setInteractive()
-          .on('pointerup', () => {
+        .setDisplaySize(7 * 4, 8 * 4)
+        .setInteractive()
+        .on('pointerup', () => {
 
-            GAME.goToErrand(errandDescription.id);
-            this.scene.switch("journal");
-          })
+          GAME.goToErrand(errandDescription.id);
+          this.scene.switch("journal");
+        })
       };
     }));
   }
@@ -89,8 +89,8 @@ export default class ErrandsGui extends Phaser.Scene {
     const screenHeight = config.scale!.height! as number
 
     this.add
-      .sprite(screenWidth / 2, screenHeight / 2, "map")
-      .setDisplaySize(screenWidth, screenHeight);
+    .sprite(screenWidth / 2, screenHeight / 2, "map")
+    .setDisplaySize(screenWidth, screenHeight);
   }
 
   update(time: number, delta: number) {
