@@ -32,7 +32,7 @@ export class LevelEditor {
       return this.emptyAddResult;
     }
 
-    const thingToAdd = new Thing(description);
+    const thingToAdd = Thing.create(description);
 
     location.things.push(thingToAdd);
 
