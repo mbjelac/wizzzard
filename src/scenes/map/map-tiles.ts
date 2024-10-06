@@ -9,6 +9,12 @@ export interface MapTiles {
 
 export interface MapTile {
   readonly frameIndex: number;
+  readonly animation?: MapTileAnimation;
+}
+
+export interface MapTileAnimation {
+  readonly frameCount: number;
+  readonly framesPerSecond?: number;
 }
 
 class Direction {
@@ -157,7 +163,12 @@ function createMapTile(symbol: string, location: Coords): MapTile {
               ? riverNeighbourhood1
               : riverNeighbourhood2
           ),
-          { x: 0, y: 4 })
+          { x: 0, y: 4 }
+        ),
+        animation: {
+          frameCount: 2,
+          framesPerSecond: 4
+        }
       }
     default:
       return {

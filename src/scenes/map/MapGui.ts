@@ -17,6 +17,7 @@ interface ErrandMarker {
 export default class MapGui extends Phaser.Scene {
 
   private readonly tilesetName = "mapTiles";
+  private readonly animationKey = "mapAnimation";
 
   // @ts-ignore
   private errandMarkers: ErrandMarker[] = [];
@@ -108,9 +109,14 @@ export default class MapGui extends Phaser.Scene {
 
     const pixelCoords = this.getMapPixelCoords(location)
 
-    this.physics.add
+    const sprite = this.physics.add
     .sprite(pixelCoords.x, pixelCoords.y, this.tilesetName, mapTile.frameIndex)
     .setDisplaySize(tileSizePixels, tileSizePixels);
+
+    if (mapTile.animation !== undefined) {
+      sprite.anims.create(this.getAnimation(mapTile))
+      sprite.anims.play(this.animationKey);
+    }
   }
 
   update(time: number, delta: number) {
@@ -121,6 +127,21 @@ export default class MapGui extends Phaser.Scene {
     return {
       x: (location.x + 1) * tileSizePixels,
       y: (location.y + 1) * tileSizePixels,
+    };
+  }
+
+  private getAnimation(mapTile: MapTile): Phaser.Types.Animations.Animation {
+    return {
+      key: this.animationKey,
+      frameRate: mapTile.animation!!.framesPerSecond || 7,
+      frames: this.anims.generateFrameNumbers(
+        this.tilesetName,
+        {
+          start: mapTile.frameIndex,
+          end: mapTile.frameIndex + mapTile.animation!!.frameCount - 1
+        }
+      ),
+      repeat: -1,
     };
   }
 }
