@@ -4,7 +4,7 @@ import { Direction } from "../engine/Direction";
 import { TILE_SIZE, tileCenterOffset } from "../config";
 import { GAME } from "../engine/game";
 import { Coords, Errand, ThingDescription } from "../engine/Errand";
-import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION } from "./sprites";
+import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION, spriteAt } from "./sprites";
 import { clearLabelText, getLabelText } from "./editor-panel";
 import depths from "./depths";
 import { ButtonConfig, DialogBox } from "./widgets/DialogBox";
@@ -626,6 +626,8 @@ export default class LevelGui extends Phaser.Scene {
 
   }
 
+  private activeRememberingStoneSprite: Sprite | undefined;
+
   private updateAnimationsOfThingsWhichChangedState(things: Thing[], quietly: boolean = false) {
 
     things.forEach(thing => {
@@ -641,6 +643,16 @@ export default class LevelGui extends Phaser.Scene {
 
       if (!quietly) {
         this.playSpriteSoundEffect(thing.description.sprite);
+      }
+
+      if (thing.is("remember")) {
+
+        if (this.activeRememberingStoneSprite !== undefined && this.activeRememberingStoneSprite !== sprite) {
+          this.activeRememberingStoneSprite.stop();
+          this.activeRememberingStoneSprite.play(animation1);
+        }
+
+        this.activeRememberingStoneSprite = sprite;
       }
     });
   }
