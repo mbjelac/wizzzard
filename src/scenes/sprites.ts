@@ -17,14 +17,14 @@ export interface AnimationConfig {
 
 
 function spriteConfig(
-config: {
-  coords: Coords;
-  animation?: AnimationConfig;
-  auxAnimation?: AnimationConfig;
-  variants?: Coords[];
-  soundEffect?: string;
-  playerDeath?: PlayerDeath;
-}
+  config: {
+    coords: Coords;
+    animation?: AnimationConfig;
+    auxAnimation?: AnimationConfig;
+    variants?: Coords[];
+    soundEffect?: string;
+    playerDeath?: PlayerDeath;
+  }
 ): SpriteConfig {
   return {
     tileCoords: config.coords,
@@ -61,13 +61,13 @@ export const SPRITE_CONFIGS = {
       brick: spriteAt(4, 0),
       mud: spriteAt(12, 5),
       torch:
-      spriteConfig({
-        coords: { x: 12, y: 4 },
-        animation: {
-          frameCount: 4,
-          framesPerSecond: 8
-        }
-      })
+        spriteConfig({
+          coords: { x: 12, y: 4 },
+          animation: {
+            frameCount: 4,
+            framesPerSecond: 8
+          }
+        })
     },
     stairs: {
       brownStone: {
@@ -84,6 +84,19 @@ export const SPRITE_CONFIGS = {
       coords: { x: 1, y: 0 },
       soundEffect: "grassStep"
     }),
+    path: {
+      horizontal: spriteAt(11, 18),
+      vertical: spriteAt(12, 18),
+      crossing: spriteAt(13, 18),
+      t_s: spriteAt(14, 18),
+      t_n: spriteAt(15, 18),
+      t_w: spriteAt(16, 18),
+      t_e: spriteAt(17, 18),
+      bend_e_s: spriteAt(18, 18),
+      bend_w_s: spriteAt(19, 18),
+      bend_e_n: spriteAt(20, 18),
+      bend_w_n: spriteAt(21, 18),
+    },
     dirt: {
       light: spriteConfig({
         coords: { x: 12, y: 7 },
@@ -148,16 +161,16 @@ export const SPRITE_CONFIGS = {
         knob: {
           closed: {
             vertical: spriteConfig({
-              coords: { x: 4, y: 1 },
-              animation: { frameCount: 1 },
-              auxAnimation: { frameCount: 1 },
-            }
+                coords: { x: 4, y: 1 },
+                animation: { frameCount: 1 },
+                auxAnimation: { frameCount: 1 },
+              }
             ),
             horizontal: spriteConfig({
-              coords: { x: 4, y: 2 },
-              animation: { frameCount: 1 },
-              auxAnimation: { frameCount: 1 },
-            }
+                coords: { x: 4, y: 2 },
+                animation: { frameCount: 1 },
+                auxAnimation: { frameCount: 1 },
+              }
             )
           },
           open: {
@@ -170,28 +183,28 @@ export const SPRITE_CONFIGS = {
         keyhole: {
           closed: {
             vertical: spriteConfig(
-            {
-              coords: { x: 4, y: 4 },
-              soundEffect: "doorUnlock",
-              animation: {
-                frameCount: 1
-              },
-              auxAnimation: {
-                frameCount: 1
+              {
+                coords: { x: 4, y: 4 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
               }
-            }
             ),
             horizontal: spriteConfig(
-            {
-              coords: { x: 4, y: 5 },
-              soundEffect: "doorUnlock",
-              animation: {
-                frameCount: 1
-              },
-              auxAnimation: {
-                frameCount: 1
+              {
+                coords: { x: 4, y: 5 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
               }
-            }
             ),
           }
         }
@@ -200,28 +213,28 @@ export const SPRITE_CONFIGS = {
         keyhole: {
           closed: {
             vertical: spriteConfig(
-            {
-              coords: { x: 4, y: 6 },
-              soundEffect: "doorUnlock",
-              animation: {
-                frameCount: 1
-              },
-              auxAnimation: {
-                frameCount: 1
+              {
+                coords: { x: 4, y: 6 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
               }
-            }
             ),
             horizontal: spriteConfig(
-            {
-              coords: { x: 4, y: 7 },
-              soundEffect: "doorUnlock",
-              animation: {
-                frameCount: 1
-              },
-              auxAnimation: {
-                frameCount: 1
+              {
+                coords: { x: 4, y: 7 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
               }
-            }
             ),
           }
         }
@@ -230,28 +243,28 @@ export const SPRITE_CONFIGS = {
         keyhole: {
           closed: {
             vertical: spriteConfig(
-            {
-              coords: { x: 8, y: 6 },
-              soundEffect: "doorUnlock",
-              animation: {
-                frameCount: 1
-              },
-              auxAnimation: {
-                frameCount: 1
+              {
+                coords: { x: 8, y: 6 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
               }
-            }
             ),
             horizontal: spriteConfig(
-            {
-              coords: { x: 8, y: 7 },
-              soundEffect: "doorUnlock",
-              animation: {
-                frameCount: 1
-              },
-              auxAnimation: {
-                frameCount: 1
+              {
+                coords: { x: 8, y: 7 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
               }
-            }
             ),
           },
           open: {
@@ -264,28 +277,28 @@ export const SPRITE_CONFIGS = {
         keyhole: {
           closed: {
             vertical: spriteConfig(
-            {
-              coords: { x: 6, y: 4 },
-              soundEffect: "doorUnlock",
-              animation: {
-                frameCount: 1
-              },
-              auxAnimation: {
-                frameCount: 1
+              {
+                coords: { x: 6, y: 4 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
               }
-            }
             ),
             horizontal: spriteConfig(
-            {
-              coords: { x: 6, y: 5 },
-              soundEffect: "doorUnlock",
-              animation: {
-                frameCount: 1
-              },
-              auxAnimation: {
-                frameCount: 1
+              {
+                coords: { x: 6, y: 5 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
               }
-            }
             ),
           }
         }
@@ -520,26 +533,50 @@ export const SPRITE_CONFIGS = {
     jar: spriteAt(0, 29),
     book: spriteAt(1, 29),
     rememberingStone: {
-      brown: spriteConfig({
-        coords: { x: 20, y: 0 },
-        animation: { frameCount: 1 },
-        auxAnimation: { frameCount: 4, framesPerSecond: 4 }
-      }),
-      red: spriteConfig({
-        coords: { x: 20, y: 1 },
-        animation: { frameCount: 1 },
-        auxAnimation: { frameCount: 4, framesPerSecond: 4 }
-      }),
-      green: spriteConfig({
-        coords: { x: 20, y: 2 },
-        animation: { frameCount: 1 },
-        auxAnimation: { frameCount: 4, framesPerSecond: 4 }
-      }),
-      purple: spriteConfig({
-        coords: { x: 20, y: 3 },
-        animation: { frameCount: 1 },
-        auxAnimation: { frameCount: 4, framesPerSecond: 4 }
-      }),
+      natural: {
+        brown: spriteConfig({
+          coords: { x: 20, y: 0 },
+          animation: { frameCount: 1 },
+          auxAnimation: { frameCount: 4, framesPerSecond: 4 }
+        }),
+        red: spriteConfig({
+          coords: { x: 20, y: 1 },
+          animation: { frameCount: 1 },
+          auxAnimation: { frameCount: 4, framesPerSecond: 4 }
+        }),
+        green: spriteConfig({
+          coords: { x: 20, y: 2 },
+          animation: { frameCount: 1 },
+          auxAnimation: { frameCount: 4, framesPerSecond: 4 }
+        }),
+        purple: spriteConfig({
+          coords: { x: 20, y: 3 },
+          animation: { frameCount: 1 },
+          auxAnimation: { frameCount: 4, framesPerSecond: 4 }
+        })
+      },
+      carved: {
+        brown: spriteConfig({
+          coords: { x: 20, y: 4 },
+          animation: { frameCount: 1 },
+          auxAnimation: { frameCount: 4, framesPerSecond: 4 }
+        }),
+        red: spriteConfig({
+          coords: { x: 20, y: 5 },
+          animation: { frameCount: 1 },
+          auxAnimation: { frameCount: 4, framesPerSecond: 4 }
+        }),
+        green: spriteConfig({
+          coords: { x: 20, y: 6 },
+          animation: { frameCount: 1 },
+          auxAnimation: { frameCount: 4, framesPerSecond: 4 }
+        }),
+        purple: spriteConfig({
+          coords: { x: 20, y: 7 },
+          animation: { frameCount: 1 },
+          auxAnimation: { frameCount: 4, framesPerSecond: 4 }
+        })
+      },
     }
   },
 }
