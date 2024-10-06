@@ -29,6 +29,82 @@ class Direction {
   }
 }
 
+const zoneNeighbourhood: { [key: string]: Coords } = {
+  "0000": { x: 3, y: 0 },
+  "0001": { x: 3, y: 1 },
+  "0010": { x: 5, y: 1 },
+  "0011": { x: 4, y: 1 },
+  "0100": { x: 3, y: 2 },
+  "0101": { x: 0, y: 0 },
+  "0110": { x: 2, y: 0 },
+  "0111": { x: 1, y: 0 },
+  "1000": { x: 5, y: 2 },
+  "1001": { x: 0, y: 2 },
+  "1010": { x: 2, y: 2 },
+  "1011": { x: 1, y: 2 },
+  "1100": { x: 4, y: 2 },
+  "1101": { x: 0, y: 1 },
+  "1110": { x: 2, y: 1 },
+  "1111": { x: 1, y: 1 },
+};
+
+const roadNeighbourhood: { [key: string]: Coords } = {
+  "0000": { x: 0, y: 0 },
+  "0001": { x: 0, y: 0 },
+  "0010": { x: 0, y: 0 },
+  "0011": { x: 0, y: 0 },
+  "0100": { x: 1, y: 0 },
+  "0101": { x: 4, y: 0 },
+  "0110": { x: 3, y: 0 },
+  "0111": { x: 9, y: 0 },
+  "1000": { x: 1, y: 0 },
+  "1001": { x: 5, y: 0 },
+  "1010": { x: 2, y: 0 },
+  "1011": { x: 7, y: 0 },
+  "1100": { x: 1, y: 0 },
+  "1101": { x: 8, y: 0 },
+  "1110": { x: 10, y: 0 },
+  "1111": { x: 6, y: 0 },
+};
+
+const riverNeighbourhood1: { [key: string]: Coords } = {
+  "0000": { x: 0, y: 0 },
+  "0001": { x: 0, y: 9 },
+  "0010": { x: 0, y: 11 },
+  "0011": { x: 0, y: 0 },
+  "0100": { x: 0, y: 10 },
+  "0101": { x: 0, y: 5 },
+  "0110": { x: 0, y: 4 },
+  "0111": { x: 0, y: 0 },
+  "1000": { x: 0, y: 8 },
+  "1001": { x: 0, y: 7 },
+  "1010": { x: 0, y: 6 },
+  "1011": { x: 0, y: 0 },
+  "1100": { x: 0, y: 2 },
+  "1101": { x: 0, y: 0 },
+  "1110": { x: 0, y: 0 },
+  "1111": { x: 0, y: 0 },
+};
+
+const riverNeighbourhood2: { [key: string]: Coords } = {
+  "0000": { x: 0, y: 0 },
+  "0001": { x: 0, y: 9 },
+  "0010": { x: 0, y: 11 },
+  "0011": { x: 0, y: 1 },
+  "0100": { x: 0, y: 10 },
+  "0101": { x: 0, y: 5 },
+  "0110": { x: 0, y: 4 },
+  "0111": { x: 0, y: 0 },
+  "1000": { x: 0, y: 8 },
+  "1001": { x: 0, y: 7 },
+  "1010": { x: 0, y: 6 },
+  "1011": { x: 0, y: 0 },
+  "1100": { x: 0, y: 3 },
+  "1101": { x: 0, y: 0 },
+  "1110": { x: 0, y: 0 },
+  "1111": { x: 0, y: 0 },
+};
+
 export const mapTiles: MapTiles = {
   tiles: map
   .map((row, y) =>
@@ -40,31 +116,48 @@ export const mapTiles: MapTiles = {
   )
 }
 
+
 function createMapTile(symbol: string, location: Coords): MapTile {
   switch (symbol) {
     case "M":
       return {
         frameIndex: 0
       };
-      case "H":
+    case "H":
       return {
         frameIndex: 1
       };
     case "h":
       return {
-        frameIndex: tileLocationToFrameIndex({x: 1, y: 12})
+        frameIndex: tileLocationToFrameIndex({ x: 1, y: 16 })
       };
     case "v":
       return {
-        frameIndex: tileLocationToFrameIndex({x: 0, y: 12})
+        frameIndex: tileLocationToFrameIndex({ x: 0, y: 16 })
       };
     case "f":
       return {
-        frameIndex: tileLocationToFrameIndex(getZoneTileLocation(symbol, location), { x: 0, y: 1 })
+        frameIndex: tileLocationToFrameIndex(getConnectedTileLocation(symbol, location, zoneNeighbourhood), { x: 0, y: 1 })
       }
     case "w":
       return {
-        frameIndex: tileLocationToFrameIndex(getZoneTileLocation(symbol, location), { x: 6, y: 1 })
+        frameIndex: tileLocationToFrameIndex(getConnectedTileLocation(symbol, location, zoneNeighbourhood), { x: 6, y: 1 })
+      }
+    case "p":
+      return {
+        frameIndex: tileLocationToFrameIndex(getConnectedTileLocation(symbol, location, roadNeighbourhood), { x: 0, y: 17 })
+      }
+    case "r":
+      return {
+        frameIndex: tileLocationToFrameIndex(
+          getConnectedTileLocation(
+            symbol,
+            location,
+            (location.x + location.y) % 2 === 0
+              ? riverNeighbourhood1
+              : riverNeighbourhood2
+          ),
+          { x: 0, y: 4 })
       }
     default:
       return {
@@ -75,7 +168,7 @@ function createMapTile(symbol: string, location: Coords): MapTile {
 
 function tileLocationToFrameIndex(
   location: Coords,
-  offset: Coords = {x: 0, y: 0},
+  offset: Coords = { x: 0, y: 0 },
 ): number {
 
   const actualLocation: Coords = {
@@ -86,28 +179,8 @@ function tileLocationToFrameIndex(
   return actualLocation.y * tileSetWidth + actualLocation.x;
 }
 
-function getZoneTileLocation(symbol: string, location: Coords): Coords {
-
-  const zoneIndexes: { [key: string]: Coords } = {
-    "0000": { x: 3, y: 0 },
-    "0001": { x: 3, y: 1 },
-    "0010": { x: 5, y: 1 },
-    "0011": { x: 4, y: 1 },
-    "0100": { x: 3, y: 2 },
-    "0101": { x: 0, y: 0 },
-    "0110": { x: 2, y: 0 },
-    "0111": { x: 1, y: 0 },
-    "1000": { x: 5, y: 2 },
-    "1001": { x: 0, y: 2 },
-    "1010": { x: 2, y: 2 },
-    "1011": { x: 1, y: 2 },
-    "1100": { x: 4, y: 2 },
-    "1101": { x: 0, y: 1 },
-    "1110": { x: 2, y: 1 },
-    "1111": { x: 1, y: 1 },
-  };
-
-  return zoneIndexes[getZoneIndexKey(symbol, location)];
+function getConnectedTileLocation(symbol: string, location: Coords, neighbourhoodMap: { [key: string]: Coords }): Coords {
+  return neighbourhoodMap[getZoneIndexKey(symbol, location)];
 }
 
 function getZoneIndexKey(symbol: string, location: Coords): string {
@@ -124,3 +197,4 @@ function getZoneIndexKey(symbol: string, location: Coords): string {
 function getSymbol(location: Coords): string {
   return map[location.y]?.charAt(location.x) || " ";
 }
+
