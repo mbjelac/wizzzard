@@ -137,7 +137,6 @@ export default class MapGui extends Phaser.Scene {
   }
 
   private addErrandMarker(errandDescription: ErrandDescription): ErrandMarker | undefined {
-    const mapPixelCoords = this.getMapPixelCoords(errandDescription.mapMarkerLocation);
 
     const errandMarkerConfig = errandMarkersConfigs.get(errandDescription.id);
 
