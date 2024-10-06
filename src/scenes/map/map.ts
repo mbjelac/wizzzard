@@ -1,0 +1,15 @@
+export const map = [
+  "                M                                     ",
+  "                MM                                    ",
+  "              MM M                                    ",
+  "            MM    M                                   ",
+  "           M  MM                                      ",
+  "     f  ff                                            ",
+  "      fffff f                                         ",
+  "     ff                                               ",
+  "                                                      ",
+  "                                                      ",
+  "                                                      ",
+  "                                                      ",
+  "                                                      ",
+];
