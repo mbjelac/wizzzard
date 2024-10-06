@@ -26,7 +26,6 @@ export class VariantTiles {
     const variantTileCoords = spriteConfig.variants[randomIndex];
 
     this.variantCoordsCache.set(variantCacheKey, variantTileCoords);
-    console.log("add", variantCacheKey, this.variantCoordsCache);
 
     return variantTileCoords;
   }
@@ -34,7 +33,6 @@ export class VariantTiles {
   remove(spriteName: string, spriteCoords: Coords) {
     const key = createVariantCacheKey(spriteName, spriteCoords);
     this.variantCoordsCache.delete(key);
-    console.log("remove", key, this.variantCoordsCache);
 
   }
 }

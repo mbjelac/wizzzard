@@ -5,7 +5,9 @@ import config from "../../config";
 import { DialogBox } from "../widgets/DialogBox";
 import { MapTile, mapTiles } from "./map-tiles";
 import { errandMarkersConfigs } from "./errand-markers-configs";
+import { Button } from "../widgets/Button";
 import Sprite = Phaser.Physics.Arcade.Sprite;
+import depths from "../level/depths";
 
 const stretchCoefficient = 4;
 const coordinateSystemCoefficient = 8;
@@ -26,6 +28,12 @@ export default class MapGui extends Phaser.Scene {
 
   private readonly dialogBox = new DialogBox();
 
+  private errandDescriptionWidget!: {
+    readonly title: Phaser.GameObjects.BitmapText;
+    readonly page: Phaser.GameObjects.BitmapText;
+    readonly goButton: Button;
+  };
+
   constructor() {
     super('errands');
     console.log("Errands constructor")
@@ -41,12 +49,16 @@ export default class MapGui extends Phaser.Scene {
 
     this.load.bitmapFont("unnamed", "assets/fonts/Unnamed.png", "assets/fonts/Unnamed.xml");
     this.load.bitmapFont("redRobotoSmall", "assets/fonts/red-roboto-small.png", "assets/fonts/roboto-small.xml");
+    this.load.bitmapFont('blackRobotoMicro', 'assets/fonts/roboto-micro.png', 'assets/fonts/roboto-micro.xml');
 
 
     this.events.on("create", async () => this.sceneActive());
     this.events.on("wake", async () => this.sceneActive());
 
     this.dialogBox.preload(this);
+
+
+
   }
 
   private async sceneActive() {
@@ -88,6 +100,25 @@ export default class MapGui extends Phaser.Scene {
         this.addMapTile(mapTile, { x, y });
       });
     })
+
+    this.errandDescriptionWidget = {
+      title: this.add
+      .bitmapText(860, 40, "blackRobotoMicro", "")
+      .setMaxWidth(290)
+      .setScale(4)
+      .setDepth(depths.info)
+      .setVisible(true),
+      page: this.add
+      .bitmapText(860, 370, "blackRobotoMicro", "")
+      .setMaxWidth(260)
+      .setScale(4)
+      .setDepth(depths.info)
+      .setVisible(true),
+      goButton: new Button()
+    };
+
+    this.errandDescriptionWidget.goButton.preload(this);
+    this.errandDescriptionWidget.goButton.create(this);
   }
 
   private addMapTile(mapTile: MapTile, location: Coords): Sprite | undefined {
@@ -150,12 +181,32 @@ export default class MapGui extends Phaser.Scene {
     .setInteractive()
     .on('pointerup', () => {
       GAME.goToErrand(errandDescription.id);
-      this.scene.switch("journal");
+      this.displayErrandDescription();
     })
 
     return {
       description: errandDescription,
       sprite: sprite
     };
+  }
+
+  private async displayErrandDescription() {
+
+    const errand = await GAME.getSelectedErrand();
+
+    if (errand === undefined) {
+      return;
+    }
+
+    this.errandDescriptionWidget.title.setText(errand.description.title);
+    this.errandDescriptionWidget.page.setText(errand.description.description);
+
+    this.errandDescriptionWidget.goButton.show(
+      { x: 990, y: 760 },
+      "Go!",
+      () => {
+        this.scene.switch("level");
+      }
+    );
   }
 }

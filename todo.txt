@@ -1,6 +1,5 @@
-- fix map/journal
-    - map visuals
-    - journal (errand info + Go!) location/layout?
+- map: mountains can also be in continuation zones
+- map: selected errand marker tile has flashing frame around it
 - put remembering stones on existing levels
 - simplify levels
 - rethink ingredients

@@ -12,7 +12,6 @@ new Phaser.Game(
     scene: [
       MapGui,
       LevelGui,
-      JournalGui,
     ]
   })
 );
