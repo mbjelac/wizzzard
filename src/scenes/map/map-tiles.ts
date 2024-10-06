@@ -46,6 +46,10 @@ function createMapTile(symbol: string, location: Coords): MapTile {
       return {
         frameIndex: 0
       };
+      case "H":
+      return {
+        frameIndex: 1
+      };
     case "h":
       return {
         frameIndex: tileLocationToFrameIndex({x: 1, y: 12})
@@ -57,6 +61,10 @@ function createMapTile(symbol: string, location: Coords): MapTile {
     case "f":
       return {
         frameIndex: tileLocationToFrameIndex(getZoneTileLocation(symbol, location), { x: 0, y: 1 })
+      }
+    case "w":
+      return {
+        frameIndex: tileLocationToFrameIndex(getZoneTileLocation(symbol, location), { x: 6, y: 1 })
       }
     default:
       return {
@@ -90,12 +98,12 @@ function getZoneTileLocation(symbol: string, location: Coords): Coords {
     "0110": { x: 2, y: 0 },
     "0111": { x: 1, y: 0 },
     "1000": { x: 5, y: 2 },
-    "1001": { x: 4, y: 1 },
+    "1001": { x: 0, y: 2 },
     "1010": { x: 2, y: 2 },
     "1011": { x: 1, y: 2 },
     "1100": { x: 4, y: 2 },
-    "1101": { x: 0, y: 2 },
-    "1110": { x: 2, y: 2 },
+    "1101": { x: 0, y: 1 },
+    "1110": { x: 2, y: 1 },
     "1111": { x: 1, y: 1 },
   };
 
