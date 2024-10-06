@@ -1,8 +1,8 @@
-import { loadEditorPanel } from "./scenes/editor-panel";
+import { loadEditorPanel } from "./scenes/level/editor-panel";
 import Phaser from "phaser";
 import config from "./config";
-import ErrandsGui from "./scenes/ErrandsGui";
-import LevelGui from "./scenes/LevelGui";
+import MapGui from "./scenes/map/MapGui";
+import LevelGui from "./scenes/level/LevelGui";
 import JournalGui from "./scenes/JournalGui";
 
 loadEditorPanel();
@@ -10,7 +10,7 @@ loadEditorPanel();
 new Phaser.Game(
   Object.assign(config, {
     scene: [
-      ErrandsGui,
+      MapGui,
       LevelGui,
       JournalGui,
     ]

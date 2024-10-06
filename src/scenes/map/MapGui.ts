@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
-import { Coords, ErrandDescription } from "../engine/Errand";
-import { GAME } from "../engine/game";
-import config from "../config";
-import { DialogBox } from "./widgets/DialogBox";
+import { Coords, ErrandDescription } from "../../engine/Errand";
+import { GAME } from "../../engine/game";
+import config from "../../config";
+import { DialogBox } from "../widgets/DialogBox";
 
 
 const depths = {
@@ -16,7 +16,7 @@ interface ErrandMarker {
   sprite: Phaser.GameObjects.Sprite
 }
 
-export default class ErrandsGui extends Phaser.Scene {
+export default class MapGui extends Phaser.Scene {
 
   // @ts-ignore
   private errandMarkers: ErrandMarker[] = [];
@@ -34,6 +34,7 @@ export default class ErrandsGui extends Phaser.Scene {
 
     this.load.image("errandMarker", "assets/map_errand_marker.png");
     this.load.image("map", "assets/map.png");
+    this.load.image("mapTiles", "assets/map_tileset.png");
 
     this.load.bitmapFont("unnamed", "assets/fonts/Unnamed.png", "assets/fonts/Unnamed.xml");
     this.load.bitmapFont("redRobotoSmall", "assets/fonts/red-roboto-small.png", "assets/fonts/roboto-small.xml");
@@ -91,6 +92,9 @@ export default class ErrandsGui extends Phaser.Scene {
     this.add
     .sprite(screenWidth / 2, screenHeight / 2, "map")
     .setDisplaySize(screenWidth, screenHeight);
+
+
+
   }
 
   update(time: number, delta: number) {

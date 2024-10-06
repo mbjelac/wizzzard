@@ -1,4 +1,4 @@
-import { Coords } from "../engine/Errand";
+import { Coords } from "../../engine/Errand";
 import { SpriteConfig } from "./sprites";
 
 export class VariantTiles {

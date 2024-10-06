@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import { screen } from "../config";
 import { GAME } from "../engine/game";
-import depths from "./depths";
+import depths from "./level/depths";
 import { Button } from "./widgets/Button";
-import toPixelCoords from "./toPixelCoords";
+import toPixelCoords from "./level/toPixelCoords";
 
 export default class JournalGui extends Phaser.Scene {
 

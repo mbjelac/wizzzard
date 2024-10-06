@@ -1,4 +1,4 @@
-import depths from "../depths";
+import depths from "../level/depths";
 import { Coords } from "../../engine/Errand";
 import Pointer = Phaser.Input.Pointer;
 import { Scene } from "phaser";
