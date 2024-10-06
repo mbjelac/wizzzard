@@ -177,7 +177,7 @@ function createMapTile(symbol: string, location: Coords): MapTile {
   }
 }
 
-function tileLocationToFrameIndex(
+export function tileLocationToFrameIndex(
   location: Coords,
   offset: Coords = { x: 0, y: 0 },
 ): number {

@@ -4,6 +4,8 @@ import { GAME } from "../../engine/game";
 import config from "../../config";
 import { DialogBox } from "../widgets/DialogBox";
 import { MapTile, mapTiles } from "./map-tiles";
+import { errandMarkersConfigs } from "./errand-markers-configs";
+import Sprite = Phaser.Physics.Arcade.Sprite;
 
 const stretchCoefficient = 4;
 const coordinateSystemCoefficient = 8;
@@ -62,24 +64,11 @@ export default class MapGui extends Phaser.Scene {
 
   private addErrandMarkers(errands: ErrandDescription[]) {
 
-    this.errandMarkers.push(...errands.map(errandDescription => {
-      const mapPixelCoords = this.getMapPixelCoords(errandDescription.mapMarkerLocation);
-      return {
-        description: errandDescription,
-        sprite: this.add.sprite(
-          mapPixelCoords.x,
-          mapPixelCoords.y,
-          'errandMarker'
-        )
-        .setDisplaySize(7 * 4, 8 * 4)
-        .setInteractive()
-        .on('pointerup', () => {
-
-          GAME.goToErrand(errandDescription.id);
-          this.scene.switch("journal");
-        })
-      };
-    }));
+    this.errandMarkers.push(
+      ...(errands
+      .map(errandDescription => this.addErrandMarker(errandDescription))
+      .filter(marker => marker !== undefined)) as ErrandMarker[]
+    );
   }
 
   create() {
@@ -101,7 +90,7 @@ export default class MapGui extends Phaser.Scene {
     })
   }
 
-  private addMapTile(mapTile: MapTile, location: Coords) {
+  private addMapTile(mapTile: MapTile, location: Coords): Sprite | undefined {
 
     if (mapTile.frameIndex === -1) {
       return;
@@ -117,6 +106,8 @@ export default class MapGui extends Phaser.Scene {
       sprite.anims.create(this.getAnimation(mapTile))
       sprite.anims.play(this.animationKey);
     }
+
+    return sprite;
   }
 
   update(time: number, delta: number) {
@@ -142,6 +133,30 @@ export default class MapGui extends Phaser.Scene {
         }
       ),
       repeat: -1,
+    };
+  }
+
+  private addErrandMarker(errandDescription: ErrandDescription): ErrandMarker | undefined {
+    const mapPixelCoords = this.getMapPixelCoords(errandDescription.mapMarkerLocation);
+
+    const errandMarkerConfig = errandMarkersConfigs.get(errandDescription.id);
+
+    if (errandMarkerConfig === undefined) {
+      return undefined;
+    }
+
+    const sprite = this.addMapTile(errandMarkerConfig.mapTile, errandMarkerConfig.location)!;
+
+    sprite
+    .setInteractive()
+    .on('pointerup', () => {
+      GAME.goToErrand(errandDescription.id);
+      this.scene.switch("journal");
+    })
+
+    return {
+      description: errandDescription,
+      sprite: sprite
     };
   }
 }
