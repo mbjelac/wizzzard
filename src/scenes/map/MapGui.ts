@@ -6,8 +6,8 @@ import { DialogBox } from "../widgets/DialogBox";
 import { MapTile, mapTiles } from "./map-tiles";
 import { errandMarkersConfigs } from "./errand-markers-configs";
 import { Button } from "../widgets/Button";
-import Sprite = Phaser.Physics.Arcade.Sprite;
 import depths from "../level/depths";
+import Sprite = Phaser.Physics.Arcade.Sprite;
 
 const stretchCoefficient = 4;
 const coordinateSystemCoefficient = 8;
@@ -32,6 +32,7 @@ export default class MapGui extends Phaser.Scene {
     readonly title: Phaser.GameObjects.BitmapText;
     readonly page: Phaser.GameObjects.BitmapText;
     readonly goButton: Button;
+    readonly image: Phaser.GameObjects.Sprite;
   };
 
   constructor() {
@@ -47,6 +48,9 @@ export default class MapGui extends Phaser.Scene {
     this.load.image("map", "assets/map.png");
     this.load.spritesheet(this.tilesetName, "assets/map_tileset.png", { frameWidth: coordinateSystemCoefficient, frameHeight: coordinateSystemCoefficient });
 
+    this.load.image("woodenDog", "assets/errand_images/woodenDog-transparent.png");
+
+
     this.load.bitmapFont("unnamed", "assets/fonts/Unnamed.png", "assets/fonts/Unnamed.xml");
     this.load.bitmapFont("redRobotoSmall", "assets/fonts/red-roboto-small.png", "assets/fonts/roboto-small.xml");
     this.load.bitmapFont('blackRobotoMicro', 'assets/fonts/roboto-micro.png', 'assets/fonts/roboto-micro.xml');
@@ -56,7 +60,6 @@ export default class MapGui extends Phaser.Scene {
     this.events.on("wake", async () => this.sceneActive());
 
     this.dialogBox.preload(this);
-
 
 
   }
@@ -107,14 +110,18 @@ export default class MapGui extends Phaser.Scene {
       .setMaxWidth(290)
       .setScale(4)
       .setDepth(depths.info)
-      .setVisible(true),
+      .setVisible(false),
       page: this.add
       .bitmapText(860, 370, "blackRobotoMicro", "")
       .setMaxWidth(260)
       .setScale(4)
       .setDepth(depths.info)
-      .setVisible(true),
-      goButton: new Button()
+      .setVisible(false),
+      goButton: new Button(),
+      image: this.add
+      .sprite(990, 216, "woodenDog")
+      .setDisplaySize(66 * 4, 66 * 4)
+      .setVisible(false)
     };
 
     this.errandDescriptionWidget.goButton.preload(this);
@@ -198,8 +205,9 @@ export default class MapGui extends Phaser.Scene {
       return;
     }
 
-    this.errandDescriptionWidget.title.setText(errand.description.title);
-    this.errandDescriptionWidget.page.setText(errand.description.description);
+    this.errandDescriptionWidget.title.setText(errand.description.title).setVisible(true);
+    this.errandDescriptionWidget.page.setText(errand.description.description).setVisible(true);
+    this.errandDescriptionWidget.image.setTexture(errand.description.id).setVisible(true);
 
     this.errandDescriptionWidget.goButton.show(
       { x: 990, y: 760 },
