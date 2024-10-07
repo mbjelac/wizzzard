@@ -4,7 +4,7 @@ import { Direction } from "../../engine/Direction";
 import { TILE_SIZE, tileCenterOffset } from "../../config";
 import { GAME } from "../../engine/game";
 import { Coords, Errand, ThingDescription } from "../../engine/Errand";
-import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION, spriteAt } from "./sprites";
+import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION } from "./sprites";
 import { clearLabelText, getLabelText } from "./editor-panel";
 import depths from "./depths";
 import { ButtonConfig, DialogBox } from "../widgets/DialogBox";
@@ -13,7 +13,6 @@ import { ALL_THING_PROPERTIES, Thing } from "../../engine/Thing";
 import { VariantTiles } from "./VariantTiles";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
-import Texture = Phaser.Textures.Texture;
 
 const animation1 = "animation1";
 const animation2 = "animation2";
@@ -647,9 +646,14 @@ export default class LevelGui extends Phaser.Scene {
 
       if (thing.is("remember")) {
 
-        if (this.activeRememberingStoneSprite !== undefined && this.activeRememberingStoneSprite !== sprite) {
+        if (
+          this.activeRememberingStoneSprite !== undefined &&
+          this.activeRememberingStoneSprite.anims != undefined &&
+          this.activeRememberingStoneSprite !== sprite
+        ) {
           this.activeRememberingStoneSprite.stop();
           this.activeRememberingStoneSprite.play(animation1);
+
         }
 
         this.activeRememberingStoneSprite = sprite;
