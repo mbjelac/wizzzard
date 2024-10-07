@@ -20,4 +20,14 @@ export const errandMarkersConfigs = new Map<string, ErrandMarkerConfig>()
     },
     location: { x: 14, y: 5 }
   }
-);
+)
+  .set(
+  "void",
+  {
+    mapTile: {
+      frameIndex: tileLocationToFrameIndex({ x: 2, y: 0 }),
+    },
+    location: { x: 2, y: 2 }
+  }
+)
+;
