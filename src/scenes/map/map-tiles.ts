@@ -127,8 +127,8 @@ function createMapTile(symbol: string, location: Coords): MapTile {
   switch (symbol) {
     case "M":
       return {
-        frameIndex: 0
-      };
+        frameIndex: tileLocationToFrameIndex(getConnectedTileLocation(symbol, location, zoneNeighbourhood), { x: 12, y: 1 })
+      }
     case "H":
       return {
         frameIndex: 1
@@ -151,7 +151,14 @@ function createMapTile(symbol: string, location: Coords): MapTile {
       }
     case "p":
       return {
-        frameIndex: tileLocationToFrameIndex(getConnectedTileLocation(symbol, location, roadNeighbourhood), { x: 0, y: 17 })
+        frameIndex: tileLocationToFrameIndex(
+          getConnectedTileLocation(
+            symbol,
+            location,
+            roadNeighbourhood
+          ),
+          { x: 0, y: 17 }
+        )
       }
     case "r":
       return {
@@ -161,7 +168,8 @@ function createMapTile(symbol: string, location: Coords): MapTile {
             location,
             (location.x + location.y) % 2 === 0
               ? riverNeighbourhood1
-              : riverNeighbourhood2
+              : riverNeighbourhood2,
+            ["w"]
           ),
           { x: 0, y: 4 }
         ),
@@ -190,19 +198,24 @@ export function tileLocationToFrameIndex(
   return actualLocation.y * tileSetWidth + actualLocation.x;
 }
 
-function getConnectedTileLocation(symbol: string, location: Coords, neighbourhoodMap: { [key: string]: Coords }): Coords {
-  return neighbourhoodMap[getZoneIndexKey(symbol, location)];
+function getConnectedTileLocation(symbol: string, location: Coords, neighbourhoodMap: { [key: string]: Coords }, alsoNeighbours: string[] = []): Coords {
+  return neighbourhoodMap[getZoneIndexKey(symbol, location, alsoNeighbours)];
 }
 
-function getZoneIndexKey(symbol: string, location: Coords): string {
+function getZoneIndexKey(symbol: string, location: Coords, alsoNeighbours: string[] = []): string {
   return [
-    getSymbol(Direction.UP.getLocation(location)) === symbol,
-    getSymbol(Direction.DOWN.getLocation(location)) === symbol,
-    getSymbol(Direction.LEFT.getLocation(location)) === symbol,
-    getSymbol(Direction.RIGHT.getLocation(location)) === symbol,
+    hasNeighbor(symbol, location, Direction.UP, alsoNeighbours),
+    hasNeighbor(symbol, location, Direction.DOWN, alsoNeighbours),
+    hasNeighbor(symbol, location, Direction.LEFT, alsoNeighbours),
+    hasNeighbor(symbol, location, Direction.RIGHT, alsoNeighbours),
   ]
   .map(hasNeighbour => hasNeighbour ? "1" : "0")
   .join("");
+}
+
+function hasNeighbor(symbol: string, location: Coords, direction: Direction, alsoNeighbours: string[] = []): boolean {
+  const neighbouringSymbol = getSymbol(direction.getLocation(location));
+  return neighbouringSymbol === symbol || alsoNeighbours.includes(neighbouringSymbol);
 }
 
 function getSymbol(location: Coords): string {

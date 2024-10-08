@@ -1,9 +1,9 @@
 export const map = [
   "         M       H       ",
   "H     H HMM H H     H    ",
-  "     H MMHMHH  p     H   ",
-  "  H  MMHrrHM  ppfff f    ",
-  "    M HMMr H ppfffff  ff ",
+  "     H MMMMHH  p     H   ",
+  "  H  MMMrrMM  ppfff f    ",
+  "    MMHMMr H ppfffff  ff ",
   " ffH HHH rHH phffffff ff ",
   "ffff f H rrrhpffffhff    ",
   "        ppprpv fwffff    ",
