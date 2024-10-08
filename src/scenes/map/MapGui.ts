@@ -26,6 +26,8 @@ export default class MapGui extends Phaser.Scene {
   // @ts-ignore
   private errandMarkers: ErrandMarker[] = [];
 
+  private errandSelectionFrame!: Phaser.GameObjects.Sprite;
+
   private readonly dialogBox = new DialogBox();
 
   private errandDescriptionWidget!: {
@@ -60,8 +62,6 @@ export default class MapGui extends Phaser.Scene {
     this.events.on("wake", async () => this.sceneActive());
 
     this.dialogBox.preload(this);
-
-
   }
 
   private async sceneActive() {
@@ -126,6 +126,19 @@ export default class MapGui extends Phaser.Scene {
 
     this.errandDescriptionWidget.goButton.preload(this);
     this.errandDescriptionWidget.goButton.create(this);
+
+    this.errandSelectionFrame = this.physics.add
+    .sprite(0, 0, this.tilesetName, 6)
+    .setDisplaySize(tileSizePixels, tileSizePixels)
+    .setVisible(false);
+
+    this.errandSelectionFrame.anims.create(this.getAnimation({
+      frameIndex: 6,
+      animation: {
+        frameCount: 14,
+        framesPerSecond: 12
+      },
+    }));
   }
 
   private addMapTile(mapTile: MapTile, location: Coords): Sprite | undefined {
@@ -188,6 +201,12 @@ export default class MapGui extends Phaser.Scene {
     .setInteractive()
     .on('pointerup', () => {
       GAME.goToErrand(errandDescription.id);
+
+      const locationPixels = this.getMapPixelCoords(errandMarkerConfig.location);
+      this.errandSelectionFrame.setX(locationPixels.x);
+      this.errandSelectionFrame.setY(locationPixels.y);
+      this.errandSelectionFrame.anims.play(this.animationKey);
+      this.errandSelectionFrame.setVisible(true);
       this.displayErrandDescription();
     })
 

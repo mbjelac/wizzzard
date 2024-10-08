@@ -1,4 +1,3 @@
-- map: selected errand marker tile has flashing frame around it
 - put remembering stones on existing levels
 - simplify levels
 - rethink ingredients
