@@ -7,6 +7,7 @@ import { MapTile, mapTiles } from "./map-tiles";
 import { errandMarkersConfigs } from "./errand-markers-configs";
 import { Button } from "../widgets/Button";
 import depths from "../level/depths";
+import { getMapPlaceDescriptionAt } from "./place-descriptions";
 import Sprite = Phaser.Physics.Arcade.Sprite;
 
 const stretchCoefficient = 4;
@@ -36,6 +37,8 @@ export default class MapGui extends Phaser.Scene {
     readonly goButton: Button;
     readonly image: Phaser.GameObjects.Sprite;
   };
+
+  private placeDescriptionText!: Phaser.GameObjects.BitmapText;
 
   constructor() {
     super('errands');
@@ -139,6 +142,13 @@ export default class MapGui extends Phaser.Scene {
         framesPerSecond: 12
       },
     }));
+
+    this.placeDescriptionText = this.add
+    .bitmapText(200, 780, "blackRobotoMicro", "blah")
+    .setMaxWidth(600)
+    .setScale(4)
+    .setDepth(depths.info)
+    .setVisible(true);
   }
 
   private addMapTile(mapTile: MapTile, location: Coords): Sprite | undefined {
@@ -149,9 +159,15 @@ export default class MapGui extends Phaser.Scene {
 
     const pixelCoords = this.getMapPixelCoords(location)
 
+    const description = getMapPlaceDescriptionAt(location);
+
     const sprite = this.physics.add
     .sprite(pixelCoords.x, pixelCoords.y, this.tilesetName, mapTile.frameIndex)
-    .setDisplaySize(tileSizePixels, tileSizePixels);
+    .setDisplaySize(tileSizePixels, tileSizePixels)
+    .setInteractive()
+    .on('pointermove', async () => {
+      this.placeDescriptionText.setText(description || "");
+    });
 
     if (mapTile.animation !== undefined) {
       sprite.anims.create(this.getAnimation(mapTile))

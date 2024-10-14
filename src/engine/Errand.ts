@@ -5,6 +5,10 @@ export interface Coords {
   readonly y: number
 }
 
+export function locationsSame(location: Coords, anotherLocation: Coords): boolean {
+  return location.x === anotherLocation.x && location.y === anotherLocation.y;
+}
+
 export interface ThingDescription {
   readonly properties: ThingProperty[],
   readonly sprite: string,
