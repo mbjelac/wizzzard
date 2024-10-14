@@ -505,6 +505,13 @@ export const SPRITE_CONFIGS = {
   misc: {
     woodenDog: spriteAt(0, 9),
     seed: spriteAt(1, 9),
+    speenAachPlant: spriteConfig({
+      coords: { x: 2, y: 29 },
+      animation: {
+        frameCount: 4,
+        framesPerSecond: 6
+      }
+    }),
     magicWaterVial: spriteConfig({
       coords: { x: 3, y: 19 },
       animation: {
@@ -577,7 +584,14 @@ export const SPRITE_CONFIGS = {
           auxAnimation: { frameCount: 4, framesPerSecond: 4 }
         })
       },
-    }
+    },
+    lifeCrystal: spriteConfig({
+      coords: { x: 0, y: 30},
+      animation: {
+        frameCount: 4,
+        framesPerSecond: 4
+      }
+    })
   },
 }
 
