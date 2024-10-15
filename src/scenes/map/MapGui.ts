@@ -105,7 +105,7 @@ export default class MapGui extends Phaser.Scene {
     .setDisplaySize(screenWidth, screenHeight);
 
     this.add
-    .sprite(120, 42, "spellBook")
+    .sprite(120, 18, "spellBook")
     .setDepth(depths.decorations)
     .setDisplaySize(60 * 4, 37 * 4)
     .setInteractive()
@@ -156,7 +156,7 @@ export default class MapGui extends Phaser.Scene {
     }));
 
     this.placeDescriptionText = this.add
-    .bitmapText(200, 780, "blackRobotoMicro", "blah")
+    .bitmapText(200, 780, "blackRobotoMicro", "")
     .setMaxWidth(600)
     .setScale(4)
     .setDepth(depths.info)
