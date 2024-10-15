@@ -167,6 +167,8 @@ export default class MapGui extends Phaser.Scene {
     .setInteractive()
     .on('pointermove', async () => {
       this.placeDescriptionText.setText(description || "");
+      const textWidth = this.placeDescriptionText.getTextBounds().global.width;
+      this.placeDescriptionText.setX(416 - textWidth / 2);
     });
 
     if (mapTile.animation !== undefined) {
