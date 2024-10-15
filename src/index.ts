@@ -3,7 +3,7 @@ import Phaser from "phaser";
 import config from "./config";
 import MapGui from "./scenes/map/MapGui";
 import LevelGui from "./scenes/level/LevelGui";
-import JournalGui from "./scenes/JournalGui";
+import SpellsGui from "./scenes/spells/SpellsGui";
 
 loadEditorPanel();
 
@@ -12,6 +12,7 @@ new Phaser.Game(
     scene: [
       MapGui,
       LevelGui,
+      SpellsGui
     ]
   })
 );
