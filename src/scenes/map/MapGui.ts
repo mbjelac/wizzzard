@@ -50,6 +50,7 @@ export default class MapGui extends Phaser.Scene {
     console.log("Errands preload")
 
     this.load.image("errandMarker", "assets/map_errand_marker.png");
+    this.load.image("spellBook", "assets/spellbook-on-map.png");
     this.load.image("map", "assets/map.png");
     this.load.spritesheet(this.tilesetName, "assets/map_tileset.png", { frameWidth: coordinateSystemCoefficient, frameHeight: coordinateSystemCoefficient });
 
@@ -101,6 +102,11 @@ export default class MapGui extends Phaser.Scene {
     this.add
     .sprite(screenWidth / 2, screenHeight / 2, "map")
     .setDisplaySize(screenWidth, screenHeight);
+
+    this.add
+    .sprite(120, 42, "spellBook")
+    .setDepth(depths.decorations)
+    .setDisplaySize(60 * 4, 37 * 4);
 
     mapTiles.tiles.forEach((row, y) => {
       row.forEach((mapTile, x) => {
@@ -224,7 +230,7 @@ export default class MapGui extends Phaser.Scene {
       this.errandSelectionFrame.setY(locationPixels.y);
       this.errandSelectionFrame.anims.play(this.animationKey);
       this.errandSelectionFrame.setVisible(true);
-      this.displayErrandDescription();
+      this.displayErrandDescription(errandDescription);
 
       GAME.setCurrentLevel(errandDescription.id);
     })
@@ -235,17 +241,11 @@ export default class MapGui extends Phaser.Scene {
     };
   }
 
-  private async displayErrandDescription() {
+  private async displayErrandDescription(metadata: LevelMetadata) {
 
-    const errand = await GAME.getSelectedLevelDescription();
-
-    if (errand === undefined) {
-      return;
-    }
-
-    this.errandDescriptionWidget.title.setText(errand.metadata.title).setVisible(true);
-    this.errandDescriptionWidget.page.setText(errand.metadata.description).setVisible(true);
-    this.errandDescriptionWidget.image.setTexture(errand.metadata.id).setVisible(true);
+    this.errandDescriptionWidget.title.setText(metadata.title).setVisible(true);
+    this.errandDescriptionWidget.page.setText(metadata.description).setVisible(true);
+    this.errandDescriptionWidget.image.setTexture(metadata.id).setVisible(true);
 
     this.errandDescriptionWidget.goButton.show(
       { x: 990, y: 760 },
