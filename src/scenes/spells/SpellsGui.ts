@@ -19,8 +19,6 @@ interface SpellListItem {
 
 export default class SpellsGui extends Phaser.Scene {
 
-  private background!: Phaser.GameObjects.Sprite;
-
   private spellListItems: SpellListItem[] = [];
 
   private spellPage!: SpellPage
@@ -31,6 +29,8 @@ export default class SpellsGui extends Phaser.Scene {
 
   preload() {
     this.load.image("background", "assets/journal.png");
+    this.load.image("closeLeft", "assets/journal_close_left.png");
+    this.load.image("closeRight", "assets/journal_close_right.png");
 
     this.load.bitmapFont('blackRobotoMicro', 'assets/fonts/roboto-micro.png', 'assets/fonts/roboto-micro.xml');
 
@@ -57,9 +57,25 @@ export default class SpellsGui extends Phaser.Scene {
   }
 
   create() {
-    this.background = this.physics.add
+    this.physics.add
     .sprite(screen.center.x, screen.center.y, "background")
     .setDisplaySize(screen.size.width, screen.size.height);
+
+    this.physics.add
+    .sprite(4*4, screen.center.y, "closeLeft")
+    .setDisplaySize(12 * 4, screen.size.height)
+    .setInteractive()
+    .on("pointerup", () => {
+      this.scene.switch("errands")
+    });
+
+    this.physics.add
+    .sprite(screen.size.width - 5*4, screen.center.y, "closeRight")
+    .setDisplaySize(14 * 4, screen.size.height)
+    .setInteractive()
+    .on("pointerup", () => {
+      this.scene.switch("errands")
+    });
 
     this.spellPage.researchButton.create(this);
 
