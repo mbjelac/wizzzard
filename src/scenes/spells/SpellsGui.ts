@@ -5,6 +5,7 @@ import depths from "../level/depths";
 import { Button } from "../widgets/Button";
 import { SceneId } from "../scene-ids";
 import { LevelMetadata } from "../../engine/LevelDescription";
+import Rectangle = Phaser.Geom.Rectangle;
 
 interface SpellPage {
   readonly name: Phaser.GameObjects.BitmapText;// @ts-ignore
@@ -36,14 +37,14 @@ export default class SpellsGui extends Phaser.Scene {
 
     this.spellPage = {
       name: this.add
-      .bitmapText(40, 50, "blackRobotoMicro", "")
+      .bitmapText(200 * 4, 14 * 4, "blackRobotoMicro", "")
       .setMaxWidth(300)
       .setScale(4)
       .setDepth(depths.info)
       .setVisible(true),
       description: this.add
-      .bitmapText(40, 50, "blackRobotoMicro", "")
-      .setMaxWidth(300)
+      .bitmapText(152 * 4, 40 * 4, "blackRobotoMicro", "")
+      .setMaxWidth(480)
       .setScale(4)
       .setDepth(depths.info)
       .setVisible(true),
@@ -62,7 +63,7 @@ export default class SpellsGui extends Phaser.Scene {
     .setDisplaySize(screen.size.width, screen.size.height);
 
     this.physics.add
-    .sprite(4*4, screen.center.y, "closeLeft")
+    .sprite(4 * 4, screen.center.y, "closeLeft")
     .setDisplaySize(12 * 4, screen.size.height)
     .setInteractive()
     .on("pointerup", () => {
@@ -70,7 +71,7 @@ export default class SpellsGui extends Phaser.Scene {
     });
 
     this.physics.add
-    .sprite(screen.size.width - 5*4, screen.center.y, "closeRight")
+    .sprite(screen.size.width - 5 * 4, screen.center.y, "closeRight")
     .setDisplaySize(14 * 4, screen.size.height)
     .setInteractive()
     .on("pointerup", () => {
@@ -109,31 +110,39 @@ export default class SpellsGui extends Phaser.Scene {
       ...
         metadata
         .filter(metadata => metadata.type === "ritual")
-        .map(metadata => this.addSpellListItem(metadata))
+        .map((metadata, index) => this.addSpellListItem(metadata, index))
     );
   }
 
-  private addSpellListItem(metadata: LevelMetadata): SpellListItem {
-    return {
+  private addSpellListItem(metadata: LevelMetadata, index: number): SpellListItem {
+    const item: SpellListItem = {
       description: metadata,
       name: this
       .add
-      .bitmapText(40, 50, "blackRobotoMicro", metadata.title)
+      .bitmapText(20 * 4, 12 * 4 + index * 36, "blackRobotoMicro", metadata.title)
       .setMaxWidth(100)
       .setScale(4)
       .setDepth(depths.info)
       .setVisible(true)
-      .setInteractive()
-      .on("pointerup", () => {
-        this.displaySpellPage(metadata)
-      })
     };
+
+    const bounds = item.name.getTextBounds(true).local;
+
+    item.name
+    .setInteractive(
+      new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height),
+      Phaser.Geom.Rectangle.Contains
+    )
+    .on("pointerup", () => {
+      this.displaySpellPage(metadata)
+    });
+
+    return item;
   }
 
   private displaySpellPage(metadata: LevelMetadata) {
-
     this.spellPage.name.setText(metadata.title);
+    this.spellPage.name.setX(210 * 4 - this.spellPage.name.getTextBounds().global.width / 2);
     this.spellPage.description.setText(metadata.description);
-
   }
 }

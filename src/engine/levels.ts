@@ -65,6 +65,22 @@ const levels: LevelDescription[] = [
     },
     matrix: [],
     startCoords: { x: 0, y: 0 }
+  },
+  {
+    metadata: {
+      id: "waterbreathing",
+      title: "Waterbreathing",
+      description: "You can breathe under water. This means you can not drown.\n\nThere is much to explore under water. Beware of the spell duration!",
+      type: "ritual"
+    },
+    levelDimensions: { width: 11, height: 11 },
+    texts: {},
+    completionCriteria: {
+      inventory: ["vialOfStrength"],
+      receives: []
+    },
+    matrix: [],
+    startCoords: { x: 0, y: 0 }
   }
 ];
 
