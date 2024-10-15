@@ -1,5 +1,5 @@
 import { LevelLocation } from "../Level";
-import { ThingDescription } from "../Errand";
+import { ThingDescription } from "../LevelDescription";
 import { Thing } from "../Thing";
 
 export interface AddResult {

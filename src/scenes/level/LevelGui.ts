@@ -3,7 +3,7 @@ import { Level, LevelLocation } from "../../engine/Level";
 import { Direction } from "../../engine/Direction";
 import { TILE_SIZE, tileCenterOffset } from "../../config";
 import { GAME } from "../../engine/game";
-import { Coords, Errand, ThingDescription } from "../../engine/Errand";
+import { Coords, LevelDescription, ThingDescription } from "../../engine/LevelDescription";
 import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION } from "./sprites";
 import { clearLabelText, getLabelText } from "./editor-panel";
 import depths from "./depths";
@@ -99,19 +99,19 @@ export default class LevelGui extends Phaser.Scene {
 
     this.level = await GAME.getCurrentLevel();
 
-    for (const x of Array(this.level.errand.levelDimensions.width).keys()) {
-      for (const y of Array(this.level.errand.levelDimensions.height).keys()) {
+    for (const x of Array(this.level.levelDescription.levelDimensions.width).keys()) {
+      for (const y of Array(this.level.levelDescription.levelDimensions.height).keys()) {
         this.addLocation({ x, y });
       }
     }
 
-    const startCoords: Coords = { x: this.level.errand.startCoords.x, y: this.level.errand.startCoords.y };
+    const startCoords: Coords = { x: this.level.levelDescription.startCoords.x, y: this.level.levelDescription.startCoords.y };
 
     this.createPlayerSprite(startCoords);
 
     this.displayInventory();
 
-    this.playAmbientSound(this.level.errand.initialAmbientSound);
+    this.playAmbientSound(this.level.levelDescription.initialAmbientSound);
   }
 
   private createPlayerSprite(startCoords: Coords) {
@@ -616,12 +616,12 @@ export default class LevelGui extends Phaser.Scene {
 
   private async saveLevelMatrix() {
 
-    const errand: Errand = {
-      ...this.level.errand,
-      matrix: this.level.getErrandMatrix()
+    const levelDescription: LevelDescription = {
+      ...this.level.levelDescription,
+      matrix: this.level.getLevelMatrix()
     }
 
-    await GAME.setErrand(errand);
+    await GAME.setLevel(levelDescription);
 
   }
 
@@ -667,7 +667,7 @@ export default class LevelGui extends Phaser.Scene {
       return "I will remember you.";
     }
 
-    const longText = this.level.errand.texts[text];
+    const longText = this.level.levelDescription.texts[text];
 
     return longText ? longText.text : text;
   }
@@ -756,8 +756,8 @@ export default class LevelGui extends Phaser.Scene {
 
     this.displayInventory();
 
-    for (const x of Array(this.level.errand.levelDimensions.width).keys()) {
-      for (const y of Array(this.level.errand.levelDimensions.height).keys()) {
+    for (const x of Array(this.level.levelDescription.levelDimensions.width).keys()) {
+      for (const y of Array(this.level.levelDescription.levelDimensions.height).keys()) {
         this.addLocation({ x, y });
       }
     }

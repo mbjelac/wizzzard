@@ -1,4 +1,4 @@
-import { Coords } from "./Errand";
+import { Coords } from "./LevelDescription";
 
 export class Direction {
 

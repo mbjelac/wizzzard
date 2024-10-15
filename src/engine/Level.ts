@@ -1,6 +1,6 @@
 import { LevelEditor } from "./editor/LevelEditor";
 import { Direction } from "./Direction";
-import { Coords, Errand, ErrandMatrix } from "./Errand";
+import { Coords, LevelDescription, LevelMatrix } from "./LevelDescription";
 import { SavedThing, Thing, ThingProperty } from "./Thing";
 
 export interface MoveResult {
@@ -60,11 +60,11 @@ export class Level {
   private thingsThatChangedState: Thing[] = [];
 
   constructor(
-    public readonly errand: Errand,
+    public readonly levelDescription: LevelDescription,
   ) {
-    this.playerCoords = { ...errand.startCoords };
+    this.playerCoords = { ...levelDescription.startCoords };
     this.levelLocations = this
-    .errand
+    .levelDescription
     .matrix
     .map((row, rowIndex) => row
       .map((location, columnIndex) => ({
@@ -240,7 +240,7 @@ export class Level {
   }
 
   private inventoryHasRequiredItems(): boolean {
-    const requiredLabels = this.errand.completionCriteria.inventory;
+    const requiredLabels = this.levelDescription.completionCriteria.inventory;
 
     if (requiredLabels.length === 0) {
       return true;
@@ -255,7 +255,7 @@ export class Level {
 
   private requiredReceivesDone(): boolean {
 
-    const requiredReceives = this.errand.completionCriteria.receives;
+    const requiredReceives = this.levelDescription.completionCriteria.receives;
 
     if (requiredReceives.length === 0) {
       return true;
@@ -284,7 +284,7 @@ export class Level {
       { y: this.playerCoords.y, x: this.playerCoords.x - 1 },
       { y: this.playerCoords.y, x: this.playerCoords.x + 1 },
     ]
-    .filter(coords => coords.x >= 0 && coords.y >= 0 && coords.x < this.errand.levelDimensions.width && coords.y < this.errand.levelDimensions.height)
+    .filter(coords => coords.x >= 0 && coords.y >= 0 && coords.x < this.levelDescription.levelDimensions.width && coords.y < this.levelDescription.levelDimensions.height)
     .map(coords => this.levelLocations[coords.y][coords.x]);
   }
 
@@ -469,7 +469,7 @@ export class Level {
       ?.coords;
   }
 
-  getErrandMatrix(): ErrandMatrix {
+  getLevelMatrix(): LevelMatrix {
     return this.levelLocations
     .map(row => row
       .map(location => ({

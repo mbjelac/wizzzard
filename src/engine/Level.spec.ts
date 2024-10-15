@@ -2,7 +2,7 @@ import { Level, LevelLocation, MoveResult } from "./Level";
 import { createThingProps, LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
 import { EditorTool } from "./editor/EditorTool";
-import { Coords, Errand, ThingDescription } from "./Errand";
+import { Coords, LevelDescription, ThingDescription } from "./LevelDescription";
 import { ALL_THING_PROPERTIES, SavedThing, Thing, ThingProperty } from "./Thing";
 
 let level: Level;
@@ -33,11 +33,11 @@ const factory = new LevelFactory();
 
 function createLevel(...rows: string[]): Level {
   return new Level({
-    description: {
+    metadata: {
       id: "testLevel",
       description: "",
       title: "",
-      mapMarkerLocation: { x: 0, y: 0 }
+      type: "errand"
     },
     texts: {},
     levelDimensions: { width: rows[0].length, height: rows.length },
@@ -824,7 +824,7 @@ describe("completing level", () => {
   it("complete when both required pickups & receivers done", () => {
 
     level = new Level({
-      ...dummyErrand,
+      ...dummyLevel,
       levelDimensions: { width: 3, height: 3 },
       matrix: factory.fromMatrix(
         "   ",
@@ -866,7 +866,7 @@ describe("completing level", () => {
 
   function completionRequiresInventory(...requiredInventory: string[]) {
     level = new Level({
-      ...dummyErrand,
+      ...dummyLevel,
       levelDimensions: { width: 3, height: 3 },
       matrix: factory.fromMatrix(
         "   ",
@@ -883,7 +883,7 @@ describe("completing level", () => {
 
   function completionRequiresReceives(...requiredReceives: string[]) {
     level = new Level({
-      ...dummyErrand,
+      ...dummyLevel,
       levelDimensions: { width: 3, height: 3 },
       matrix: factory.fromMatrix(
         "   ",
@@ -902,12 +902,12 @@ describe("completing level", () => {
     return directions.map(direction => level.tryToMove(direction).levelComplete);
   }
 
-  const dummyErrand: Errand = {
-    description: {
-      id: "dummyErrand",
+  const dummyLevel: LevelDescription = {
+    metadata: {
+      id: "dummyLevel",
       description: "",
       title: "",
-      mapMarkerLocation: { x: 0, y: 0 }
+      type: "errand"
     },
     texts: {},
     levelDimensions: { width: 3, height: 3 },

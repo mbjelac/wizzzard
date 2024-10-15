@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { Coords, ErrandDescription } from "../../engine/Errand";
+import { Coords, LevelMetadata } from "../../engine/LevelDescription";
 import { GAME } from "../../engine/game";
 import config from "../../config";
 import { DialogBox } from "../widgets/DialogBox";
@@ -15,7 +15,7 @@ const coordinateSystemCoefficient = 8;
 const tileSizePixels = stretchCoefficient * coordinateSystemCoefficient;
 
 interface ErrandMarker {
-  description: ErrandDescription,
+  description: LevelMetadata,
   sprite: Phaser.GameObjects.Sprite
 }
 
@@ -69,10 +69,10 @@ export default class MapGui extends Phaser.Scene {
 
   private async sceneActive() {
 
-    const descriptions = await GAME.getErrandDescriptions();
+    const levelMetadata = await GAME.getLevelMetadata();
 
     this.clearErrandMarkers();
-    this.addErrandMarkers(descriptions);
+    this.addErrandMarkers(levelMetadata);
   }
 
   private clearErrandMarkers() {
@@ -80,11 +80,12 @@ export default class MapGui extends Phaser.Scene {
     this.errandMarkers.length = 0;
   }
 
-  private addErrandMarkers(errands: ErrandDescription[]) {
+  private addErrandMarkers(metadata: LevelMetadata[]) {
 
     this.errandMarkers.push(
-      ...(errands
-      .map(errandDescription => this.addErrandMarker(errandDescription))
+      ...(metadata
+      .filter(metadata => metadata.type === "errand")
+      .map(metadata => this.addErrandMarker(metadata))
       .filter(marker => marker !== undefined)) as ErrandMarker[]
     );
   }
@@ -205,7 +206,7 @@ export default class MapGui extends Phaser.Scene {
     };
   }
 
-  private addErrandMarker(errandDescription: ErrandDescription): ErrandMarker | undefined {
+  private addErrandMarker(errandDescription: LevelMetadata): ErrandMarker | undefined {
 
     const errandMarkerConfig = errandMarkersConfigs.get(errandDescription.id);
 
@@ -218,14 +219,14 @@ export default class MapGui extends Phaser.Scene {
     sprite
     .setInteractive()
     .on('pointerup', () => {
-      GAME.goToErrand(errandDescription.id);
-
       const locationPixels = this.getMapPixelCoords(errandMarkerConfig.location);
       this.errandSelectionFrame.setX(locationPixels.x);
       this.errandSelectionFrame.setY(locationPixels.y);
       this.errandSelectionFrame.anims.play(this.animationKey);
       this.errandSelectionFrame.setVisible(true);
       this.displayErrandDescription();
+
+      GAME.setCurrentLevel(errandDescription.id);
     })
 
     return {
@@ -236,15 +237,15 @@ export default class MapGui extends Phaser.Scene {
 
   private async displayErrandDescription() {
 
-    const errand = await GAME.getSelectedErrand();
+    const errand = await GAME.getSelectedLevelDescription();
 
     if (errand === undefined) {
       return;
     }
 
-    this.errandDescriptionWidget.title.setText(errand.description.title).setVisible(true);
-    this.errandDescriptionWidget.page.setText(errand.description.description).setVisible(true);
-    this.errandDescriptionWidget.image.setTexture(errand.description.id).setVisible(true);
+    this.errandDescriptionWidget.title.setText(errand.metadata.title).setVisible(true);
+    this.errandDescriptionWidget.page.setText(errand.metadata.description).setVisible(true);
+    this.errandDescriptionWidget.image.setTexture(errand.metadata.id).setVisible(true);
 
     this.errandDescriptionWidget.goButton.show(
       { x: 990, y: 760 },

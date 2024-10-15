@@ -1,5 +1,5 @@
 import { MapTile, tileLocationToFrameIndex } from "./map-tiles";
-import { Coords } from "../../engine/Errand";
+import { Coords } from "../../engine/LevelDescription";
 
 export interface ErrandMarkerConfig {
   readonly mapTile: MapTile;

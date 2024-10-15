@@ -16,12 +16,12 @@ export interface ThingDescription {
   readonly text?: string,
 }
 
-export interface ErrandLocation {
+export interface LevelLocation {
 
   things: ThingDescription[]
 }
 
-export type ErrandMatrix = ErrandLocation[][];
+export type LevelMatrix = LevelLocation[][];
 
 export interface CompletionCriteria {
   inventory: string[],
@@ -33,17 +33,20 @@ export interface LevelDimensions {
   readonly height: number
 }
 
-export interface ErrandDescription {
+export type LevelType = "errand" | "ritual";
+
+export interface LevelMetadata {
   readonly id: string,
   readonly title: string,
   readonly description: string
+  readonly type: LevelType;
 }
 
-export interface Errand {
+export interface LevelDescription {
 
-  readonly description: ErrandDescription,
+  readonly metadata: LevelMetadata,
   readonly levelDimensions: LevelDimensions,
-  readonly matrix: ErrandMatrix,
+  readonly matrix: LevelMatrix,
   readonly startCoords: Coords
   readonly completionCriteria: CompletionCriteria
   readonly texts: {[key: string]: TextContent}

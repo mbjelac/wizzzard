@@ -1,13 +1,13 @@
-import { Errand, ErrandDescription } from "./Errand";
+import { LevelDescription, LevelMetadata } from "./LevelDescription";
 import { populateEmptyLevelMatrix } from "./game";
 
-const errands: Errand[] = [
+const levels: LevelDescription[] = [
   {
-    description: {
+    metadata: {
       id: "woodenDog",
       title: "The wooden dog",
       description: "Wooden dog description...",
-      mapMarkerLocation: {x: 8, y: 17}
+      type: "errand"
     },
     levelDimensions: { width: 40, height: 30 },
     startCoords: { x: 7, y: 7 },
@@ -19,11 +19,11 @@ const errands: Errand[] = [
     texts: {}
   },
   {
-    description: {
+    metadata: {
       id: "forgetfulDruid",
       title: "The Forgetful Druid",
       description: "description...",
-      mapMarkerLocation: {x: 10, y: 15}
+      type: "errand"
     },
     levelDimensions: { width: 70, height: 70 },
     startCoords: { x: 7, y: 7 },
@@ -35,11 +35,11 @@ const errands: Errand[] = [
     texts: {}
   },
   {
-    description: {
+    metadata: {
       id: "void",
       title: "A void",
       description: "An empty black void, suitable for trying out the level editor.",
-      mapMarkerLocation: {x: 0, y: 0}
+      type: "errand"
     },
     levelDimensions: { width: 10, height: 10 },
     startCoords: { x: 5, y: 5 },
@@ -53,54 +53,54 @@ const errands: Errand[] = [
   }
 ];
 
-export async function getErrand(errandId: string): Promise<Errand> {
-  const errandFromStorage = getErrandFromLocalStorage(errandId);
+export async function getLevelDescription(levelId: string): Promise<LevelDescription> {
+  const levelFromStorage = getLevelFromLocalStorage(levelId);
 
-  if (errandFromStorage !== undefined) {
-    return Promise.resolve(errandFromStorage);
+  if (levelFromStorage !== undefined) {
+    return Promise.resolve(levelFromStorage);
   }
 
-  const errandFromCode = errands.find(errand => errand.description.id === errandId);
+  const levelFromCode = levels.find(level => level.metadata.id === levelId);
 
-  if (errandFromCode === undefined) {
-    return Promise.reject(`Errand not found for id: ${errandId}`);
+  if (levelFromCode === undefined) {
+    return Promise.reject(`Level not found for id: ${levelId}`);
   }
 
-  let fixedErrand = errandFromCode;
+  let levelWithFilledMap = levelFromCode;
 
-  if (fixedErrand.matrix.length === 0) {
-    fixedErrand = {
-      ...fixedErrand,
-      matrix: populateEmptyLevelMatrix(fixedErrand.levelDimensions)
+  if (levelWithFilledMap.matrix.length === 0) {
+    levelWithFilledMap = {
+      ...levelWithFilledMap,
+      matrix: populateEmptyLevelMatrix(levelWithFilledMap.levelDimensions)
     }
   }
 
-  await setErrand(fixedErrand);
+  await storeLevel(levelWithFilledMap);
 
-  return Promise.resolve(fixedErrand);
+  return Promise.resolve(levelWithFilledMap);
 }
 
-function getErrandFromLocalStorage(errandId: string): Errand | undefined {
+function getLevelFromLocalStorage(levelId: string): LevelDescription | undefined {
 
-  const errandString = localStorage.getItem(errandId);
+  const levelString = localStorage.getItem(levelId);
 
-  if (errandString === null) {
-    console.error(`Errand "${errandId}" not found in local storage!`);
+  if (levelString === null) {
+    console.error(`Level "${levelId}" not found in local storage!`);
     return undefined;
   }
 
   try {
-    return JSON.parse(errandString);
+    return JSON.parse(levelString);
   } catch (e) {
-    console.error("Level exists in local storage but failed to parse it: ", e, errandString);
+    console.error("Level exists in local storage but failed to parse it: ", e, levelString);
     return undefined;
   }
 }
 
-export async function setErrand(errand: Errand) {
-  localStorage.setItem(errand.description.id, JSON.stringify(errand));
+export async function storeLevel(level: LevelDescription) {
+  localStorage.setItem(level.metadata.id, JSON.stringify(level));
 }
 
-export async function getErrandDescriptions(): Promise<ErrandDescription[]> {
-  return Promise.resolve(errands.map(errand => errand.description));
+export async function getLevelMetadata(): Promise<LevelMetadata[]> {
+  return Promise.resolve(levels.map(level => level.metadata));
 }

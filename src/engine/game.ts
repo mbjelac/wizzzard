@@ -1,42 +1,42 @@
-import { Errand, ErrandDescription, ErrandMatrix, LevelDimensions } from "./Errand";
+import { LevelDescription, LevelMetadata, LevelMatrix, LevelDimensions } from "./LevelDescription";
 import { Level } from "./Level";
-import { getErrand, getErrandDescriptions, setErrand } from "./errands";
+import { getLevelDescription, getLevelMetadata, storeLevel } from "./errands";
 
 export class Game {
 
-  private currentErrandId?: string;
+  private currentLevelId?: string;
 
-  async getErrandDescriptions(): Promise<ErrandDescription[]> {
-    return await getErrandDescriptions()
+  async getLevelMetadata(): Promise<LevelMetadata[]> {
+    return await getLevelMetadata()
   }
 
-  goToErrand(errandId: string) {
-    this.currentErrandId = errandId;
+  setCurrentLevel(levelId: string) {
+    this.currentLevelId = levelId;
   }
 
   async getCurrentLevel(): Promise<Level> {
 
-    if (this.currentErrandId === undefined) {
-      throw Error("Currently not on errand!");
+    if (this.currentLevelId === undefined) {
+      throw Error("Current level not set!");
     }
 
-    const errand = await getErrand(this.currentErrandId);
+    const levelDescription = await getLevelDescription(this.currentLevelId);
 
-    return new Level(errand);
+    return new Level(levelDescription);
   }
 
-  async setErrand(errand: Errand) {
-    await setErrand(errand);
+  async setLevel(levelDescription: LevelDescription) {
+    await storeLevel(levelDescription);
   }
 
-  async getSelectedErrand(): Promise<Errand | undefined> {
-    return this.currentErrandId ? await getErrand(this.currentErrandId) : undefined;
+  async getSelectedLevelDescription(): Promise<LevelDescription | undefined> {
+    return this.currentLevelId ? await getLevelDescription(this.currentLevelId) : undefined;
   }
 }
 
 export const GAME = new Game();
 
-export function populateEmptyLevelMatrix(dimensions: LevelDimensions): ErrandMatrix {
+export function populateEmptyLevelMatrix(dimensions: LevelDimensions): LevelMatrix {
   if (dimensions.width === 0 || dimensions.height === 0) {
     return [];
   }

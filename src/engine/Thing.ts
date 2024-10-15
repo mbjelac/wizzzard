@@ -1,4 +1,4 @@
-import { ThingDescription } from "./Errand";
+import { ThingDescription } from "./LevelDescription";
 
 export type ThingProperty = ThingPropertyTuple[number];
 

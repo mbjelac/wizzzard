@@ -1,10 +1,10 @@
 import { EditorTool } from "./editor/EditorTool";
-import { ErrandMatrix, ThingDescription } from "./Errand";
+import { LevelMatrix, ThingDescription } from "./LevelDescription";
 import { Thing } from "./Thing";
 
 export class LevelFactory {
 
-  public fromMatrix(...rows: string[]): ErrandMatrix {
+  public fromMatrix(...rows: string[]): LevelMatrix {
     return rows
       .map((row, rowIndex) =>
         [...row]
