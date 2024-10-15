@@ -28,9 +28,9 @@ export default class SpellsGui extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("background", "assets/journal.png");
-    this.load.image("closeLeft", "assets/journal_close_left.png");
-    this.load.image("closeRight", "assets/journal_close_right.png");
+    this.load.image("background", "assets/spellbook.png");
+    this.load.image("closeLeft", "assets/spellbook_close_left.png");
+    this.load.image("closeRight", "assets/spellbook_close_right.png");
 
     this.load.bitmapFont('blackRobotoMicro', 'assets/fonts/roboto-micro.png', 'assets/fonts/roboto-micro.xml');
 
