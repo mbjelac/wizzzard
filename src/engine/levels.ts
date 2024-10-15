@@ -48,8 +48,23 @@ const levels: LevelDescription[] = [
       inventory: ["someLabel"],
       receives: []
     },
-    texts: {
-    }
+    texts: {}
+  },
+  {
+    metadata: {
+      id: "strength",
+      title: "Strength",
+      description: "You feel you can push heavy stone blocks. It doesn't look like the feeling lasts long.",
+      type: "ritual"
+    },
+    levelDimensions: { width: 11, height: 11 },
+    texts: {},
+    completionCriteria: {
+      inventory: ["vialOfStrength"],
+      receives: []
+    },
+    matrix: [],
+    startCoords: { x: 0, y: 0 }
   }
 ];
 
