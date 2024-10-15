@@ -9,6 +9,7 @@ import { Button } from "../widgets/Button";
 import depths from "../level/depths";
 import { getMapPlaceDescriptionAt } from "./place-descriptions";
 import Sprite = Phaser.Physics.Arcade.Sprite;
+import { SceneId } from "../scene-ids";
 
 const stretchCoefficient = 4;
 const coordinateSystemCoefficient = 8;
@@ -106,7 +107,11 @@ export default class MapGui extends Phaser.Scene {
     this.add
     .sprite(120, 42, "spellBook")
     .setDepth(depths.decorations)
-    .setDisplaySize(60 * 4, 37 * 4);
+    .setDisplaySize(60 * 4, 37 * 4)
+    .setInteractive()
+    .on("pointerup", ()=> {
+      this.scene.switch(SceneId.SPELLS);
+    });
 
     mapTiles.tiles.forEach((row, y) => {
       row.forEach((mapTile, x) => {
