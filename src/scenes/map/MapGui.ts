@@ -8,8 +8,8 @@ import { errandMarkersConfigs } from "./errand-markers-configs";
 import { Button } from "../widgets/Button";
 import depths from "../level/depths";
 import { getMapPlaceDescriptionAt } from "./place-descriptions";
-import Sprite = Phaser.Physics.Arcade.Sprite;
 import { SceneId } from "../scene-ids";
+import Sprite = Phaser.Physics.Arcade.Sprite;
 
 const stretchCoefficient = 4;
 const coordinateSystemCoefficient = 8;
@@ -109,7 +109,7 @@ export default class MapGui extends Phaser.Scene {
     .setDepth(depths.decorations)
     .setDisplaySize(60 * 4, 37 * 4)
     .setInteractive()
-    .on("pointerup", ()=> {
+    .on("pointerup", () => {
       this.scene.switch(SceneId.SPELLS);
     });
 
@@ -134,8 +134,7 @@ export default class MapGui extends Phaser.Scene {
       .setVisible(false),
       goButton: new Button(),
       image: this.add
-      .sprite(990, 216, "woodenDog")
-      .setDisplaySize(66 * 4, 66 * 4)
+      .sprite(990, 216, "")
       .setVisible(false)
     };
 
@@ -250,7 +249,11 @@ export default class MapGui extends Phaser.Scene {
 
     this.errandDescriptionWidget.title.setText(metadata.title).setVisible(true);
     this.errandDescriptionWidget.page.setText(metadata.description).setVisible(true);
-    this.errandDescriptionWidget.image.setTexture(metadata.id).setVisible(true);
+    this.errandDescriptionWidget
+    .image
+    .setTexture(metadata.id)
+    .setDisplaySize(66 * 4, 66 * 4)
+    .setVisible(true);
 
     this.errandDescriptionWidget.goButton.show(
       { x: 990, y: 760 },
