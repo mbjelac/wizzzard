@@ -144,5 +144,9 @@ export default class SpellsGui extends Phaser.Scene {
     this.spellPage.name.setText(metadata.title);
     this.spellPage.name.setX(210 * 4 - this.spellPage.name.getTextBounds().global.width / 2);
     this.spellPage.description.setText(metadata.description);
+    this.spellPage.researchButton.show({ x: 210 * 4, y: 180 * 4 }, "Research", () => {
+      GAME.setCurrentLevel(metadata.id);
+      this.scene.switch(SceneId.LEVEL);
+    });
   }
 }
