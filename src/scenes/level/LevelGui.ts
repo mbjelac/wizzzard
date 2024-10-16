@@ -11,6 +11,7 @@ import { ButtonConfig, DialogBox } from "../widgets/DialogBox";
 import toPixelCoords from "./toPixelCoords";
 import { ALL_THING_PROPERTIES, Thing } from "../../engine/Thing";
 import { VariantTiles } from "./VariantTiles";
+import { SceneId } from "../scene-ids";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
 
@@ -326,7 +327,11 @@ export default class LevelGui extends Phaser.Scene {
   }
 
   private exitLevel() {
-    this.scene.switch("errands");
+    this.scene.switch(
+      this.level.levelDescription.metadata.type === "errand"
+        ? SceneId.ERRANDS
+        : SceneId.SPELLS
+    );
   }
 
   update(time: number, delta: number) {
