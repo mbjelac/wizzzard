@@ -105,7 +105,7 @@ export default class MapGui extends Phaser.Scene {
     .setDisplaySize(screenWidth, screenHeight);
 
     this.add
-    .sprite(120, 18, "spellBook")
+    .sprite(-20, 0, "spellBook")
     .setDepth(depths.decorations)
     .setDisplaySize(60 * 4, 37 * 4)
     .setInteractive()
