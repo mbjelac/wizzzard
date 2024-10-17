@@ -1,4 +1,4 @@
-import { LevelEditor } from "./editor/LevelEditor";
+import { LevelEditor } from "../editor/LevelEditor";
 import { Direction } from "./Direction";
 import { Coords, LevelDescription, LevelMatrix } from "./LevelDescription";
 import { SavedThing, Thing, ThingProperty } from "./Thing";

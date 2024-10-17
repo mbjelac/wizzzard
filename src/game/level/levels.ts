@@ -1,5 +1,5 @@
 import { LevelDescription, LevelMetadata } from "./LevelDescription";
-import { populateEmptyLevelMatrix } from "./game";
+import { populateEmptyLevelMatrix } from "../game";
 
 const levels: LevelDescription[] = [
   {

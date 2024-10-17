@@ -1,5 +1,5 @@
 import { SpellBook, SpellStatus } from "./SpellBook";
-import { SpellRequirement, SpellRequirements, spellRequirementsBySpellId } from "../scenes/spells/spell-requirements";
+import { SpellRequirement, SpellRequirements, spellRequirementsBySpellId } from "./spell-requirements";
 
 const ALL_SPELL_IDS = [...spellRequirementsBySpellId.keys()];
 

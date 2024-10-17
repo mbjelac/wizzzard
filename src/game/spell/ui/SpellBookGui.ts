@@ -1,10 +1,10 @@
 import Phaser from 'phaser';
-import { screen } from "../../config";
-import { GAME } from "../../engine/game";
-import depths from "../level/depths";
-import { Button } from "../widgets/Button";
-import { SceneId } from "../scene-ids";
-import { LevelMetadata } from "../../engine/LevelDescription";
+import { screen } from "../../../config";
+import { GAME } from "../../game";
+import depths from "../../level/ui/depths";
+import { Button } from "../../../utils/widgets/Button";
+import { SceneId } from "../../../utils/scene-ids";
+import { LevelMetadata } from "../../level/LevelDescription";
 import Rectangle = Phaser.Geom.Rectangle;
 
 interface SpellPage {
@@ -18,7 +18,7 @@ interface SpellListItem {
   name: Phaser.GameObjects.BitmapText
 }
 
-export default class SpellsGui extends Phaser.Scene {
+export default class SpellBookGui extends Phaser.Scene {
 
   private spellListItems: SpellListItem[] = [];
 

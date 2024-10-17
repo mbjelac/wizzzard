@@ -1,5 +1,5 @@
 import { LevelLocation, LevelMatrix, LevelDimensions } from "./LevelDescription";
-import { populateEmptyLevelMatrix } from "./game";
+import { populateEmptyLevelMatrix } from "../game";
 
 describe("non-positive dimensions level produces empty matrix", () => {
   it.each<LevelDimensions>([

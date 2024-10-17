@@ -1,5 +1,5 @@
-import depths from "../level/depths";
-import { Coords } from "../../engine/LevelDescription";
+import depths from "../../game/level/ui/depths";
+import { Coords } from "../../game/level/LevelDescription";
 import { Scene } from "phaser";
 import Pointer = Phaser.Input.Pointer;
 

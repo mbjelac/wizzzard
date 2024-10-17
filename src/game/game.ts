@@ -1,6 +1,6 @@
-import { LevelDescription, LevelMetadata, LevelMatrix, LevelDimensions } from "./LevelDescription";
-import { Level } from "./Level";
-import { getLevelDescription, getLevelMetadata, storeLevel } from "./levels";
+import { LevelDescription, LevelMetadata, LevelMatrix, LevelDimensions } from "./level/LevelDescription";
+import { Level } from "./level/Level";
+import { getLevelDescription, getLevelMetadata, storeLevel } from "./level/levels";
 
 export class Game {
 

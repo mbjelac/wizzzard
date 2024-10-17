@@ -1,4 +1,4 @@
-import { Coords } from "../../engine/LevelDescription";
+import { Coords } from "../level/LevelDescription";
 
 export interface SpellRequirements {
   readonly requirements: SpellRequirement[];

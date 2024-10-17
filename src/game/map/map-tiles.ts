@@ -1,5 +1,5 @@
 import { map } from "./map";
-import { Coords } from "../../engine/LevelDescription";
+import { Coords } from "../level/LevelDescription";
 
 const tileSetWidth = 25;
 

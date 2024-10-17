@@ -1,5 +1,5 @@
-import { Coords } from "../../engine/LevelDescription";
-import { TILE_SIZE, tileCenterOffset } from "../../config";
+import { Coords } from "../LevelDescription";
+import { TILE_SIZE, tileCenterOffset } from "../../../config";
 
 function toPixelCoords(coords: Coords): Coords {
   return {

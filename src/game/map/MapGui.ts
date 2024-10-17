@@ -1,14 +1,14 @@
 import Phaser from 'phaser';
-import { Coords, LevelMetadata } from "../../engine/LevelDescription";
-import { GAME } from "../../engine/game";
+import { Coords, LevelMetadata } from "../level/LevelDescription";
+import { GAME } from "../game";
 import config from "../../config";
-import { DialogBox } from "../widgets/DialogBox";
+import { DialogBox } from "../../utils/widgets/DialogBox";
 import { MapTile, mapTiles } from "./map-tiles";
 import { errandMarkersConfigs } from "./errand-markers-configs";
-import { Button } from "../widgets/Button";
-import depths from "../level/depths";
+import { Button } from "../../utils/widgets/Button";
+import depths from "../level/ui/depths";
 import { getMapPlaceDescriptionAt } from "./place-descriptions";
-import { SceneId } from "../scene-ids";
+import { SceneId } from "../../utils/scene-ids";
 import Sprite = Phaser.Physics.Arcade.Sprite;
 
 const stretchCoefficient = 4;

@@ -1,4 +1,4 @@
-import { Coords, locationsSame } from "../../engine/LevelDescription";
+import { Coords, locationsSame } from "../level/LevelDescription";
 
 const mapPlaceDescriptions: [Coords[], string][] = [
   [[{ x: 14, y: 5 }], "Eva the herbalist's house"],

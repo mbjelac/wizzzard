@@ -1,6 +1,6 @@
-import { LevelLocation } from "../Level";
-import { ThingDescription } from "../LevelDescription";
-import { Thing } from "../Thing";
+import { LevelLocation } from "../level/Level";
+import { ThingDescription } from "../level/LevelDescription";
+import { Thing } from "../level/Thing";
 
 export interface AddResult {
   addedThing?: Thing

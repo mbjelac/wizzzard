@@ -1,9 +1,9 @@
-import { loadEditorPanel } from "./scenes/level/editor-panel";
+import { loadEditorPanel } from "./game/level/ui/editor-panel";
 import Phaser from "phaser";
 import config from "./config";
-import MapGui from "./scenes/map/MapGui";
-import LevelGui from "./scenes/level/LevelGui";
-import SpellsGui from "./scenes/spells/SpellsGui";
+import MapGui from "./game/map/MapGui";
+import LevelGui from "./game/level/ui/LevelGui";
+import SpellBookGui from "./game/spell/ui/SpellBookGui";
 
 loadEditorPanel();
 
@@ -12,7 +12,7 @@ new Phaser.Game(
     scene: [
       MapGui,
       LevelGui,
-      SpellsGui
+      SpellBookGui
     ]
   })
 );

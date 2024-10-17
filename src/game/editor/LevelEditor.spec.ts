@@ -1,6 +1,6 @@
 import { LevelEditor } from "./LevelEditor";
-import { LevelLocation } from "../Level";
-import { ThingDescription } from "../LevelDescription";
+import { LevelLocation } from "../level/Level";
+import { ThingDescription } from "../level/LevelDescription";
 
 let editor: LevelEditor;
 

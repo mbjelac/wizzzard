@@ -1,7 +1,7 @@
 import { Level, LevelLocation, MoveResult } from "./Level";
 import { createThingProps, LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
-import { EditorTool } from "./editor/EditorTool";
+import { EditorTool } from "../editor/EditorTool";
 import { Coords, LevelDescription, ThingDescription } from "./LevelDescription";
 import { ALL_THING_PROPERTIES, SavedThing, Thing, ThingProperty } from "./Thing";
 

@@ -1,4 +1,4 @@
-import { Coords } from "../../engine/LevelDescription";
+import { Coords } from "../LevelDescription";
 import { SpriteConfig } from "./sprites";
 
 export class VariantTiles {

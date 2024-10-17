@@ -1,4 +1,4 @@
-import { EditorTool } from "./editor/EditorTool";
+import { EditorTool } from "../editor/EditorTool";
 import { LevelMatrix, ThingDescription } from "./LevelDescription";
 import { Thing } from "./Thing";
 

@@ -1,4 +1,4 @@
-import { Coords } from "../../engine/LevelDescription";
+import { Coords } from "../LevelDescription";
 
 export interface SpriteConfig {
   tileCoords: Coords;

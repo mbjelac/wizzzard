@@ -1,4 +1,4 @@
-import { spellRequirementsBySpellId } from "../scenes/spells/spell-requirements";
+import { spellRequirementsBySpellId } from "./spell-requirements";
 
 export type SpellStatus = "COLLECTING_REQUIREMENTS" | "ALL_REQUIREMENTS_COLLECTED" | "RESEARCHED";
 

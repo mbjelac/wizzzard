@@ -1,17 +1,17 @@
 import Phaser from 'phaser';
-import { Level, LevelLocation } from "../../engine/Level";
-import { Direction } from "../../engine/Direction";
-import { TILE_SIZE, tileCenterOffset } from "../../config";
-import { GAME } from "../../engine/game";
-import { Coords, LevelDescription, ThingDescription } from "../../engine/LevelDescription";
+import { Level, LevelLocation } from "../Level";
+import { Direction } from "../Direction";
+import { TILE_SIZE, tileCenterOffset } from "../../../config";
+import { GAME } from "../../game";
+import { Coords, LevelDescription, ThingDescription } from "../LevelDescription";
 import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION } from "./sprites";
 import { clearLabelText, getLabelText } from "./editor-panel";
 import depths from "./depths";
-import { ButtonConfig, DialogBox } from "../widgets/DialogBox";
+import { ButtonConfig, DialogBox } from "../../../utils/widgets/DialogBox";
 import toPixelCoords from "./toPixelCoords";
-import { ALL_THING_PROPERTIES, Thing } from "../../engine/Thing";
+import { ALL_THING_PROPERTIES, Thing } from "../Thing";
 import { VariantTiles } from "./VariantTiles";
-import { SceneId } from "../scene-ids";
+import { SceneId } from "../../../utils/scene-ids";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
 

@@ -1,6 +1,6 @@
 import { SPRITE_CONFIGS, SPRITE_CONFIGS_BY_LOCATION, SpriteConfig } from "./sprites";
 
-import { ALL_THING_PROPERTIES } from "../../engine/Thing";
+import { ALL_THING_PROPERTIES } from "../Thing";
 
 const spriteSelectionPanel: HTMLElement = document.getElementById("editor-sprites")!;
 const propertiesOptionsPanel: HTMLElement = document.getElementById("editor-properties")!;
