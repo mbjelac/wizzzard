@@ -586,7 +586,7 @@ export const SPRITE_CONFIGS = {
       },
     },
     lifeCrystal: spriteConfig({
-      coords: { x: 0, y: 30},
+      coords: { x: 0, y: 30 },
       animation: {
         frameCount: 4,
         framesPerSecond: 4

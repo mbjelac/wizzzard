@@ -15,10 +15,10 @@ export const spellRequirementsBySpellId = new Map<string, SpellRequirements>()
   "strength",
   {
     requirements: [
-      { label: "speenAach", name: "Speen-Aach plant", spriteLocation: { x: 0, y: 0 } },
-      { label: "splendidWater", name: "Vial of Splendid Water", spriteLocation: { x: 0, y: 0 } },
-      { label: "lifeCrystal", name: "Crystal of Life", spriteLocation: { x: 0, y: 0 } },
-      { label: "speenAachBook", name: "Speen-Aach growing manual", spriteLocation: { x: 0, y: 0 } },
+      { label: "speenAach", name: "Speen-Aach plant", spriteLocation: { x: 2, y: 29 } },
+      { label: "splendidWater", name: "Vial of Splendid Water", spriteLocation: { x: 3, y: 19 } },
+      { label: "lifeCrystal", name: "Crystal of Life", spriteLocation: { x: 0, y: 30 } },
+      { label: "speenAachBook", name: "Speen-Aach growing manual", spriteLocation: { x: 1, y: 29 } },
     ]
   }
 );

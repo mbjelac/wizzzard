@@ -6,8 +6,10 @@ import { Button } from "../../../utils/widgets/Button";
 import { SceneId } from "../../../utils/scene-ids";
 import { Coords, LevelMetadata } from "../../level/LevelDescription";
 import { BitmapFonts } from "../../../utils/BitmapFonts";
-import Rectangle = Phaser.Geom.Rectangle;
 import { spellRequirementsBySpellId } from "../spell-requirements";
+import Rectangle = Phaser.Geom.Rectangle;
+import { getSpriteFrameIndex } from "../../level/ui/LevelGui";
+
 
 interface SpellListItem {
   readonly description: LevelMetadata;
@@ -16,7 +18,7 @@ interface SpellListItem {
 
 interface SpellRequirementItem {
   readonly name: Phaser.GameObjects.BitmapText;
-  readonly image: Phaser.GameObjects.Sprite;
+  readonly image: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
 }
 
 export default class SpellBookGui extends Phaser.Scene {
@@ -29,6 +31,8 @@ export default class SpellBookGui extends Phaser.Scene {
   private spellRequirementItems!: SpellRequirementItem[];
   private readonly researchButton = new Button();
 
+  private readonly tileset = "tileset";
+
   constructor() {
     super(SceneId.SPELLS);
   }
@@ -37,6 +41,7 @@ export default class SpellBookGui extends Phaser.Scene {
     this.load.image("background", "assets/spellbook.png");
     this.load.image("closeLeft", "assets/spellbook_close_left.png");
     this.load.image("closeRight", "assets/spellbook_close_right.png");
+    this.load.spritesheet(this.tileset, "assets/tileset.png", { frameWidth: 16, frameHeight: 16 });
 
     BitmapFonts.getInstance().loadFonts(this);
 
@@ -71,13 +76,15 @@ export default class SpellBookGui extends Phaser.Scene {
 
     this.spellRequirementItems = Array(10).fill(0).map((_, index) => ({
       name: this.add
-      .bitmapText(166 * 4, 126 * 4 + index * 34, "blackRobotoMicro", "")
+      .bitmapText(169 * 4, 123 * 4 + index * 58, "blackRobotoMicro", "")
       .setMaxWidth(430)
       .setScale(4)
       .setDepth(depths.info)
       .setVisible(true),
       image: this.physics.add
-      .sprite(156 * 4, 126 * 4 + index * 36, "")
+      .sprite(162 * 4, 126 * 4 + index * 58, this.tileset, 0)
+      .setDisplaySize(64, 64)
+      .setDepth(depths.info)
       .setVisible(false)
     }));
 
@@ -196,10 +203,10 @@ export default class SpellBookGui extends Phaser.Scene {
 
     const requirements = spellRequirementsBySpellId.get(metadata.id)!;
 
-    requirements.requirements.forEach((requirement, index)=> {
+    requirements.requirements.forEach((requirement, index) => {
       const item = this.spellRequirementItems[index];
       item.name.setText(requirement.name);
-      item.image.setFrame(0);
+      item.image.setFrame(getSpriteFrameIndex(requirement.spriteLocation));
       item.image.setVisible(true);
     });
 

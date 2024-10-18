@@ -803,7 +803,7 @@ function setEditorInfo(text: string) {
   (document.getElementById("editor-info-panel")! as HTMLInputElement).textContent = text;
 }
 
-function getSpriteFrameIndex(tileCoords: Coords): number {
+export function getSpriteFrameIndex(tileCoords: Coords): number {
   const tileSetWidth = 40;
   return tileCoords.y * tileSetWidth + tileCoords.x;
 }
