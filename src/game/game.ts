@@ -1,10 +1,13 @@
 import { LevelDescription, LevelMetadata, LevelMatrix, LevelDimensions } from "./level/LevelDescription";
 import { Level } from "./level/Level";
 import { getLevelDescription, getLevelMetadata, storeLevel } from "./level/levels";
+import { SpellBook } from "./spell/SpellBook";
 
 export class Game {
 
   private currentLevelId?: string;
+
+  readonly spellBook = new SpellBook();
 
   async getLevelMetadata(): Promise<LevelMetadata[]> {
     return await getLevelMetadata()

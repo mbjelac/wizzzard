@@ -7,8 +7,9 @@ import { SceneId } from "../../../utils/scene-ids";
 import { Coords, LevelMetadata } from "../../level/LevelDescription";
 import { BitmapFonts } from "../../../utils/BitmapFonts";
 import { spellRequirementsBySpellId } from "../spell-requirements";
-import Rectangle = Phaser.Geom.Rectangle;
 import { getSpriteFrameIndex } from "../../level/ui/LevelGui";
+import Rectangle = Phaser.Geom.Rectangle;
+import Sprite = Phaser.GameObjects.Sprite;
 
 
 interface SpellListItem {
@@ -19,6 +20,7 @@ interface SpellListItem {
 interface SpellRequirementItem {
   readonly name: Phaser.GameObjects.BitmapText;
   readonly image: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  readonly strikethrough: Sprite;
 }
 
 export default class SpellBookGui extends Phaser.Scene {
@@ -31,6 +33,7 @@ export default class SpellBookGui extends Phaser.Scene {
   private readonly researchButton = new Button();
 
   private readonly tileset = "tileset";
+  private readonly strikethrough = "strikethrough";
 
   constructor() {
     super(SceneId.SPELLS);
@@ -40,6 +43,7 @@ export default class SpellBookGui extends Phaser.Scene {
     this.load.image("background", "assets/spellbook.png");
     this.load.image("closeLeft", "assets/spellbook_close_left.png");
     this.load.image("closeRight", "assets/spellbook_close_right.png");
+    this.load.image(this.strikethrough, "assets/spellbook_strikethrough.png");
     this.load.spritesheet(this.tileset, "assets/tileset.png", { frameWidth: 16, frameHeight: 16 });
 
     BitmapFonts.getInstance().loadFonts(this);
@@ -77,6 +81,11 @@ export default class SpellBookGui extends Phaser.Scene {
       .sprite(162 * 4, 98 * 4 + index * 58, this.tileset, 0)
       .setDisplaySize(64, 64)
       .setDepth(depths.info)
+      .setVisible(false),
+      strikethrough: this.add
+      .sprite(162 * 4, 98 * 4 - 2 + index * 58, this.strikethrough)
+      .setDepth(depths.info)
+      .setDisplaySize(64, 4)
       .setVisible(false)
     }));
 
@@ -144,6 +153,7 @@ export default class SpellBookGui extends Phaser.Scene {
     this.spellRequirementItems.forEach(item => {
       item.name.setText("");
       item.image.setVisible(false);
+      item.strikethrough.setVisible(false);
     })
 
     this.spellListItems.forEach(item => item.name.destroy(true));
@@ -197,6 +207,15 @@ export default class SpellBookGui extends Phaser.Scene {
       item.name.setText(requirement.name);
       item.image.setFrame(getSpriteFrameIndex(requirement.spriteLocation));
       item.image.setVisible(true);
+
+      const textWidth = item.name.getTextBounds(true).global.width;
+
+      if (GAME.spellBook.isRequirementForSpellPresent(requirement.label)) {
+        item.strikethrough
+        .setX(163 * 4 + textWidth / 2)
+        .setDisplaySize(64 + textWidth, 4)
+        .setVisible(true);
+      }
     });
 
     this.researchButton.show({ x: 210 * 4, y: 180 * 4 }, "Research", () => {
