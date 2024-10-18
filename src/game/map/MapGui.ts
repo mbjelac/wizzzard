@@ -10,6 +10,7 @@ import depths from "../level/ui/depths";
 import { getMapPlaceDescriptionAt } from "./place-descriptions";
 import { SceneId } from "../../utils/scene-ids";
 import Sprite = Phaser.Physics.Arcade.Sprite;
+import { BitmapFonts } from "../../utils/BitmapFonts";
 
 const stretchCoefficient = 4;
 const coordinateSystemCoefficient = 8;
@@ -58,9 +59,7 @@ export default class MapGui extends Phaser.Scene {
     this.load.image("woodenDog", "assets/errand_images/woodenDog-transparent.png");
 
 
-    this.load.bitmapFont("unnamed", "assets/fonts/Unnamed.png", "assets/fonts/Unnamed.xml");
-    this.load.bitmapFont("redRobotoSmall", "assets/fonts/red-roboto-small.png", "assets/fonts/roboto-small.xml");
-    this.load.bitmapFont('blackRobotoMicro', 'assets/fonts/roboto-micro.png', 'assets/fonts/roboto-micro.xml');
+    BitmapFonts.getInstance().loadFonts(this);
 
 
     this.events.on("create", async () => this.sceneActive());

@@ -4,25 +4,30 @@ import { GAME } from "../../game";
 import depths from "../../level/ui/depths";
 import { Button } from "../../../utils/widgets/Button";
 import { SceneId } from "../../../utils/scene-ids";
-import { LevelMetadata } from "../../level/LevelDescription";
+import { Coords, LevelMetadata } from "../../level/LevelDescription";
+import { BitmapFonts } from "../../../utils/BitmapFonts";
 import Rectangle = Phaser.Geom.Rectangle;
-
-interface SpellPage {
-  readonly name: Phaser.GameObjects.BitmapText;// @ts-ignore
-  readonly description: Phaser.GameObjects.BitmapText;
-  readonly researchButton: Button;
-}
+import { spellRequirementsBySpellId } from "../spell-requirements";
 
 interface SpellListItem {
-  description: LevelMetadata,
-  name: Phaser.GameObjects.BitmapText
+  readonly description: LevelMetadata;
+  readonly name: Phaser.GameObjects.BitmapText;
+}
+
+interface SpellRequirementItem {
+  readonly name: Phaser.GameObjects.BitmapText;
+  readonly image: Phaser.GameObjects.Sprite;
 }
 
 export default class SpellBookGui extends Phaser.Scene {
 
   private spellListItems: SpellListItem[] = [];
 
-  private spellPage!: SpellPage
+  private spellName!: Phaser.GameObjects.BitmapText;// @ts-ignore
+  private spellDescription!: Phaser.GameObjects.BitmapText;
+  private spellUsage!: Phaser.GameObjects.BitmapText;
+  private spellRequirementItems!: SpellRequirementItem[];
+  private readonly researchButton = new Button();
 
   constructor() {
     super(SceneId.SPELLS);
@@ -33,31 +38,49 @@ export default class SpellBookGui extends Phaser.Scene {
     this.load.image("closeLeft", "assets/spellbook_close_left.png");
     this.load.image("closeRight", "assets/spellbook_close_right.png");
 
-    this.load.bitmapFont('blackRobotoMicro', 'assets/fonts/roboto-micro.png', 'assets/fonts/roboto-micro.xml');
-
-    this.spellPage = {
-      name: this.add
-      .bitmapText(200 * 4, 14 * 4, "blackRobotoMicro", "")
-      .setMaxWidth(300)
-      .setScale(4)
-      .setDepth(depths.info)
-      .setVisible(true),
-      description: this.add
-      .bitmapText(152 * 4, 40 * 4, "blackRobotoMicro", "")
-      .setMaxWidth(480)
-      .setScale(4)
-      .setDepth(depths.info)
-      .setVisible(true),
-      researchButton: new Button()
-    }
-
-    this.spellPage.researchButton.preload(this);
+    BitmapFonts.getInstance().loadFonts(this);
 
     this.events.on("create", async () => this.displayContent());
     this.events.on("wake", async () => await this.displayContent());
+
+    this.researchButton.preload(this);
   }
 
   create() {
+
+    this.spellName = this.add
+    .bitmapText(156 * 4, 26 * 4, "blackRobotoMicro", "")
+    .setMaxWidth(440)
+    .setScale(4)
+    .setDepth(depths.info)
+    .setVisible(true);
+
+    this.spellDescription = this.add
+    .bitmapText(156 * 4, 47 * 4, "blackRobotoMicro", "")
+    .setMaxWidth(440)
+    .setScale(4)
+    .setDepth(depths.info)
+    .setVisible(true);
+
+    this.spellUsage = this.add
+    .bitmapText(156 * 4, 86 * 4, "blackRobotoMicro", "")
+    .setMaxWidth(440)
+    .setScale(4)
+    .setDepth(depths.info)
+    .setVisible(true);
+
+    this.spellRequirementItems = Array(10).fill(0).map((_, index) => ({
+      name: this.add
+      .bitmapText(166 * 4, 126 * 4 + index * 34, "blackRobotoMicro", "")
+      .setMaxWidth(430)
+      .setScale(4)
+      .setDepth(depths.info)
+      .setVisible(true),
+      image: this.physics.add
+      .sprite(156 * 4, 126 * 4 + index * 36, "")
+      .setVisible(false)
+    }));
+
     this.physics.add
     .sprite(screen.center.x, screen.center.y, "background")
     .setDisplaySize(screen.size.width, screen.size.height);
@@ -78,7 +101,7 @@ export default class SpellBookGui extends Phaser.Scene {
       this.scene.switch("errands")
     });
 
-    this.spellPage.researchButton.create(this);
+    this.researchButton.create(this);
 
     this.input.keyboard.on('keydown', async (event: KeyboardEvent) => {
 
@@ -87,6 +110,26 @@ export default class SpellBookGui extends Phaser.Scene {
         return;
       }
     });
+
+    this.addTitleTexts();
+
+  }
+
+  private addTitleTexts() {
+    this.addTitleText({ x: 55, y: 23 }, "My magicks");
+    this.addTitleText({ x: 155, y: 18 }, "Name");
+    this.addTitleText({ x: 155, y: 39 }, "Description");
+    this.addTitleText({ x: 155, y: 78 }, "Usage");
+    this.addTitleText({ x: 155, y: 117 }, "Requirements");
+  }
+
+  private addTitleText(coords: Coords, text: string) {
+    this.add
+    .bitmapText(coords.x * 4, coords.y * 4, "blackRobotoMicro", text)
+    .setMaxWidth(300)
+    .setScale(4)
+    .setDepth(depths.info)
+    .setVisible(true)
   }
 
   private async displayContent() {
@@ -96,9 +139,15 @@ export default class SpellBookGui extends Phaser.Scene {
   }
 
   private clearContent() {
-    this.spellPage.name.setText("");
-    this.spellPage.description.setText("");
-    this.spellPage.researchButton.hide();
+    this.spellName.setText("");
+    this.spellDescription.setText("");
+    this.spellUsage.setText("");
+    this.researchButton.hide();
+
+    this.spellRequirementItems.forEach(item => {
+      item.name.setText("");
+      item.image.setVisible(false);
+    })
 
     this.spellListItems.forEach(item => item.name.destroy(true));
     this.spellListItems.length = 0;
@@ -119,7 +168,7 @@ export default class SpellBookGui extends Phaser.Scene {
       description: metadata,
       name: this
       .add
-      .bitmapText(20 * 4, 12 * 4 + index * 36, "blackRobotoMicro", metadata.title)
+      .bitmapText(30 * 4, 30 * 4 + index * 40, "blackRobotoMicro", metadata.title)
       .setMaxWidth(100)
       .setScale(4)
       .setDepth(depths.info)
@@ -141,10 +190,20 @@ export default class SpellBookGui extends Phaser.Scene {
   }
 
   private displaySpellPage(metadata: LevelMetadata) {
-    this.spellPage.name.setText(metadata.title);
-    this.spellPage.name.setX(210 * 4 - this.spellPage.name.getTextBounds().global.width / 2);
-    this.spellPage.description.setText(metadata.description);
-    this.spellPage.researchButton.show({ x: 210 * 4, y: 180 * 4 }, "Research", () => {
+    this.spellName.setText(metadata.title);
+    this.spellDescription.setText(metadata.description);
+    this.spellUsage.setText(metadata.usage!);
+
+    const requirements = spellRequirementsBySpellId.get(metadata.id)!;
+
+    requirements.requirements.forEach((requirement, index)=> {
+      const item = this.spellRequirementItems[index];
+      item.name.setText(requirement.name);
+      item.image.setFrame(0);
+      item.image.setVisible(true);
+    });
+
+    this.researchButton.show({ x: 210 * 4, y: 180 * 4 }, "Research", () => {
       GAME.setCurrentLevel(metadata.id);
       this.scene.switch(SceneId.LEVEL);
     });

@@ -55,7 +55,8 @@ const levels: LevelDescription[] = [
       id: "strength",
       title: "Strength",
       description: "You feel you can push heavy stone blocks. It doesn't look like the feeling lasts long.",
-      type: "ritual"
+      type: "ritual",
+      usage: "Select with TAB\nActivate with SPACE\nDuration: 20 moves"
     },
     levelDimensions: { width: 11, height: 11 },
     texts: {},
@@ -71,7 +72,8 @@ const levels: LevelDescription[] = [
       id: "waterbreathing",
       title: "Waterbreathing",
       description: "You can breathe under water. This means you can not drown.\n\nThere is much to explore under water, but beware of the spell duration!",
-      type: "ritual"
+      type: "ritual",
+      usage: ""
     },
     levelDimensions: { width: 11, height: 11 },
     texts: {},

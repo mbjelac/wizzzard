@@ -14,6 +14,7 @@ import { VariantTiles } from "./VariantTiles";
 import { SceneId } from "../../../utils/scene-ids";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
+import { BitmapFonts } from "../../../utils/BitmapFonts";
 
 const animation1 = "animation1";
 const animation2 = "animation2";
@@ -68,6 +69,8 @@ export default class LevelGui extends Phaser.Scene {
   preload() {
 
     this.dialogBox.preload(this);
+
+    BitmapFonts.getInstance().loadFonts(this);
 
     this.load.spritesheet(this.tilesetName, "assets/tileset.png", { frameWidth: 16, frameHeight: 16 });
     this.load.image("panel", "assets/panel.png");
