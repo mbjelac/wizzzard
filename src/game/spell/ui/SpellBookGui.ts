@@ -27,7 +27,6 @@ export default class SpellBookGui extends Phaser.Scene {
 
   private spellName!: Phaser.GameObjects.BitmapText;// @ts-ignore
   private spellDescription!: Phaser.GameObjects.BitmapText;
-  private spellUsage!: Phaser.GameObjects.BitmapText;
   private spellRequirementItems!: SpellRequirementItem[];
   private readonly researchButton = new Button();
 
@@ -67,22 +66,15 @@ export default class SpellBookGui extends Phaser.Scene {
     .setDepth(depths.info)
     .setVisible(true);
 
-    this.spellUsage = this.add
-    .bitmapText(156 * 4, 86 * 4, "blackRobotoMicro", "")
-    .setMaxWidth(440)
-    .setScale(4)
-    .setDepth(depths.info)
-    .setVisible(true);
-
     this.spellRequirementItems = Array(10).fill(0).map((_, index) => ({
       name: this.add
-      .bitmapText(169 * 4, 123 * 4 + index * 58, "blackRobotoMicro", "")
+      .bitmapText(169 * 4, 94 * 4 + index * 58, "blackRobotoMicro", "")
       .setMaxWidth(430)
       .setScale(4)
       .setDepth(depths.info)
       .setVisible(true),
       image: this.physics.add
-      .sprite(162 * 4, 126 * 4 + index * 58, this.tileset, 0)
+      .sprite(162 * 4, 98 * 4 + index * 58, this.tileset, 0)
       .setDisplaySize(64, 64)
       .setDepth(depths.info)
       .setVisible(false)
@@ -126,8 +118,7 @@ export default class SpellBookGui extends Phaser.Scene {
     this.addTitleText({ x: 55, y: 23 }, "My magicks");
     this.addTitleText({ x: 155, y: 18 }, "Name");
     this.addTitleText({ x: 155, y: 39 }, "Description");
-    this.addTitleText({ x: 155, y: 78 }, "Usage");
-    this.addTitleText({ x: 155, y: 117 }, "Requirements");
+    this.addTitleText({ x: 155, y: 82 }, "Requirements");
   }
 
   private addTitleText(coords: Coords, text: string) {
@@ -148,7 +139,6 @@ export default class SpellBookGui extends Phaser.Scene {
   private clearContent() {
     this.spellName.setText("");
     this.spellDescription.setText("");
-    this.spellUsage.setText("");
     this.researchButton.hide();
 
     this.spellRequirementItems.forEach(item => {
@@ -199,7 +189,6 @@ export default class SpellBookGui extends Phaser.Scene {
   private displaySpellPage(metadata: LevelMetadata) {
     this.spellName.setText(metadata.title);
     this.spellDescription.setText(metadata.description);
-    this.spellUsage.setText(metadata.usage!);
 
     const requirements = spellRequirementsBySpellId.get(metadata.id)!;
 

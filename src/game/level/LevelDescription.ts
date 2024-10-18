@@ -40,7 +40,6 @@ export interface LevelMetadata {
   readonly title: string,
   readonly description: string
   readonly type: LevelType;
-  readonly usage?: string;
 }
 
 export interface LevelDescription {
