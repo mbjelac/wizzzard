@@ -3,7 +3,7 @@ import { createThingProps, LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
 import { EditorTool } from "../editor/EditorTool";
 import { Coords, LevelDescription, ThingDescription } from "./LevelDescription";
-import { ALL_THING_PROPERTIES, SavedThing, Thing, ThingProperty } from "./Thing";
+import { SavedThing, Thing, ThingProperty } from "./Thing";
 
 let level: Level;
 
@@ -31,24 +31,35 @@ const startCoords: Coords = { x: 1, y: 1 };
 
 const factory = new LevelFactory();
 
+const itemsAddedToGameInventory: string[] = [];
+
+const addToGameInventoryFake: (items: string[]) => void = (items) => itemsAddedToGameInventory.push(...items);
+
 function createLevel(...rows: string[]): Level {
-  return new Level({
-    metadata: {
-      id: "testLevel",
-      description: "",
-      title: "",
-      type: "errand"
+  return new Level(
+    {
+      metadata: {
+        id: "testLevel",
+        description: "",
+        title: "",
+        type: "errand"
+      },
+      texts: {},
+      levelDimensions: { width: rows[0].length, height: rows.length },
+      matrix: factory.fromMatrix(...rows),
+      startCoords: startCoords,
+      completionCriteria: {
+        inventory: ["any"],
+        receives: []
+      }
     },
-    texts: {},
-    levelDimensions: { width: rows[0].length, height: rows.length },
-    matrix: factory.fromMatrix(...rows),
-    startCoords: startCoords,
-    completionCriteria: {
-      inventory: ["any"],
-      receives: []
-    }
-  });
+    addToGameInventoryFake
+  );
 }
+
+beforeEach(() => {
+  itemsAddedToGameInventory.length = 0;
+})
 
 describe("moving", () => {
 
@@ -823,20 +834,23 @@ describe("completing level", () => {
 
   it("complete when both required pickups & receivers done", () => {
 
-    level = new Level({
-      ...dummyLevel,
-      levelDimensions: { width: 3, height: 3 },
-      matrix: factory.fromMatrix(
-        "   ",
-        "   ",
-        "   "
-      ),
-      startCoords: { x: 1, y: 1 },
-      completionCriteria: {
-        inventory: ["label1"],
-        receives: ["label2"]
-      }
-    });
+    level = new Level(
+      {
+        ...dummyLevel,
+        levelDimensions: { width: 3, height: 3 },
+        matrix: factory.fromMatrix(
+          "   ",
+          "   ",
+          "   "
+        ),
+        startCoords: { x: 1, y: 1 },
+        completionCriteria: {
+          inventory: ["label1"],
+          receives: ["label2"]
+        }
+      },
+      addToGameInventoryFake
+    );
 
     addLabelledThing(0, 0, "label1", "pickup");
     addLabelledThing(2, 0, "label2", "pickup");
@@ -865,37 +879,43 @@ describe("completing level", () => {
 
 
   function completionRequiresInventory(...requiredInventory: string[]) {
-    level = new Level({
-      ...dummyLevel,
-      levelDimensions: { width: 3, height: 3 },
-      matrix: factory.fromMatrix(
-        "   ",
-        "   ",
-        "   "
-      ),
-      startCoords: { x: 1, y: 1 },
-      completionCriteria: {
-        inventory: requiredInventory,
-        receives: []
-      }
-    });
+    level = new Level(
+      {
+        ...dummyLevel,
+        levelDimensions: { width: 3, height: 3 },
+        matrix: factory.fromMatrix(
+          "   ",
+          "   ",
+          "   "
+        ),
+        startCoords: { x: 1, y: 1 },
+        completionCriteria: {
+          inventory: requiredInventory,
+          receives: []
+        }
+      },
+      addToGameInventoryFake
+    );
   }
 
   function completionRequiresReceives(...requiredReceives: string[]) {
-    level = new Level({
-      ...dummyLevel,
-      levelDimensions: { width: 3, height: 3 },
-      matrix: factory.fromMatrix(
-        "   ",
-        "   ",
-        "   "
-      ),
-      startCoords: { x: 1, y: 1 },
-      completionCriteria: {
-        inventory: [],
-        receives: requiredReceives
-      }
-    });
+    level = new Level(
+      {
+        ...dummyLevel,
+        levelDimensions: { width: 3, height: 3 },
+        matrix: factory.fromMatrix(
+          "   ",
+          "   ",
+          "   "
+        ),
+        startCoords: { x: 1, y: 1 },
+        completionCriteria: {
+          inventory: [],
+          receives: requiredReceives
+        }
+      },
+      addToGameInventoryFake
+    );
   }
 
   function movementToCompletedFlags(...directions: Direction[]): boolean[] {
@@ -919,6 +939,7 @@ describe("completing level", () => {
     },
   };
 });
+
 describe("reading or listening", () => {
 
   beforeEach(() => {
@@ -1175,7 +1196,7 @@ describe("teleportation", () => {
 
 });
 
-describe("automatic", ()=> {
+describe("automatic", () => {
   it("changes state on move to it's location", () => {
 
     level = createLevel(
@@ -1626,6 +1647,12 @@ describe("remembering stone", () => {
       "pushable",
       "teleport"
     ]);
+  });
+});
+
+describe("game inventory", () => {
+  it("level completion adds all inventory items to game inventory", () => {
+    throw Error("TODO!");
   });
 });
 

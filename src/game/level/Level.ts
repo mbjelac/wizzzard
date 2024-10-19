@@ -61,6 +61,7 @@ export class Level {
 
   constructor(
     public readonly levelDescription: LevelDescription,
+    private readonly addToGameInventory: (items: string[]) => void
   ) {
     this.playerCoords = { ...levelDescription.startCoords };
     this.levelLocations = this
