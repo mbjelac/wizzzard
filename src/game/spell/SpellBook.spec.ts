@@ -1,9 +1,11 @@
 import { SpellBook, SpellStatus } from "./SpellBook";
 import { SpellRequirement, SpellRequirements, spellRequirementsBySpellId } from "./spell-requirements";
+import { Inventory } from "../Inventory";
 
 const ALL_SPELL_IDS = [...spellRequirementsBySpellId.keys()];
 
 let spellBook: SpellBook;
+let knownSpells: Inventory;
 
 const testSpellId = "thisIsATestSpell";
 const testSpellRequirements: SpellRequirements = {
@@ -23,7 +25,9 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  spellBook = new SpellBook();
+  localStorage.clear();
+  knownSpells = new Inventory("spells");
+  spellBook = new SpellBook(new Inventory("items"), knownSpells);
 });
 
 describe("requirements", () => {
@@ -62,7 +66,7 @@ describe("research", () => {
   });
 
   it.each<string>(ALL_SPELL_IDS)("%s spell has been researched", (spellId) => {
-    spellBook.spellResearched(spellId);
+    knownSpells.add(spellId);
     expect(spellBook.getSpellStatus(spellId)).toEqual<SpellStatus>("RESEARCHED");
   });
 });

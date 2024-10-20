@@ -1,13 +1,17 @@
-import { LevelDescription, LevelMetadata, LevelMatrix, LevelDimensions } from "./level/LevelDescription";
+import { LevelDescription, LevelDimensions, LevelMatrix, LevelMetadata } from "./level/LevelDescription";
 import { Level } from "./level/Level";
 import { getLevelDescription, getLevelMetadata, storeLevel } from "./level/levels";
 import { SpellBook } from "./spell/SpellBook";
+import { Inventory } from "./Inventory";
 
 export class Game {
 
   private currentLevelId?: string;
 
   readonly spellBook = new SpellBook();
+
+  readonly items = new Inventory("items");
+  readonly spells = new Inventory("spells");
 
   async getLevelMetadata(): Promise<LevelMetadata[]> {
     return await getLevelMetadata()
@@ -25,7 +29,16 @@ export class Game {
 
     const levelDescription = await getLevelDescription(this.currentLevelId);
 
-    return new Level(levelDescription);
+    return new Level(
+      levelDescription,
+      (items: string[]) => items.forEach(item =>
+        (
+          levelDescription.metadata.type === "errand"
+            ? this.items
+            : this.spells
+        )
+        .add(item))
+    );
   }
 
   async setLevel(levelDescription: LevelDescription) {
@@ -45,9 +58,9 @@ export function populateEmptyLevelMatrix(dimensions: LevelDimensions): LevelMatr
   }
 
   return Array(dimensions.height)
+  .fill(null)
+  .map(() => Array(dimensions.width)
     .fill(null)
-    .map(() => Array(dimensions.width)
-      .fill(null)
-      .map(() => ({ things: [] }))
-    );
+    .map(() => ({ things: [] }))
+  );
 }

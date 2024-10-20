@@ -20,4 +20,8 @@ export class Inventory {
     const items: string[] = this.getContents();
     localStorage.setItem(this.storageKey, JSON.stringify(items.filter(item => item !== itemToRemove)));
   }
+
+  has(item: string) :boolean{
+    return this.getContents().includes(item);
+  }
 }

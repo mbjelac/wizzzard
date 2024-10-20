@@ -57,3 +57,18 @@ it("removed item is no longer in inventory contents", () => {
 
   expect(inventory.getContents()).toEqual<string[]>(["bar"]);
 });
+
+it("check if item is present", () => {
+
+  inventory.add("foo");
+
+  const actual = {
+    hasFoo: inventory.has("foo"),
+    hasBar: inventory.has("bar")
+  };
+
+  expect(actual).toEqual<typeof actual>({
+    hasFoo: true,
+    hasBar: false
+  });
+});

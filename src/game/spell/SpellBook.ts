@@ -1,15 +1,19 @@
 import { spellRequirementsBySpellId } from "./spell-requirements";
+import { Inventory } from "../Inventory";
 
 export type SpellStatus = "COLLECTING_REQUIREMENTS" | "ALL_REQUIREMENTS_COLLECTED" | "RESEARCHED";
 
 export class SpellBook {
 
-  private readonly inventory = new Set<string>();
-  private readonly researchedSpells = new Set<string>();
+  constructor(
+    private readonly items: Inventory,
+    private readonly knownSpells: Inventory
+  ) {
+  }
 
   getSpellStatus(spellId: string): SpellStatus {
 
-    if(this.researchedSpells.has(spellId)) {
+    if (this.knownSpells.has(spellId)) {
       return "RESEARCHED";
     }
 
@@ -24,19 +28,15 @@ export class SpellBook {
     return spellRequirementsBySpellId
       .get(spellId)
       ?.requirements
-      .every(requirement => this.inventory.has(requirement.label))
+      .every(requirement => this.items.has(requirement.label))
       || false;
   }
 
   isRequirementForSpellPresent(requirementLabel: string): boolean {
-    return this.inventory.has(requirementLabel);
-  }
-
-  spellResearched(spellId: string) {
-    this.researchedSpells.add(spellId);
+    return this.items.has(requirementLabel);
   }
 
   collectRequirement(requirementLabel: string) {
-    this.inventory.add(requirementLabel);
+    this.items.add(requirementLabel);
   }
 }
