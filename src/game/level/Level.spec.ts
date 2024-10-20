@@ -7,6 +7,25 @@ import { SavedThing, Thing, ThingProperty } from "./Thing";
 
 let level: Level;
 
+const factory = new LevelFactory();
+
+const dummyLevel: LevelDescription = {
+  metadata: {
+    id: "dummyLevel",
+    description: "",
+    title: "",
+    type: "errand"
+  },
+  texts: {},
+  levelDimensions: { width: 3, height: 3 },
+  matrix: factory.fromMatrix(" "),
+  startCoords: { x: 0, y: 0 },
+  completionCriteria: {
+    inventory: [],
+    receives: []
+  },
+};
+
 const stayed: MoveResult = {
   moved: false,
   died: false,
@@ -29,7 +48,6 @@ const movedAndDied: MoveResult = {
 
 const startCoords: Coords = { x: 1, y: 1 };
 
-const factory = new LevelFactory();
 
 const itemsAddedToGameInventory: string[] = [];
 
@@ -930,23 +948,6 @@ describe("completing level", () => {
   function movementToCompletedFlags(...directions: Direction[]): boolean[] {
     return directions.map(direction => level.tryToMove(direction).levelComplete);
   }
-
-  const dummyLevel: LevelDescription = {
-    metadata: {
-      id: "dummyLevel",
-      description: "",
-      title: "",
-      type: "errand"
-    },
-    texts: {},
-    levelDimensions: { width: 3, height: 3 },
-    matrix: factory.fromMatrix(" "),
-    startCoords: { x: 0, y: 0 },
-    completionCriteria: {
-      inventory: [],
-      receives: []
-    },
-  };
 });
 
 describe("reading or listening", () => {
@@ -1656,6 +1657,36 @@ describe("remembering stone", () => {
       "pushable",
       "teleport"
     ]);
+  });
+});
+
+describe("initial inventory", () => {
+
+  it("inventory is filled from initial inventory on create", () => {
+
+    const initialThingDescriptions: ThingDescription[] = [
+      {
+        label: "foo",
+        sprite: "fooSprite",
+        properties: ["pickup", "bridge"],
+      },
+      {
+        label: "bar",
+        sprite: "barSprite",
+        properties: ["pushable"],
+      }
+    ]
+
+    const level = new Level(
+      {
+        ...dummyLevel,
+        initialInventory: initialThingDescriptions
+      },
+      addToGameInventoryFake
+    );
+
+    expect(level.getInventory().map(thing => thing.description))
+    .toEqual(initialThingDescriptions);
   });
 });
 

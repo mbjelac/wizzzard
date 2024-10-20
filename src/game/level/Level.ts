@@ -75,6 +75,11 @@ export class Level {
         })
       )
     );
+
+    (levelDescription.initialInventory || [])
+    .forEach(initialThingDescription => {
+      this.inventory.push(Thing.create(initialThingDescription))
+    });
   }
 
   public tryToMove(direction: Direction): MoveResult {
