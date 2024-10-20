@@ -51,6 +51,7 @@ export interface LevelDescription {
   readonly completionCriteria: CompletionCriteria
   readonly texts: {[key: string]: TextContent}
   readonly initialAmbientSound?: string;
+  readonly initialInventory?: ThingDescription[]
 }
 
 export interface TextContent {
