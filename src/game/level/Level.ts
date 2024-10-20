@@ -171,10 +171,16 @@ export class Level {
 
     this.thingsThatChangedState.push(...changedStateThings);
 
+    const levelComplete = this.isLevelComplete();
+
+    if (levelComplete) {
+      this.addToGameInventory(this.inventory.map(thing => thing.description.label!));
+    }
+
     return {
       moved: canMove,
       died: this.doesLocationHaveProperty(nextLocation, "death") && hasNotReceived,
-      levelComplete: this.isLevelComplete(),
+      levelComplete: levelComplete,
       text: receiveEventText || interactionText || this.getNeighbouringTexts(),
       removedThings: thingsToRemove,
       pushed: pushedThings,

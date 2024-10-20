@@ -679,7 +679,6 @@ describe("completing level", () => {
 
   describe("by pickup", () => {
 
-
     it("complete when a required item is in inventory", () => {
 
       completionRequiresInventory("someLabel");
@@ -744,6 +743,17 @@ describe("completing level", () => {
         true
       ]);
     });
+  });
+
+  it("completion adds all inventory items to game inventory", () => {
+    completionRequiresInventory("someLabel");
+
+    addLabelledThing(0, 0, "someLabel", "pickup");
+
+    level.tryToMove(Direction.UP);
+    level.tryToMove(Direction.LEFT);
+
+    expect(itemsAddedToGameInventory).toEqual<string[]>(["someLabel"]);
   });
 
   describe("by receive", () => {
@@ -876,7 +886,6 @@ describe("completing level", () => {
       true,
     ]);
   });
-
 
   function completionRequiresInventory(...requiredInventory: string[]) {
     level = new Level(
@@ -1647,12 +1656,6 @@ describe("remembering stone", () => {
       "pushable",
       "teleport"
     ]);
-  });
-});
-
-describe("game inventory", () => {
-  it("level completion adds all inventory items to game inventory", () => {
-    throw Error("TODO!");
   });
 });
 
