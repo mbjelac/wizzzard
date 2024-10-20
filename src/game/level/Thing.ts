@@ -1,6 +1,29 @@
 import { ThingDescription } from "./LevelDescription";
 
+export const ALL_THING_PROPERTIES = [
+  "wall",
+  "death",
+  "pickup",
+  "receiver",
+  "automatic",
+  "open",
+  "give",
+  "pushable",
+  "ambientSound",
+  "bridge",
+  "bridgeable",
+  "teleport",
+  "remember",
+  "slot"
+] as const;
+export type ThingPropertyTuple = typeof ALL_THING_PROPERTIES;
+
 export type ThingProperty = ThingPropertyTuple[number];
+
+export interface SavedThing {
+  readonly id: number;
+  readonly description: ThingDescription;
+}
 
 export class Thing {
 
@@ -57,24 +80,3 @@ export class Thing {
   }
 }
 
-export const ALL_THING_PROPERTIES = [
-  "wall",
-  "death",
-  "pickup",
-  "receiver",
-  "automatic",
-  "open",
-  "give",
-  "pushable",
-  "ambientSound",
-  "bridge",
-  "bridgeable",
-  "teleport",
-  "remember"
-] as const;
-export type ThingPropertyTuple = typeof ALL_THING_PROPERTIES;
-
-export interface SavedThing {
-  readonly id: number;
-  readonly description: ThingDescription;
-}
