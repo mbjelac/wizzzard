@@ -8,10 +8,10 @@ export class Game {
 
   private currentLevelId?: string;
 
-  readonly spellBook = new SpellBook();
-
   readonly items = new Inventory("items");
   readonly spells = new Inventory("spells");
+
+  readonly spellBook = new SpellBook(this.items, this.spells);
 
   async getLevelMetadata(): Promise<LevelMetadata[]> {
     return await getLevelMetadata()
