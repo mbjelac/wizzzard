@@ -490,6 +490,34 @@ export const SPRITE_CONFIGS = {
       }),
     },
   },
+  laboratory: {
+    floor: spriteAt(14, 6),
+    wall: spriteAt(14, 5),
+    window: spriteAt(13, 5),
+    magicStuff: {
+      pedestal: spriteAt(15, 5),
+      symbolEye: spriteAt(16, 5),
+      symbolPyramid: spriteAt(17, 5),
+      symbolWater: spriteAt(18, 5),
+      symbolCross: spriteAt(16, 6),
+      symbolFire: spriteAt(17, 6),
+      symbol7: spriteAt(18, 6)
+    },
+    furniture: {
+      table: spriteAt(15, 0),
+      tableStone: spriteAt(15, 6),
+      shelves: spriteAt(15, 1),
+      chair: spriteAt(15, 2),
+      alchemyStuff: spriteConfig({
+        coords: { x: 10, y: 2 },
+        animation: {
+          frameCount: 4,
+          framesPerSecond: 4
+        }
+      })
+    }
+
+  },
   keys: {
     silver: spriteAt(1, 8),
     gold: spriteAt(3, 8),
@@ -538,7 +566,8 @@ export const SPRITE_CONFIGS = {
       }
     }),
     jar: spriteAt(0, 29),
-    book: spriteAt(1, 29),
+    speenAachBook: spriteAt(1, 29),
+    speenAachBookOpen: spriteAt(6, 29),
     rememberingStone: {
       natural: {
         brown: spriteConfig({
