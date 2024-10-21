@@ -400,6 +400,7 @@ export default class LevelGui extends Phaser.Scene {
     const moveResult = this.level.tryToMove(direction);
 
     this.removeSpritesOfRemovedThings(moveResult.removedThings);
+    this.addSpritesOfAddedThings(moveResult.addedThings);
     this.updateAnimationsOfThingsWhichChangedState(moveResult.changedState);
 
     if (moveResult.levelComplete) {
@@ -773,6 +774,18 @@ export default class LevelGui extends Phaser.Scene {
     this.updateAnimationsOfThingsWhichChangedState(this.level.getThingsThatChangedState(), true);
 
     this.playAmbientSound(this.level.getAmbientSound());
+  }
+
+  private addSpritesOfAddedThings(addedThings: LevelLocation | undefined) {
+    if (addedThings === undefined) {
+      return;
+    }
+
+    const levelLocation = this.level.getLocation(addedThings.coords)!
+
+    addedThings.things.forEach(addedThing => {
+      this.addThingSprite(addedThings.coords, levelLocation, addedThing);
+    });
   }
 }
 

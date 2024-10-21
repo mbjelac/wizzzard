@@ -220,11 +220,11 @@ export default class SpellBookGui extends Phaser.Scene {
 
     const status = GAME.spellBook.getSpellStatus(metadata.id);
 
-    if (status === "ALL_REQUIREMENTS_COLLECTED") {
+    // if (status === "ALL_REQUIREMENTS_COLLECTED") {
       this.researchButton.show({ x: 210 * 4, y: 180 * 4 }, "Research", () => {
         GAME.setCurrentLevel(metadata.id);
         this.scene.switch(SceneId.LEVEL);
       });
-    }
+    // }
   }
 }
