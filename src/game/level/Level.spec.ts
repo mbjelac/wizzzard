@@ -33,7 +33,8 @@ const stayed: MoveResult = {
   text: undefined,
   removedThings: [],
   pushed: [],
-  changedState: []
+  changedState: [],
+  addedThings: undefined
 }
 
 const moved: MoveResult = {
@@ -1707,6 +1708,34 @@ describe("slot", () => {
     ]);
   });
 
+  it("pickup put into slot is added", () => {
+
+    const pickup = addThing(0, 1, "pickup");
+    const slot = addThing(2, 1, "slot", "wall");
+
+    // pick up
+    level.tryToMove(Direction.LEFT);
+
+    // move next to slot
+    level.tryToMove(Direction.RIGHT);
+
+    expect(level.tryToMove(Direction.RIGHT).addedThings).toEqual<LevelLocation>({
+      coords: { x: 2, y: 1 },
+      things: [pickup]
+    });
+  });
+
+  it("pickup put is not added when not interacting with slot", () => {
+
+    const pickup = addThing(0, 1, "pickup");
+    const slot = addThing(2, 1, "slot", "wall");
+
+    // pick up
+    level.tryToMove(Direction.LEFT);
+
+    expect(level.tryToMove(Direction.RIGHT).addedThings).toEqual(undefined);
+  });
+
   it("pickup from slot", () => {
     const slot = addThing(2, 1, "slot", "wall");
     const pickup = addThing(2, 1, "pickup");
@@ -1729,6 +1758,13 @@ describe("slot", () => {
     level.tryToMove(Direction.RIGHT);
 
     expect(level.getInventory()).toEqual([pickup]);
+  });
+
+  it("item picked up from slot is removed", () => {
+    const slot = addThing(2, 1, "slot", "wall");
+    const pickup = addThing(2, 1, "pickup");
+
+    expect(level.tryToMove(Direction.RIGHT).removedThings).toEqual([pickup]);
   });
 });
 

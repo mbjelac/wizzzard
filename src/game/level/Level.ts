@@ -12,6 +12,7 @@ export interface MoveResult {
   removedThings: Thing[];
   pushed: Thing[];
   changedState: Thing[];
+  addedThings: LevelLocation | undefined;
 }
 
 const doNothing: MoveResult = {
@@ -21,7 +22,8 @@ const doNothing: MoveResult = {
   text: undefined,
   removedThings: [],
   pushed: [],
-  changedState: []
+  changedState: [],
+  addedThings: undefined
 }
 
 export interface LevelLocation {
@@ -88,6 +90,7 @@ export class Level {
     const nextLocation = this.getMoveLocation(this.playerCoords, direction);
 
     const thingsToRemove: Thing[] = [];
+    let addedThings: LevelLocation | undefined = undefined;
 
     if (nextLocation === undefined) {
       return doNothing;
@@ -177,12 +180,20 @@ export class Level {
       slotInteraction.moveToInventory.forEach(thing => {
         this.inventory.push(thing);
         this.removeFromLocation(nextLocation, thing);
+        thingsToRemove.push(thing);
       });
 
       slotInteraction.moveToSlot.forEach(thing => {
         this.inventory = this.inventory.filter(thingInInventory => !thingInInventory.equals(thing));
         nextLocation.things.push(thing);
       });
+
+      if (slotInteraction.moveToSlot.length > 0) {
+        addedThings = {
+          coords: nextLocation.coords,
+          things: slotInteraction.moveToSlot
+        }
+      }
     }
 
     const pushedThings = canMove ? this.pushThings(nextLocation, direction) : [];
@@ -205,7 +216,8 @@ export class Level {
       text: receiveEventText || interactionText || this.getNeighbouringTexts(),
       removedThings: thingsToRemove,
       pushed: pushedThings,
-      changedState: changedStateThings
+      changedState: changedStateThings,
+      addedThings: addedThings
     };
   }
 
