@@ -2,6 +2,7 @@ import { LevelEditor } from "../editor/LevelEditor";
 import { Direction } from "./Direction";
 import { Coords, LevelDescription, LevelMatrix } from "./LevelDescription";
 import { SavedThing, Thing, ThingProperty } from "./Thing";
+import { interactWithSlot } from "./slot";
 
 export interface MoveResult {
   moved: boolean,
@@ -167,6 +168,21 @@ export class Level {
           idsThatChangedState: [...this.thingsThatChangedState.map(thing => thing.id), rememberingStone.id]
         };
       }
+
+      const slotInteraction = interactWithSlot({
+        inventory: this.inventory,
+        thingsAtSlotLocation: nextLocation.things
+      });
+
+      slotInteraction.moveToInventory.forEach(thing => {
+        this.inventory.push(thing);
+        this.removeFromLocation(nextLocation, thing);
+      });
+
+      slotInteraction.moveToSlot.forEach(thing => {
+        this.inventory = this.inventory.filter(thingInInventory => !thingInInventory.equals(thing));
+        nextLocation.things.push(thing);
+      });
     }
 
     const pushedThings = canMove ? this.pushThings(nextLocation, direction) : [];
@@ -184,7 +200,7 @@ export class Level {
 
     return {
       moved: canMove,
-      died: this.doesLocationHaveProperty(nextLocation, "death") && hasNotReceived,
+      died: canMove && this.doesLocationHaveProperty(nextLocation, "death") && hasNotReceived,
       levelComplete: levelComplete,
       text: receiveEventText || interactionText || this.getNeighbouringTexts(),
       removedThings: thingsToRemove,

@@ -1354,18 +1354,6 @@ describe("remembering stone", () => {
     expect(level.getInventory()).toEqual([item1]);
   });
 
-  function getThingDescriptions() {
-    return level
-    .getSavedLocations()
-    .map(row =>
-      row.map(location =>
-        location.things
-        .filter(thing => thing.description.sprite !== "floor")
-        .map(thing => thing.description)
-      )
-    );
-  }
-
   it("remembers things", () => {
 
     const item1 = addPickup(2, 2, "1st item");
@@ -1690,6 +1678,60 @@ describe("initial inventory", () => {
   });
 });
 
+describe("slot", () => {
+
+  beforeEach(() => {
+    level = createLevel(
+      "   ",
+      "   ",
+      "   "
+    );
+  });
+
+  it("put pickup into slot", () => {
+
+    const pickup = addThing(0, 1, "pickup");
+    const slot = addThing(2, 1, "slot", "wall");
+
+    // pick up
+    level.tryToMove(Direction.LEFT);
+
+    // insert into slot
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.RIGHT);
+
+    expect(getThingDescriptions()).toEqual([
+      [[], [], []],
+      [[], [], [slot.description, pickup.description]],
+      [[], [], []],
+    ]);
+  });
+
+  it("pickup from slot", () => {
+    const slot = addThing(2, 1, "slot", "wall");
+    const pickup = addThing(2, 1, "pickup");
+
+    // pick up
+    level.tryToMove(Direction.RIGHT);
+
+    expect(getThingDescriptions()).toEqual([
+      [[], [], []],
+      [[], [], [slot.description]],
+      [[], [], []],
+    ]);
+  });
+
+  it("item picked up from slot is in inventory", () => {
+    const slot = addThing(2, 1, "slot", "wall");
+    const pickup = addThing(2, 1, "pickup");
+
+    // pick up
+    level.tryToMove(Direction.RIGHT);
+
+    expect(level.getInventory()).toEqual([pickup]);
+  });
+});
+
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
   return addThingWithProps({
     x: x,
@@ -1752,4 +1794,16 @@ function movementToChangedStateLists(...directions: Direction[]): Thing[][] {
 
 function textAfterMove(...directions: Direction[]): (string | undefined)[] {
   return directions.map(direction => level.tryToMove(direction).text);
+}
+
+function getThingDescriptions() {
+  return level
+  .getSavedLocations()
+  .map(row =>
+    row.map(location =>
+      location.things
+      .filter(thing => thing.description.sprite !== "floor")
+      .map(thing => thing.description)
+    )
+  );
 }
