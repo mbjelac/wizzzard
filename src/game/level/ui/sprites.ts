@@ -130,6 +130,7 @@ export const SPRITE_CONFIGS = {
         tableContents2: spriteAt(11, 0),
         tableContents3: spriteAt(12, 0),
         tableContents4: spriteAt(13, 0),
+        tableContents5: spriteAt(14, 0),
         shelves: spriteAt(9, 1),
         shelveContents1: spriteAt(10, 1),
         shelveContents2: spriteAt(11, 1),
@@ -490,7 +491,7 @@ export const SPRITE_CONFIGS = {
       }),
     },
   },
-  laboratory: {
+  tower: {
     floor: spriteAt(14, 6),
     wall: spriteAt(14, 5),
     window: spriteAt(13, 5),
@@ -508,11 +509,18 @@ export const SPRITE_CONFIGS = {
       tableStone: spriteAt(15, 6),
       shelves: spriteAt(15, 1),
       chair: spriteAt(15, 2),
-      alchemyStuff: spriteConfig({
+      experiment1: spriteConfig({
         coords: { x: 10, y: 2 },
         animation: {
           frameCount: 4,
           framesPerSecond: 4
+        }
+      }),
+      experiment2: spriteConfig({
+        coords: { x: 11, y: 3 },
+        animation: {
+          frameCount: 4,
+          framesPerSecond: 6
         }
       })
     }
