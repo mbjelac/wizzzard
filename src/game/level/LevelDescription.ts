@@ -55,5 +55,6 @@ export interface LevelDescription {
 }
 
 export interface TextContent {
-  text: string
+  readonly text: string
+  readonly head: string | undefined
 }

@@ -3,7 +3,7 @@ import { Level, LevelLocation } from "../Level";
 import { Direction } from "../Direction";
 import { TILE_SIZE, tileCenterOffset } from "../../../config";
 import { GAME } from "../../game";
-import { Coords, LevelDescription, ThingDescription } from "../LevelDescription";
+import { Coords, LevelDescription, TextContent, ThingDescription } from "../LevelDescription";
 import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION } from "./sprites";
 import { clearLabelText, getLabelText } from "./editor-panel";
 import depths from "./depths";
@@ -12,9 +12,10 @@ import toPixelCoords from "./toPixelCoords";
 import { ALL_THING_PROPERTIES, Thing } from "../Thing";
 import { VariantTiles } from "./VariantTiles";
 import { SceneId } from "../../../utils/scene-ids";
+import { BitmapFonts } from "../../../utils/BitmapFonts";
+import { talkingHeadConfigs } from "./talkingHeadConfigs";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
-import { BitmapFonts } from "../../../utils/BitmapFonts";
 
 const animation1 = "animation1";
 const animation2 = "animation2";
@@ -27,16 +28,15 @@ interface AmbientSound {
 
 export default class LevelGui extends Phaser.Scene {
 
-  // @ts-ignore
-  private player: Phaser.Physics.Arcade.Sprite;
+  private player!: Phaser.Physics.Arcade.Sprite;
 
-  // @ts-ignore
-  private sidePanel: Phaser.GameObjects.Sprite;
+  private sidePanel!: Phaser.GameObjects.Sprite;
 
-  // @ts-ignore
-  private sideText: Phaser.GameObjects.BitmapText;
+  private talkingHead!: Phaser.Physics.Arcade.Sprite;
 
-  private sideTextString: string = "";
+  private sideText!: Phaser.GameObjects.BitmapText;
+
+  private sideTextContent: TextContent | undefined;
 
   // @ts-ignore undefined - has to be set before usage (fail fast)
   private level: Level;
@@ -49,6 +49,7 @@ export default class LevelGui extends Phaser.Scene {
   private inventorySprites: Sprite[] = [];
 
   private readonly tilesetName = "sprites";
+  private readonly talkingHeads = "talkingHeads";
 
   private leftButtonDown: boolean = false;
   private rightButtonDown: boolean = false;
@@ -73,6 +74,8 @@ export default class LevelGui extends Phaser.Scene {
     BitmapFonts.getInstance().loadFonts(this);
 
     this.load.spritesheet(this.tilesetName, "assets/tileset.png", { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet(this.talkingHeads, "assets/talking_heads.png", { frameWidth: 10, frameHeight: 10 });
+
     this.load.image("panel", "assets/panel.png");
 
     this.load.bitmapFont('blackRobotoMicro', 'assets/fonts/roboto-micro.png', 'assets/fonts/roboto-micro.xml');
@@ -315,6 +318,21 @@ export default class LevelGui extends Phaser.Scene {
     .setDisplaySize(320, 832)
     .setDepth(depths.infoBackground);
 
+    this.talkingHead = this.physics.add
+    .sprite(0, 0, this.talkingHeads, 0)
+    .setDepth(depths.info)
+    .setDisplaySize(10 * 4, 10 * 4)
+    .setVisible(false);
+
+    talkingHeadConfigs.forEach(talkingHeadConfig => {
+      this.talkingHead.anims.create(this.getAnimation(
+        talkingHeadConfig.head,
+        talkingHeadConfig.config,
+        getSpriteFrameIndex(talkingHeadConfig.tileCoords),
+        true,
+        this.talkingHeads
+      ));
+    });
   }
 
   private getTerminationButtons(): ButtonConfig[] {
@@ -362,15 +380,38 @@ export default class LevelGui extends Phaser.Scene {
 
   private updateSideText(playerLocation: Coords) {
 
+    if (this.sideTextContent === undefined) {
+      this.sideText.setVisible(false);
+      this.talkingHead.setVisible(false);
+      return;
+    }
+
     const sideTextCoords: Coords = {
       x: playerLocation.x + 7,
       y: playerLocation.y,
     };
 
     const sideTextPixels = toPixelCoords(sideTextCoords);
-    this.sideText.x = sideTextPixels.x - tileCenterOffset + 28;
-    this.sideText.y = sideTextPixels.y - tileCenterOffset + 24;
-    this.sideText.setText(this.sideTextString);
+
+    this.sideText
+    .setPosition(
+      sideTextPixels.x - tileCenterOffset + 7 * 4,
+      sideTextPixels.y - tileCenterOffset + 10 * 4
+    )
+    .setText(this.sideTextContent.text)
+    .setVisible(true);
+
+    if (this.sideTextContent.head === undefined) {
+      this.talkingHead.stop();
+      this.talkingHead.setVisible(false);
+      return;
+    }
+
+    this.talkingHead.setPosition(
+      sideTextPixels.x + 4 * 4,
+      sideTextPixels.y + 3 * 4
+    )
+    .setVisible(true);
   }
 
   private updateInventory(playerLocation: Coords) {
@@ -421,7 +462,11 @@ export default class LevelGui extends Phaser.Scene {
       this.levelComplete = true;
     }
 
-    this.sideTextString = moveResult.text ? this.getText(moveResult.text) : "";
+    this.sideTextContent = this.getText(moveResult.text);
+
+    if (this.sideTextContent?.head !== undefined) {
+      this.talkingHead.anims.play(this.sideTextContent.head);
+    }
 
     const playerPixelCoords = toPixelCoords(this.level.getPlayerCoords());
 
@@ -608,12 +653,12 @@ export default class LevelGui extends Phaser.Scene {
     return sprite;
   }
 
-  private getAnimation(key: string, animationConfig: AnimationConfig, startIndex: number, loopsForever: boolean = true): Phaser.Types.Animations.Animation {
+  private getAnimation(key: string, animationConfig: AnimationConfig, startIndex: number, loopsForever: boolean = true, tilesetName: string = this.tilesetName): Phaser.Types.Animations.Animation {
     return {
       key: key,
       frameRate: animationConfig.framesPerSecond || 7,
       frames: this.anims.generateFrameNumbers(
-        this.tilesetName,
+        tilesetName,
         {
           start: startIndex,
           end: startIndex + animationConfig.frameCount - 1
@@ -670,15 +715,23 @@ export default class LevelGui extends Phaser.Scene {
     });
   }
 
-  private getText(text: string): string {
+  private getText(text: string | undefined): TextContent | undefined {
 
-    if (text === "remembering") {
-      return "I will remember you.";
+    if (text === undefined) {
+      return undefined;
     }
 
-    const longText = this.level.levelDescription.texts[text];
+    if (text === "remembering") {
+      return { head: "rememberingStone", text: "I will remember you." };
+    }
 
-    return longText ? longText.text : text;
+    const textContent = this.level.levelDescription.texts[text] || { text: text };
+
+    return {
+      ...textContent,
+      head: textContent.head,
+      text: (textContent.head !== undefined ? "   " : "") + textContent.text,
+    };
   }
 
   private playSoundEffectOnMove() {
