@@ -17,6 +17,14 @@ export const talkingHeadConfigs: TalkingHeadConfig[] = [
     }
   },
   {
+    head: "kim",
+    tileCoords: { x: 0, y: 2 },
+    config: {
+      frameCount: 4,
+      framesPerSecond: 5
+    }
+  },
+  {
     head: "book",
     tileCoords: { x: 0, y: 1 },
     config: {
