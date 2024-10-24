@@ -1,4 +1,3 @@
 - simplify levels
-- spell list/screen
 - make laboratory level (research level for Strength spell)
 - make level which uses Strength spell (old castle, push heavy wall blocks)
