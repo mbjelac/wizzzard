@@ -81,6 +81,22 @@ const levels: LevelDescription[] = [
     },
     matrix: [],
     startCoords: { x: 0, y: 0 }
+  },
+  {
+    metadata: {
+      id: "forestLake",
+      title: "Forest Lake",
+      description: "",
+      type: "errand"
+    },
+    levelDimensions: { width: 42, height: 27 },
+    texts: {},
+    completionCriteria: {
+      inventory: ["lifeCrystal"],
+      receives: []
+    },
+    matrix: [],
+    startCoords: { x: 0, y: 0 }
   }
 ];
 
