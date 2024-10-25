@@ -43,4 +43,17 @@ export const errandMarkersConfigs = new Map<string, ErrandMarkerConfig>()
       location: { x: 2, y: 4 }
     }
   )
+  .set(
+    "forestLake",
+    {
+      mapTile: {
+        frameIndex: tileLocationToFrameIndex({ x: 4, y: 6 }),
+        animation: {
+          frameCount: 4,
+          framesPerSecond: 4
+        }
+      },
+      location: { x: 16, y: 7 }
+    }
+  )
 ;
