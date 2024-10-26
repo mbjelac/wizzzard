@@ -20,6 +20,9 @@ it("modify level", () => {
   // insert tiles left
   // level.matrix.forEach(row => row.splice(0, 0, emptyLevelLocation));
 
+  // insert tiles right
+  level.matrix.forEach(row => row.push(emptyLevelLocation));
+
   console.log(JSON.stringify(level));
 
 });
