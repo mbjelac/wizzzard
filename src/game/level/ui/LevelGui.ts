@@ -723,7 +723,7 @@ export default class LevelGui extends Phaser.Scene {
     }
 
     if (text === "remembering") {
-      return { head: "rememberingStone", text: "I will remember you." };
+      return { head: undefined, text: "I will remember you." };
     }
 
     const textContent = this.level.levelDescription.texts[text] || { text: text };
