@@ -9,8 +9,8 @@ import { Button } from "../../utils/widgets/Button";
 import depths from "../level/ui/depths";
 import { getMapPlaceDescriptionAt } from "./place-descriptions";
 import { SceneId } from "../../utils/scene-ids";
-import Sprite = Phaser.Physics.Arcade.Sprite;
 import { BitmapFonts } from "../../utils/BitmapFonts";
+import Sprite = Phaser.Physics.Arcade.Sprite;
 
 const stretchCoefficient = 4;
 const coordinateSystemCoefficient = 8;
@@ -57,6 +57,7 @@ export default class MapGui extends Phaser.Scene {
     this.load.spritesheet(this.tilesetName, "assets/map_tileset.png", { frameWidth: coordinateSystemCoefficient, frameHeight: coordinateSystemCoefficient });
 
     this.load.image("woodenDog", "assets/errand_images/woodenDog-transparent.png");
+    this.load.image("forestLake", "assets/errand_images/forestLake.png");
 
 
     BitmapFonts.getInstance().loadFonts(this);
@@ -126,14 +127,14 @@ export default class MapGui extends Phaser.Scene {
       .setDepth(depths.info)
       .setVisible(false),
       page: this.add
-      .bitmapText(860, 370, "blackRobotoMicro", "")
+      .bitmapText(215 * 4, 50 * 4, "blackRobotoMicro", "")
       .setMaxWidth(260)
       .setScale(4)
       .setDepth(depths.info)
       .setVisible(false),
       goButton: new Button(),
       image: this.add
-      .sprite(990, 216, "")
+      .sprite(247 * 4, 33 * 4, "")
       .setVisible(false)
     };
 
@@ -251,7 +252,7 @@ export default class MapGui extends Phaser.Scene {
     this.errandDescriptionWidget
     .image
     .setTexture(metadata.id)
-    .setDisplaySize(66 * 4, 66 * 4)
+    .setDisplaySize(66 * 4, 30 * 4)
     .setVisible(true);
 
     this.errandDescriptionWidget.goButton.show(

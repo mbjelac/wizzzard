@@ -82,6 +82,7 @@ export default class LevelGui extends Phaser.Scene {
 
 
     this.load.audio("summerMeadow", "assets/sounds/ambient/summer-meadow.mp3");
+    this.load.audio("laboratory", "assets/sounds/ambient/laboratory.mp3");
     this.load.audio("forest", "assets/sounds/ambient/forest.mp3");
     this.load.audio("undergroundCritters", "assets/sounds/ambient/underground-critters.mp3");
 

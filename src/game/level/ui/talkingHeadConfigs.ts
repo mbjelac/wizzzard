@@ -30,5 +30,12 @@ export const talkingHeadConfigs: TalkingHeadConfig[] = [
     config: {
       frameCount: 1
     }
+  },
+  {
+    head: "stoneCarving",
+    tileCoords: { x: 0, y: 3 },
+    config: {
+      frameCount: 1
+    }
   }
 ];

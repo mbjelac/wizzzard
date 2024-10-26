@@ -20,7 +20,13 @@ const mapPlaceDescriptions: [Coords[], string][] = [
       { x: 16, y: 5 },
       { x: 17, y: 5 }
     ],
-    "The Dark Forest"
+    "Dark Forest"
+  ],
+  [
+    [
+      { x: 16, y: 7 },
+    ],
+    "Misty Lake"
   ],
 ];
 
