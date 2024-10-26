@@ -86,7 +86,7 @@ const levels: LevelDescription[] = [
     metadata: {
       id: "forestLake",
       title: "A swim in the lake",
-      description: "There is a rumour that a Life Crystal can be found on a tiny island in the middle of Misty Lake in Dark Forest. However, I don't swim...",
+      description: "There is a rumour that a Life Crystal can be found on a tiny island in the middle of Misty Lake in Dark Forest. However, I can't swim...",
       type: "errand"
     },
     levelDimensions: { width: 27, height: 42 },
