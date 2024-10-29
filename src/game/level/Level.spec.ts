@@ -1634,6 +1634,7 @@ describe("remembering stone", () => {
     level.tryToMove(Direction.LEFT);
 
     thing.description.properties.push("wall");
+    thing.removeProperty("pushable");
 
     level.remember();
 
