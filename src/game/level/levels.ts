@@ -29,7 +29,7 @@ const levels: LevelDescription[] = [
     startCoords: { x: 7, y: 7 },
     matrix: [],
     completionCriteria: {
-      inventory: ["vial", "jar", "book"],
+      inventory: ["book"],
       receives: []
     },
     texts: {}
