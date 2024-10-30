@@ -135,7 +135,7 @@ export class Level {
       this.pushableCanBePushed(nextLocation, direction) &&
       hasNotReceivedOrReceiverOpen;
 
-    let interactionText: string | undefined = undefined;
+    let interactionText = this.getTextsFrom(nextLocation);
 
     if (canMove) {
       this.playerCoords = this.getNextCoords(nextLocation);
@@ -157,7 +157,6 @@ export class Level {
       automatics.forEach(thing => thing.removeProperty("automatic"));
 
     } else {
-      interactionText = this.getTextsFrom(nextLocation);
 
       const rememberingStone = nextLocation.things.filter(thing => thing.is("remember"))[0];
       if (rememberingStone !== undefined) {

@@ -963,7 +963,7 @@ describe("reading or listening", () => {
 
   it("show text from neighbouring location", () => {
 
-    addText(0, 0, "Foo!", true);
+    addTextWall(0, 0, "Foo!", true);
 
     expect(movementToText(
       Direction.LEFT,
@@ -980,7 +980,7 @@ describe("reading or listening", () => {
 
   it("do not show non-automatic text from neighbouring location", () => {
 
-    addText(0, 0, "Foo!", false);
+    addTextWall(0, 0, "Foo!", false);
 
     expect(movementToText(
       Direction.LEFT,
@@ -995,27 +995,50 @@ describe("reading or listening", () => {
     ]);
   });
 
-  it("show non-automatic text from wall-like location on interaction", () => {
+  describe("show non-automatic text", () => {
+    it("from wall-like location on interaction", () => {
 
-    addText(0, 0, "Foo!", false);
+      addTextWall(0, 0, "Foo!", false);
 
-    expect(movementToText(
-      Direction.LEFT,
-      Direction.UP,
-      Direction.RIGHT,
-      Direction.UP,
-      Direction.LEFT,
-    )).toEqual([
-      undefined,
-      "Foo!",
-      undefined,
-      undefined,
-      "Foo!"
-    ]);
+      expect(movementToText(
+        Direction.LEFT,
+        Direction.UP,
+        Direction.RIGHT,
+        Direction.UP,
+        Direction.LEFT,
+      )).toEqual([
+        undefined,
+        "Foo!",
+        undefined,
+        undefined,
+        "Foo!"
+      ]);
+    });
+
+    it("from floor you're standing on", () => {
+
+      addText(0, 0, "Foo!", false);
+
+      expect(movementToText(
+        Direction.LEFT,
+        Direction.UP,
+        Direction.RIGHT,
+        Direction.LEFT,
+      )).toEqual([
+        undefined,
+        "Foo!",
+        undefined,
+        "Foo!"
+      ]);
+    });
   });
 
-  function addText(x: number, y: number, text: string, isAutomatic: boolean) {
+  function addTextWall(x: number, y: number, text: string, isAutomatic: boolean) {
     addThingWithProps({ ...defaultAddThingProps, x, y, properties: isAutomatic ? ["automatic", "wall"] : ["wall"], text });
+  }
+
+  function addText(x: number, y: number, text: string, isAutomatic: boolean) {
+    addThingWithProps({ ...defaultAddThingProps, x, y, properties: isAutomatic ? ["automatic"] : [], text });
   }
 
   function movementToText(...directions: Direction[]): (string | undefined)[] {
