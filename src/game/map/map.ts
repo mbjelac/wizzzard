@@ -9,7 +9,7 @@ export const map = [
   "        ppprpv fwffff    ",
   "          rrhpffffff     ",
   "          r  pppppppppp  ",
-  "          rr          pp ",
+  "          rr t        pp ",
   "           r           pp",
   "           rrr           ",
   "            frf          ",

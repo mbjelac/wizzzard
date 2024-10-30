@@ -137,6 +137,10 @@ function createMapTile(symbol: string, location: Coords): MapTile {
       return {
         frameIndex: tileLocationToFrameIndex({ x: 1, y: 16 })
       };
+    case "t":
+      return {
+        frameIndex: tileLocationToFrameIndex({ x: 2, y: 16 })
+      };
     case "v":
       return {
         frameIndex: tileLocationToFrameIndex({ x: 0, y: 16 })

@@ -56,4 +56,17 @@ export const errandMarkersConfigs = new Map<string, ErrandMarkerConfig>()
       location: { x: 16, y: 7 }
     }
   )
+  .set(
+    "welcomeToMyTower",
+    {
+      mapTile: {
+        frameIndex: tileLocationToFrameIndex({ x: 4, y: 7 }),
+        animation: {
+          frameCount: 10,
+          framesPerSecond: 4
+        }
+      },
+      location: { x: 13, y: 10 }
+    }
+  )
 ;

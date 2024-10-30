@@ -4,6 +4,22 @@ import { populateEmptyLevelMatrix } from "../game";
 const levels: LevelDescription[] = [
   {
     metadata: {
+      id: "welcomeToMyTower",
+      title: "The misplaced vial",
+      description: "I have misplaced a vial of Splendid Water somewhere in my storage room. It's on the 2nd level of my tower. I must find it!",
+      type: "errand"
+    },
+    levelDimensions: { width: 11, height: 11 },
+    startCoords: { x: 0, y: 0 },
+    matrix: [],
+    completionCriteria: {
+      inventory: ["vial"],
+      receives: []
+    },
+    texts: {}
+  },
+  {
+    metadata: {
       id: "woodenDog",
       title: "The wooden dog",
       description: "Wooden dog description...",
