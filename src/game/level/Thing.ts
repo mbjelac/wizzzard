@@ -30,7 +30,13 @@ export class Thing {
   private static nextId = 0;
 
   public static load(savedThing: SavedThing): Thing {
-    return new Thing(savedThing.description, savedThing.id);
+    return new Thing(
+      {
+        ...savedThing.description,
+        properties: [...savedThing.description.properties]
+      },
+      savedThing.id
+    );
   }
 
   public static create(description: ThingDescription): Thing {

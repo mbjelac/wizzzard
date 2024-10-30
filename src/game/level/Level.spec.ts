@@ -1620,30 +1620,32 @@ describe("remembering stone", () => {
     ]);
   });
 
-  it("remember properties", () => {
+  it("remember properties repeatedly", () => {
 
-    const thing = addThingWithProps({
+    addThingWithProps({
       x: 2, y: 2,
       properties: ["pushable", "teleport"],
       text: undefined,
       label: "foo"
     });
 
+    const findFoo = () => level
+    .getLocation({ x: 2, y: 2 })!
+    .things
+    .filter(thing => thing.description.label === "foo")[0]
+
     // touch remembering stone
     level.tryToMove(Direction.UP);
     level.tryToMove(Direction.LEFT);
 
-    thing.description.properties.push("wall");
-    thing.removeProperty("pushable");
+    findFoo().description.properties.push("wall");
 
+    findFoo().removeProperty("pushable");
+    level.remember();
+    findFoo().removeProperty("pushable");
     level.remember();
 
-    const rememberedThing = level
-    .getLocation({ x: 2, y: 2 })!
-    .things
-    .filter(thing => thing.description.label === "foo")[0];
-
-    expect(rememberedThing.description.properties).toEqual<ThingProperty[]>([
+    expect(findFoo().description.properties).toEqual<ThingProperty[]>([
       "pushable",
       "teleport"
     ]);
