@@ -138,6 +138,12 @@ export const SPRITE_CONFIGS = {
         shelveContents4: spriteAt(13, 1),
         shelveContents5: spriteAt(14, 1),
         chair: spriteAt(9, 2),
+        bed: {
+          east: spriteAt(17, 0),
+          west: spriteAt(18, 0),
+          north: spriteAt(17, 1),
+          south: spriteAt(18, 1),
+        }
       },
       hearth: {
         front: spriteAt(0, 27),
