@@ -57,7 +57,7 @@ export const errandMarkersConfigs = new Map<string, ErrandMarkerConfig>()
     }
   )
   .set(
-    "welcomeToMyTower",
+    "misplacedVial",
     {
       mapTile: {
         frameIndex: tileLocationToFrameIndex({ x: 4, y: 7 }),

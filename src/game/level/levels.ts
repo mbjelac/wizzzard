@@ -4,7 +4,7 @@ import { populateEmptyLevelMatrix } from "../game";
 const levels: LevelDescription[] = [
   {
     metadata: {
-      id: "welcomeToMyTower",
+      id: "misplacedVial",
       title: "The misplaced vial",
       description: "I have misplaced a vial of Splendid Water somewhere in my storage room. It's on the 2nd level of my tower. I must find it!",
       type: "errand"
@@ -161,6 +161,7 @@ function getLevelFromLocalStorage(levelId: string): LevelDescription | undefined
 }
 
 export async function storeLevel(level: LevelDescription) {
+  console.log("storing", level.metadata.id, level);
   localStorage.setItem(level.metadata.id, JSON.stringify(level));
 }
 
