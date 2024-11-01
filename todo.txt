@@ -1,3 +1,10 @@
-- simplify levels
-- make laboratory level (research level for Strength spell)
+- set fluff texts about shelve content
+- forgetful druid monster
+- forgetful druid description & marker placement
+- errand images (misplaced vial, wooden dog, forgetful druid)
+- strength spell transmuter
+- animate Lyra movement
+- animate Lyra spellcasting
 - make level which uses Strength spell (old castle, push heavy wall blocks)
+- make level with key ingredient for Jump - a rabbit statuette - located within a great rabbit warren in the hills near Mountains of Dread
+- make level for Jump spell (when moving, skip one square)

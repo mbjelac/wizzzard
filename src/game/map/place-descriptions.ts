@@ -28,6 +28,12 @@ const mapPlaceDescriptions: [Coords[], string][] = [
     ],
     "Misty Lake"
   ],
+  [
+    [
+      { x: 13, y: 10 },
+    ],
+    "Lyra's tower"
+  ],
 ];
 
 export function getMapPlaceDescriptionAt(location: Coords): string | undefined {
