@@ -492,7 +492,7 @@ export default class LevelGui extends Phaser.Scene {
     });
 
     if (moveResult.moved) {
-      this.playSoundEffectOnMove();
+      this.playSoundEffectOfMovingOnFloor();
     }
 
     this.updateAmbientSound();
@@ -695,8 +695,6 @@ export default class LevelGui extends Phaser.Scene {
       sprite.stop();
       sprite.play(animation2);
 
-      this.playSpriteSoundEffect(thing.description.sprite);
-
       if (!quietly) {
         this.playSpriteSoundEffect(thing.description.sprite);
       }
@@ -737,15 +735,16 @@ export default class LevelGui extends Phaser.Scene {
     };
   }
 
-  private playSoundEffectOnMove() {
+  private playSoundEffectOfMovingOnFloor() {
 
-    const spriteName = this
+    const floorSpriteName = this
     .level
     .getLocation(this.level.getPlayerCoords())!
-    .things
-    .map(thing => thing.description.sprite)[0];
+      .things[0]
+      .description
+      .sprite;
 
-    this.playSpriteSoundEffect(spriteName);
+    this.playSpriteSoundEffect(floorSpriteName);
   }
 
   private playSpriteSoundEffect(spriteName: string) {
