@@ -695,6 +695,8 @@ export default class LevelGui extends Phaser.Scene {
       sprite.stop();
       sprite.play(animation2);
 
+      this.playSpriteSoundEffect(thing.description.sprite);
+
       if (!quietly) {
         this.playSpriteSoundEffect(thing.description.sprite);
       }
