@@ -171,12 +171,14 @@ export const SPRITE_CONFIGS = {
                 coords: { x: 4, y: 1 },
                 animation: { frameCount: 1 },
                 auxAnimation: { frameCount: 1 },
+                soundEffect: "doorUnlock",
               }
             ),
             horizontal: spriteConfig({
                 coords: { x: 4, y: 2 },
                 animation: { frameCount: 1 },
                 auxAnimation: { frameCount: 1 },
+                soundEffect: "doorUnlock",
               }
             )
           },
