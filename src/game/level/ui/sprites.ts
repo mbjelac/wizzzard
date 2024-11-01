@@ -216,8 +216,8 @@ export const SPRITE_CONFIGS = {
           }
         }
       },
-      brownSilver: {
-        keyhole: {
+      brown: {
+        silverLock: {
           closed: {
             vertical: spriteConfig(
               {
@@ -244,7 +244,119 @@ export const SPRITE_CONFIGS = {
               }
             ),
           }
-        }
+        },
+        greenLock: {
+          closed: {
+            vertical: spriteConfig(
+              {
+                coords: { x: 10, y: 6 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
+            horizontal: spriteConfig(
+              {
+                coords: { x: 10, y: 7 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
+          }
+        },
+        yellowLock: {
+          closed: {
+            vertical: spriteConfig(
+              {
+                coords: { x: 10, y: 4 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
+            horizontal: spriteConfig(
+              {
+                coords: { x: 10, y: 5 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
+          }
+        },
+        blueLock: {
+          closed: {
+            vertical: spriteConfig(
+              {
+                coords: { x: 6, y: 6 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
+            horizontal: spriteConfig(
+              {
+                coords: { x: 6, y: 7 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
+          }
+        },
+        redLock: {
+          closed: {
+            vertical: spriteConfig(
+              {
+                coords: { x: 8, y: 4 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
+            horizontal: spriteConfig(
+              {
+                coords: { x: 8, y: 5 },
+                soundEffect: "doorUnlock",
+                animation: {
+                  frameCount: 1
+                },
+                auxAnimation: {
+                  frameCount: 1
+                }
+              }
+            ),
+          }
+        },
       },
       blueBarSilver: {
         keyhole: {
@@ -533,9 +645,11 @@ export const SPRITE_CONFIGS = {
 
   },
   keys: {
-    silver: spriteAt(1, 8),
-    gold: spriteAt(3, 8),
-    emerald: spriteAt(4, 8),
+    gray: spriteAt(1, 8),
+    yellow: spriteAt(3, 8),
+    green: spriteAt(4, 8),
+    red: spriteAt(2, 8),
+    blue: spriteAt(5, 8),
   },
   characters: {
     kim: spriteConfig({
