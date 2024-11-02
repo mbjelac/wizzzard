@@ -1,9 +1,10 @@
-import { Level, LevelLocation, MoveResult, ThingAt, TickResult } from "./Level";
+import { Level, MoveResult, ThingAt, TickResult } from "./Level";
 import { createThingProps, LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
 import { EditorTool } from "../editor/EditorTool";
 import { Coords, LevelDescription, ThingDescription } from "./LevelDescription";
 import { SavedThing, Thing, ThingProperty } from "./Thing";
+import { LevelLocation } from "./LevelMap";
 
 let level: Level;
 
@@ -1815,8 +1816,6 @@ describe("monster", () => {
     );
 
     const monster = addMonster("turnLeft|down", 1, 1);
-
-    level.tick();
 
     expect(getTickResults(4).map(result => result.movedThings)).toEqual<ThingAt[][]>([
       [{ thing: monster, at: { x: 1, y: 2 } }],

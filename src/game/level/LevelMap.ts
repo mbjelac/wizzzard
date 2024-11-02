@@ -1,10 +1,16 @@
 import { Thing } from "./Thing";
 import { Coords, LevelDimensions, LevelMatrix } from "./LevelDescription";
 import { SavedLocation } from "./Level";
+import { Direction } from "./Direction";
 
 export interface LevelLocation {
   coords: Coords,
   things: Thing[],
+}
+
+export interface Neighborhood {
+  readonly here: LevelLocation,
+  readonly neighbours: Map<Direction, LevelLocation>
 }
 
 export class LevelMap {
@@ -123,5 +129,17 @@ export class LevelMap {
     .levelLocations
     .flatMap(row => row)
     .filter(levelLocation => predicate(levelLocation));
+  }
+
+  getLocationsWhichHave(thingPredicate: (thing: Thing) => boolean) : LevelLocation[] {
+    return this
+    .getLocationsWhich(location => location.things.some(thingPredicate));
+  }
+
+  getNeighbourhood(location: LevelLocation): Neighborhood {
+    return {
+      here: location,
+      neighbours: new Map()
+    };
   }
 }
