@@ -4,6 +4,7 @@
 - strength spell transmuter
 - animate Lyra movement
 - animate Lyra spellcasting
+- automatic sprite decorations (water bank splashes, shadow from wall above, ...)
 - make level which uses Strength spell (old castle, push heavy wall blocks)
 - make level with key ingredient for Jump - a rabbit statuette - located within a great rabbit warren in the hills near Mountains of Dread
 - make level for Jump spell (when moving, skip one square)
