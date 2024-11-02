@@ -1,7 +1,7 @@
-import { Coords, LevelDescription, LevelLocation } from "../game/level/LevelDescription";
+import { Coords, LevelDescription, LevelMatrixElement } from "../game/level/LevelDescription";
 
 
-const emptyLevelLocation: LevelLocation = { things: [] };
+const emptyLevelLocation: LevelMatrixElement = { things: [] };
 
 
 const level: LevelDescription = require("./level.json");

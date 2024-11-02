@@ -1,7 +1,8 @@
-import { LevelLocation, ThingAt } from "./Level";
+import { ThingAt } from "./Level";
+import { LevelMap } from "./LevelMap";
 
 export class Monsters {
-  tick(levelLocations: LevelLocation[][]): MonstersTickResult {
+  tick(map: LevelMap): MonstersTickResult {
 
     return {
       movedMonsters: []

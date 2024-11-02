@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { Level, LevelLocation } from "../Level";
+import { Level } from "../Level";
 import { Direction } from "../Direction";
 import { TILE_SIZE, tileCenterOffset } from "../../../config";
 import { GAME } from "../../game";
@@ -16,6 +16,7 @@ import { BitmapFonts } from "../../../utils/BitmapFonts";
 import { talkingHeadConfigs } from "./talkingHeadConfigs";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
+import { LevelLocation } from "../LevelMap";
 
 const animation1 = "animation1";
 const animation2 = "animation2";
@@ -40,8 +41,6 @@ export default class LevelGui extends Phaser.Scene {
 
   // @ts-ignore undefined - has to be set before usage (fail fast)
   private level: Level;
-
-  private levelComplete = false;
 
   private voidTiles: Sprite[] = [];
   private readonly createdSpritesByThingId: Map<number, Sprite> = new Map();
@@ -460,7 +459,6 @@ export default class LevelGui extends Phaser.Scene {
           }
         ]
       );
-      this.levelComplete = true;
     }
 
     this.sideTextContent = this.getText(moveResult.text);
@@ -677,7 +675,6 @@ export default class LevelGui extends Phaser.Scene {
     }
 
     await GAME.setLevel(levelDescription);
-
   }
 
   private activeRememberingStoneSprite: Sprite | undefined;

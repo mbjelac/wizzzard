@@ -1,4 +1,4 @@
-import { LevelLocation, LevelMatrix, LevelDimensions } from "./LevelDescription";
+import { LevelMatrixElement, LevelMatrix, LevelDimensions } from "./LevelDescription";
 import { populateEmptyLevelMatrix } from "../game";
 
 describe("non-positive dimensions level produces empty matrix", () => {
@@ -42,7 +42,7 @@ it("x-y dimensions produce matrix with all elements empty location", () => {
 
   const matrix = populateEmptyLevelMatrix({ width: 2, height: 2 });
 
-  const empty: LevelLocation = { things: [] };
+  const empty: LevelMatrixElement = { things: [] };
 
   expect(matrix).toEqual([
     [empty, empty],

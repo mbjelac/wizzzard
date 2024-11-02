@@ -531,13 +531,17 @@ describe("giving receiver", () => {
     expect(level.getInventory()).toEqual([]);
   });
 
-  it("gift no longer in level after being given", () => {
+  it("gift given only once", () => {
 
     level.tryToMove(Direction.LEFT);
     level.tryToMove(Direction.RIGHT);
     level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.RIGHT);
+    level.tryToMove(Direction.RIGHT);
 
-    expect(getAllThings(level).every(thing => thing.id !== gift.id)).toBe(true);
+    expect(level.getInventory()).toEqual([gift]);
   });
 
   it("giving receiver gives all pickups under it on receiving", () => {
@@ -1068,16 +1072,27 @@ describe("pushing", () => {
   });
 
   it("pushable is pushed", () => {
-    const pushed = level.tryToMove(Direction.RIGHT).pushed;
-    expect(pushed).toEqual([pushable]);
+    expect(level.tryToMove(Direction.RIGHT).pushed).toEqual([pushable]);
   });
 
   it("pushable is relocated within level", () => {
-    level.tryToMove(Direction.RIGHT);
-
-    expect(getCoordsOf(pushable.id)).toEqual<Coords>({
-      x: 3, y: 1
-    });
+    expect([
+      Direction.RIGHT,
+      Direction.DOWN,
+      Direction.RIGHT,
+      Direction.RIGHT,
+      Direction.UP,
+      Direction.LEFT,
+      ]
+      .map(direction => level.tryToMove(direction).pushed)
+    ).toEqual([
+      [pushable],
+      [],
+      [],
+      [],
+      [],
+      [pushable],
+    ]);
   });
 
   describe("when wall behind", () => {
@@ -1092,15 +1107,11 @@ describe("pushing", () => {
     });
 
     it("pushable is not pushed", () => {
-      const pushed = level.tryToMove(Direction.RIGHT).pushed;
-      expect(pushed).toEqual([]);
+      expect(level.tryToMove(Direction.RIGHT).pushed).toEqual([]);
     });
 
     it("pushable is not relocated within level", () => {
-      level.tryToMove(Direction.RIGHT);
-      expect(getCoordsOf(pushable.id)).toEqual<Coords>({
-        x: 2, y: 1
-      });
+      expect(level.tryToMove(Direction.RIGHT).pushed).toEqual([]);
     });
   });
 
@@ -1121,10 +1132,8 @@ describe("pushing", () => {
     });
 
     it("pushable is not relocated within level", () => {
-      level.tryToMove(Direction.RIGHT);
-      expect(getCoordsOf(pushable.id)).toEqual<Coords>({
-        x: 2, y: 1
-      });
+      const moveResult = level.tryToMove(Direction.RIGHT);
+      expect(moveResult.pushed).toEqual([]);
     });
   });
 });
@@ -1881,18 +1890,6 @@ function addLabelledThing(x: number, y: number, label: string, ...properties: Th
   return addThingWithProps({ ...defaultAddThingProps, x, y, label, properties });
 }
 
-function getAllThings(level: Level): SavedThing[] {
-  return level.getSavedLocations().flatMap(row => row.flatMap(loc => loc.things));
-}
-
-function getThingsAt(x: number, y: number, skipInitialThings: boolean = true): Thing[] {
-  return level.getLocation({ x, y })!.things.slice(skipInitialThings ? 1 : 0);
-}
-
-function getCoordsOf(thingId: number): Coords | undefined {
-  return level.findLocationByThingId(thingId);
-}
-
 function movementToChangedStateLists(...directions: Direction[]): Thing[][] {
   return directions.map(direction => level.tryToMove(direction).changedState);
 }
@@ -1903,12 +1900,11 @@ function textAfterMove(...directions: Direction[]): (string | undefined)[] {
 
 function getThingDescriptions() {
   return level
-  .getSavedLocations()
+  .getLevelMatrix()
   .map(row =>
     row.map(location =>
       location.things
-      .filter(thing => thing.description.sprite !== "floor")
-      .map(thing => thing.description)
+      .filter(thingDescription => thingDescription.sprite !== "floor")
     )
   );
 }

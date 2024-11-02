@@ -16,12 +16,12 @@ export interface ThingDescription {
   readonly text?: string,
 }
 
-export interface LevelLocation {
+export interface LevelMatrixElement {
 
   things: ThingDescription[]
 }
 
-export type LevelMatrix = LevelLocation[][];
+export type LevelMatrix = LevelMatrixElement[][];
 
 export interface CompletionCriteria {
   inventory: string[],

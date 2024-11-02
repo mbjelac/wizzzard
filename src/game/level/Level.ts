@@ -4,6 +4,7 @@ import { Coords, LevelDescription, LevelMatrix } from "./LevelDescription";
 import { SavedThing, Thing, ThingProperty } from "./Thing";
 import { interactWithSlot } from "./slot";
 import { Monsters } from "./Monsters";
+import { LevelLocation, LevelMap } from "./LevelMap";
 
 export interface MoveResult {
   moved: boolean,
@@ -32,11 +33,6 @@ const doNothing: MoveResult = {
   addedThings: undefined
 }
 
-export interface LevelLocation {
-  coords: Coords,
-  things: Thing[],
-}
-
 export interface ThingAt {
   readonly thing: Thing,
   readonly at: Coords
@@ -50,7 +46,7 @@ interface SavedGame {
   readonly idsThatChangedState: number[];
 }
 
-interface SavedLocation {
+export interface SavedLocation {
   readonly coords: Coords;
   readonly things: SavedThing[];
 }
@@ -59,7 +55,7 @@ export class Level {
 
   public readonly editor = new LevelEditor();
 
-  private levelLocations: LevelLocation[][];
+  private map: LevelMap;
   private playerCoords: Coords;
 
   public collisionEnabled = true;
@@ -79,17 +75,7 @@ export class Level {
     private readonly addToGameInventory: (items: string[]) => void
   ) {
     this.playerCoords = { ...levelDescription.startCoords };
-    this.levelLocations = this
-    .levelDescription
-    .matrix
-    .map((row, rowIndex) => row
-      .map((location, columnIndex) => ({
-          coords: { x: columnIndex, y: rowIndex },
-          things: location.things
-          .map(thingProps => Thing.create(thingProps))
-        })
-      )
-    );
+    this.map = LevelMap.fromLevelMatrix(this.levelDescription.matrix);
 
     (levelDescription.initialInventory || [])
     .forEach(initialThingDescription => {
@@ -177,7 +163,7 @@ export class Level {
         this.savedGame = {
           playerCoords: this.playerCoords,
           inventory: this.inventory.map(thing => thing.save()),
-          locations: this.getSavedLocations(),
+          locations: this.map.save(),
           ambientSound: this.ambientSound,
           idsThatChangedState: [...this.thingsThatChangedState.map(thing => thing.id), rememberingStone.id]
         };
@@ -234,7 +220,7 @@ export class Level {
 
   private getMoveLocation(startCoords: Coords, direction: Direction): LevelLocation | undefined {
     const nextCoords = direction.move(startCoords);
-    return this.getLocation(nextCoords);
+    return this.map.getLocation(nextCoords);
   }
 
   private doesLocationHaveProperty(location: LevelLocation, ...properties: ThingProperty[]): boolean {
@@ -264,22 +250,8 @@ export class Level {
     this.doneReceivers.push(receiver.description.label!);
   }
 
-  getLocation(coords: Coords): LevelLocation | undefined {
-    const row = this.levelLocations[coords.y];
-
-    if (!row) {
-      return undefined;
-    }
-
-    return row[coords.x];
-  }
-
   getPlayerCoords(): Coords {
     return this.playerCoords;
-  }
-
-  matrixNotEmpty() {
-    return this.levelLocations.length > 0 && this.levelLocations.every(row => row.length > 0);
   }
 
   getInventory(): Thing[] {
@@ -318,7 +290,8 @@ export class Level {
   private getNeighbouringTexts(): string | undefined {
 
     const neighbouringTexts = this
-    .getNeighbours()
+    .map
+    .getNeighbours(this.playerCoords)
     .flatMap(neighbourLocation => neighbourLocation.things)
     .filter(thing => thing.is("automatic") && thing.description.text !== undefined)
     .map(thing => thing.description.text);
@@ -326,17 +299,6 @@ export class Level {
     return neighbouringTexts.length === 0
       ? undefined
       : neighbouringTexts.join();
-  }
-
-  private getNeighbours(): LevelLocation[] {
-    return [
-      { y: this.playerCoords.y - 1, x: this.playerCoords.x },
-      { y: this.playerCoords.y + 1, x: this.playerCoords.x },
-      { y: this.playerCoords.y, x: this.playerCoords.x - 1 },
-      { y: this.playerCoords.y, x: this.playerCoords.x + 1 },
-    ]
-    .filter(coords => coords.x >= 0 && coords.y >= 0 && coords.x < this.levelDescription.levelDimensions.width && coords.y < this.levelDescription.levelDimensions.height)
-    .map(coords => this.levelLocations[coords.y][coords.x]);
   }
 
   private getReceiverForAnInventoryItem(location: LevelLocation): Thing | undefined {
@@ -383,19 +345,7 @@ export class Level {
   }
 
   getDepth(thing: Thing): number {
-    return this.getLocationOfThing(thing)!.things.indexOf(thing);
-  }
-
-  private getLocationOfThing(thing: Thing): LevelLocation | undefined {
-    return this
-    .levelLocations
-    .flatMap(row => row
-    .flatMap(location => ({
-      hitCount: location.things.filter(levelThing => levelThing.equals(thing)).length,
-      location: location
-    })))
-    .find(result => result.hitCount === 1)
-      ?.location;
+    return this.map.getLocationOfThing(thing)!.things.indexOf(thing);
   }
 
   private pushableCanBePushed(location: LevelLocation, direction: Direction): boolean {
@@ -449,18 +399,14 @@ export class Level {
       return nextLocation.coords;
     }
 
-    const targetLocation = this
-    .levelLocations
-    .flatMap(row => row
-    .flatMap(location => ({
-      isTeleportTarget: location.things.find(levelThing => !levelThing.equals(teleport) && levelThing.description.label === teleport.description.label),
-      location: location
-    })))
-    .filter(candidate => candidate.isTeleportTarget)
-      [0]
-      ?.location;
+    const targetCoords = this
+    .map
+    .getLocationsWhich(location =>
+      location.things.find(locationThing => !locationThing.equals(teleport) && locationThing.description.label === teleport.description.label) !== undefined
+    )[0]
+      ?.coords;
 
-    return targetLocation ? targetLocation.coords : nextLocation.coords;
+    return targetCoords || nextLocation.coords;
   }
 
   canRemember() {
@@ -476,59 +422,13 @@ export class Level {
 
     const thingsById = new Map<number, Thing>();
 
-    this.levelLocations = this.savedGame.locations.map(
-      row => row.map(
-        savedLocation => (
-          {
-            coords: savedLocation.coords,
-            things: savedLocation.things.map(savedThing => {
-              const thing = Thing.load(savedThing);
-              thingsById.set(savedThing.id, thing);
-              return thing;
-            })
-          }
-        )
-      )
+    this.map = LevelMap.fromSavedLocations(
+      this.savedGame.locations,
+      (thing: Thing) => thingsById.set(thing.id, thing)
     );
     this.inventory = this.savedGame.inventory.map(savedThing => Thing.load(savedThing));
     this.ambientSound = this.savedGame.ambientSound;
     this.thingsThatChangedState = this.savedGame.idsThatChangedState.map(id => thingsById.get(id)!);
-  }
-
-  getSavedLocations(): SavedLocation[][] {
-    return this.levelLocations.map(
-      row => row.map(
-        location => (
-          {
-            coords: location.coords,
-            things: location.things.map(thing => thing.save())
-          }
-        )
-      )
-    );
-  }
-
-  findLocationByThingId(thingId: number): Coords | undefined {
-    return this
-    .levelLocations
-    .flatMap((row, rowIndex) => row
-    .flatMap((col, colIndex) => ({
-      hitCount: col.things.filter(levelThing => levelThing.id == thingId).length,
-      coords: { x: colIndex, y: rowIndex }
-    })))
-    .find(loc => loc.hitCount === 1)
-      ?.coords;
-  }
-
-  getLevelMatrix(): LevelMatrix {
-    return this.levelLocations
-    .map(row => row
-      .map(location => ({
-          things: location.things
-          .map(thing => thing.description)
-        })
-      )
-    );
   }
 
   getAmbientSound(): string | undefined {
@@ -541,11 +441,25 @@ export class Level {
 
   tick(): TickResult {
 
-    const result = this.monsters.tick(this.levelLocations);
+    const result = this.monsters.tick(this.map);
 
     return {
       died: false,
       movedThings: result.movedMonsters
     };
+  }
+
+  getLocation(coords: Coords): LevelLocation {
+    const location = this.map.getLocation(coords);
+
+    if(location === undefined) {
+      throw new Error("Invalid location: " + JSON.stringify(coords));
+    }
+
+    return location;
+  }
+
+  getLevelMatrix(): LevelMatrix {
+    return this.map.getLevelMatrix();
   }
 }
