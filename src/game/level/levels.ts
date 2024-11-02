@@ -161,7 +161,6 @@ function getLevelFromLocalStorage(levelId: string): LevelDescription | undefined
 }
 
 export async function storeLevel(level: LevelDescription) {
-  console.log("storing", level.metadata.id, level);
   localStorage.setItem(level.metadata.id, JSON.stringify(level));
 }
 
