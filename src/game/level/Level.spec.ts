@@ -1,4 +1,4 @@
-import { Level, LevelLocation, MoveResult } from "./Level";
+import { Level, LevelLocation, MoveResult, ThingAt, TickResult } from "./Level";
 import { createThingProps, LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
 import { EditorTool } from "../editor/EditorTool";
@@ -1793,6 +1793,49 @@ describe("slot", () => {
     expect(level.tryToMove(Direction.RIGHT).removedThings).toEqual([pickup]);
   });
 });
+
+describe("monster", () => {
+
+  it("moves in empty space", () => {
+
+    level = createLevel(
+      "    ",
+      "    ",
+      "    ",
+      "    ",
+    );
+
+    const monster = addMonster("turnLeft|down", 1, 1);
+
+    level.tick();
+
+    expect(getTickResults(4).map(result => result.movedThings)).toEqual<ThingAt[][]>([
+      [{ thing: monster, at: { x: 1, y: 2 } }],
+      [{ thing: monster, at: { x: 2, y: 2 } }],
+      [{ thing: monster, at: { x: 2, y: 1 } }],
+      [{ thing: monster, at: { x: 1, y: 1 } }],
+    ]);
+  });
+
+  function addMonster(label: string, x: number, y: number): Thing {
+    return addThingWithProps({
+      label: label,
+      properties: ["monster"],
+      x: x,
+      y: y,
+      text: undefined
+    });
+  }
+
+  function getTickResults(numberOfTicks: number): TickResult[] {
+    return Array(numberOfTicks)
+    .fill(0)
+    .map(_ => {
+      return level.tick();
+    });
+  }
+});
+
 
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
   return addThingWithProps({

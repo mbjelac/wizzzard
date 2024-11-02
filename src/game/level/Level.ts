@@ -3,6 +3,7 @@ import { Direction } from "./Direction";
 import { Coords, LevelDescription, LevelMatrix } from "./LevelDescription";
 import { SavedThing, Thing, ThingProperty } from "./Thing";
 import { interactWithSlot } from "./slot";
+import { Monsters } from "./Monsters";
 
 export interface MoveResult {
   moved: boolean,
@@ -13,6 +14,11 @@ export interface MoveResult {
   pushed: Thing[];
   changedState: Thing[];
   addedThings: LevelLocation | undefined;
+}
+
+export interface TickResult {
+  died: boolean
+  movedThings: ThingAt[];
 }
 
 const doNothing: MoveResult = {
@@ -29,6 +35,11 @@ const doNothing: MoveResult = {
 export interface LevelLocation {
   coords: Coords,
   things: Thing[],
+}
+
+export interface ThingAt {
+  readonly thing: Thing,
+  readonly at: Coords
 }
 
 interface SavedGame {
@@ -61,6 +72,7 @@ export class Level {
   private savedGame?: SavedGame;
 
   private thingsThatChangedState: Thing[] = [];
+  private monsters: Monsters = new Monsters();
 
   constructor(
     public readonly levelDescription: LevelDescription,
@@ -525,5 +537,15 @@ export class Level {
 
   getThingsThatChangedState() {
     return this.thingsThatChangedState;
+  }
+
+  tick(): TickResult {
+
+    const result = this.monsters.tick(this.levelLocations);
+
+    return {
+      died: false,
+      movedThings: result.movedMonsters
+    };
   }
 }

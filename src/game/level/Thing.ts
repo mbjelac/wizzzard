@@ -14,7 +14,8 @@ export const ALL_THING_PROPERTIES = [
   "bridgeable",
   "teleport",
   "remember",
-  "slot"
+  "slot",
+  "monster"
 ] as const;
 export type ThingPropertyTuple = typeof ALL_THING_PROPERTIES;
 
