@@ -1,4 +1,3 @@
-- set fluff texts about shelve content
 - forgetful druid monster
 - forgetful druid description & marker placement
 - errand images (misplaced vial, wooden dog, forgetful druid)
