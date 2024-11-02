@@ -94,19 +94,19 @@ export default class SpellBookGui extends Phaser.Scene {
     .setDisplaySize(screen.size.width, screen.size.height);
 
     this.physics.add
-    .sprite(4 * 4, screen.center.y, "closeLeft")
+    .sprite(6 * 4, screen.center.y, "closeLeft")
     .setDisplaySize(12 * 4, screen.size.height)
     .setInteractive()
     .on("pointerup", () => {
-      this.scene.switch("errands")
+      this.scene.switch(SceneId.ERRANDS)
     });
 
     this.physics.add
-    .sprite(screen.size.width - 5 * 4, screen.center.y, "closeRight")
+    .sprite(screen.size.width - 7 * 4, screen.center.y, "closeRight")
     .setDisplaySize(14 * 4, screen.size.height)
     .setInteractive()
     .on("pointerup", () => {
-      this.scene.switch("errands")
+      this.scene.switch(SceneId.ERRANDS)
     });
 
     this.researchButton.create(this);
