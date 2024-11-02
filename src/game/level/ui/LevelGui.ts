@@ -741,8 +741,8 @@ export default class LevelGui extends Phaser.Scene {
     .level
     .getLocation(this.level.getPlayerCoords())!
       .things[0]
-      .description
-      .sprite;
+      ?.description
+      ?.sprite;
 
     this.playSpriteSoundEffect(floorSpriteName);
   }
