@@ -16,7 +16,11 @@ export class Direction {
     ];
   }
 
-  private constructor(public readonly deltaX: number, public readonly deltaY: number, public readonly name: string) {
+  private constructor(
+    public readonly deltaX: number,
+    public readonly deltaY: number,
+    public readonly name: string
+  ) {
   }
 
 
@@ -26,4 +30,24 @@ export class Direction {
       y: coords.y + this.deltaY
     };
   }
+
+  left(): Direction {
+    return leftOf.get(this)!;
+  }
+
+  right(): Direction {
+    return rightOf.get(this)!;
+  }
 }
+
+const leftOf = new Map<Direction, Direction>()
+.set(Direction.UP, Direction.LEFT)
+.set(Direction.LEFT, Direction.DOWN)
+.set(Direction.DOWN, Direction.RIGHT)
+.set(Direction.RIGHT, Direction.UP);
+
+const rightOf = new Map<Direction, Direction>()
+.set(Direction.UP, Direction.RIGHT)
+.set(Direction.RIGHT, Direction.DOWN)
+.set(Direction.DOWN, Direction.LEFT)
+.set(Direction.LEFT, Direction.UP);

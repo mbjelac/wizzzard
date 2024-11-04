@@ -4,7 +4,6 @@ import { Coords, LevelDescription, LevelMatrix } from "./LevelDescription";
 import { SavedThing, Thing, ThingProperty } from "./Thing";
 import { interactWithSlot } from "./slot";
 import { LevelLocation, LevelMap } from "./LevelMap";
-import { Monster } from "./Monster";
 
 export interface MoveResult {
   moved: boolean,
@@ -445,9 +444,16 @@ export class Level {
     .getLocationsWhichHave(thing => thing.is("monster"))
     .flatMap(location =>
       location.things.filter(thing => thing.is("monster"))
-      .map(thing => new Monster(thing, location.coords, []))
-    )
-    .map(monster => monster.move());
+      .map(thing => {
+        const nextCoords =  thing.move(location.coords, this.map.getSurroundings(location))
+        this.map.move(thing, location, nextCoords);
+        return {
+          thing: thing,
+          at: nextCoords
+        }
+      }
+      )
+    );
 
     return {
       died: false,
@@ -458,7 +464,7 @@ export class Level {
   getLocation(coords: Coords): LevelLocation {
     const location = this.map.getLocation(coords);
 
-    if(location === undefined) {
+    if (location === undefined) {
       throw new Error("Invalid location: " + JSON.stringify(coords));
     }
 

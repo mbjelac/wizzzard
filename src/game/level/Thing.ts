@@ -1,4 +1,6 @@
-import { ThingDescription } from "./LevelDescription";
+import { Coords, ThingDescription } from "./LevelDescription";
+import { Direction } from "./Direction";
+import { getDirection, Surroundings } from "./monster-utils";
 
 export const ALL_THING_PROPERTIES = [
   "wall",
@@ -44,10 +46,18 @@ export class Thing {
     return new Thing(description, Thing.nextId++);
   }
 
+  private direction: Direction;
+
   private constructor(
     public readonly description: ThingDescription,
     public readonly id: number
   ) {
+    const directionSpec = description.label?.split("|")[1];
+
+    this.direction = Direction
+      .getAllDirections()
+      .find(direction => direction.name.toLowerCase() == directionSpec?.toLowerCase())
+      || Direction.DOWN;
   }
 
   equals(thing: Thing): boolean {
@@ -84,6 +94,38 @@ export class Thing {
         properties: [...this.description.properties]
       },
     };
+  }
+
+  move(currentLocation: Coords, surroundings: Surroundings): Coords {
+
+    const movePossible = this.isMovePossible(surroundings);
+
+    if (!movePossible) {
+      return currentLocation;
+    }
+
+    return movePossible
+      ? this.direction.move(currentLocation)
+      : currentLocation;
+  }
+
+  private isMovePossible(surroundings: Surroundings): boolean {
+
+    const spec = this.description.label?.split("|")[0];
+
+    if (spec == undefined) {
+      throw Error("Failed to parse spec: " + JSON.stringify(this.description));
+    }
+
+    const nextDirection = getDirection(spec, this.direction, surroundings)
+
+    if (nextDirection == undefined) {
+      return false;
+    }
+
+    this.direction = nextDirection;
+
+    return true;
   }
 }
 

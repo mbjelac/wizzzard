@@ -1818,9 +1818,9 @@ describe("monster", () => {
     const monster = addMonster("turnLeft|down", 1, 1);
 
     expect(getTickResults(4).map(result => result.movedThings)).toEqual<ThingAt[][]>([
-      [{ thing: monster, at: { x: 1, y: 2 } }],
-      [{ thing: monster, at: { x: 2, y: 2 } }],
       [{ thing: monster, at: { x: 2, y: 1 } }],
+      [{ thing: monster, at: { x: 2, y: 0 } }],
+      [{ thing: monster, at: { x: 1, y: 0 } }],
       [{ thing: monster, at: { x: 1, y: 1 } }],
     ]);
   });

@@ -2,6 +2,7 @@ import { Thing } from "./Thing";
 import { Coords, LevelDimensions, LevelMatrix } from "./LevelDescription";
 import { SavedLocation } from "./Level";
 import { Direction } from "./Direction";
+import { Surroundings } from "./monster-utils";
 
 export interface LevelLocation {
   coords: Coords,
@@ -28,7 +29,7 @@ export class LevelMap {
     );
   }
 
-  static fromSavedLocations(savedLocations: SavedLocation[][], thingCreationListener: (thing: Thing)=> void) {
+  static fromSavedLocations(savedLocations: SavedLocation[][], thingCreationListener: (thing: Thing) => void) {
     return new LevelMap(savedLocations.map(
         row => row.map(
           savedLocation => (
@@ -131,15 +132,30 @@ export class LevelMap {
     .filter(levelLocation => predicate(levelLocation));
   }
 
-  getLocationsWhichHave(thingPredicate: (thing: Thing) => boolean) : LevelLocation[] {
+  getLocationsWhichHave(thingPredicate: (thing: Thing) => boolean): LevelLocation[] {
     return this
     .getLocationsWhich(location => location.things.some(thingPredicate));
   }
 
-  getNeighbourhood(location: LevelLocation): Neighborhood {
+  getSurroundings(location: LevelLocation): Surroundings {
+
+    const thingsAround = new Map<Direction, Thing[]>();
+
+    Direction.getAllDirections().forEach(direction => {
+      const things = this.getLocation(direction.move(location.coords))?.things;
+
+      if(things !== undefined) {
+        thingsAround.set(direction, things);
+      }
+    });
+
     return {
-      here: location,
-      neighbours: new Map()
+      thingsInDirection: thingsAround
     };
+  }
+
+  move(thingToMove: Thing, currentLocation: LevelLocation, nextCoords: Coords) {
+    currentLocation.things = currentLocation.things.filter(thing => thing.id !== thingToMove.id);
+    this.getLocation(nextCoords)!.things.push(thingToMove);
   }
 }
