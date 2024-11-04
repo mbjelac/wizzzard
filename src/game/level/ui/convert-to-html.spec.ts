@@ -1,7 +1,5 @@
-import { spriteAt, SpriteConfig, spriteConfig } from "./sprites";
-import { convertToHtml } from "./editor-panel";
-
-
+import { spriteAt, SpriteConfig } from "./sprites";
+import { convertToHtml } from "./convert-to-html";
 
 const spriteConfigToString = (lastKey: string, spriteConfig: SpriteConfig) => `${lastKey}=x:${spriteConfig.tileCoords.x},y:${spriteConfig.tileCoords.y}`;
 

@@ -1,6 +1,7 @@
 import { SPRITE_CONFIGS, SPRITE_CONFIGS_BY_LOCATION, SpriteConfig } from "./sprites";
 
 import { ALL_THING_PROPERTIES } from "../Thing";
+import { convertToHtml } from "./convert-to-html";
 
 const spriteSelectionPanel: HTMLElement = document.getElementById("editor-sprites")!;
 const propertiesOptionsPanel: HTMLElement = document.getElementById("editor-properties")!;
@@ -42,26 +43,7 @@ margin-right: 6px;
     });
 }
 
-export function convertToHtml(
-  spriteConfigs: any,
-  configToHtml: (lastKey: string, spriteConfig: SpriteConfig) => string
-): string {
-  return Object
-    .keys(spriteConfigs)
-    .map(key => {
 
-      if (spriteConfigs[key].tileCoords !== undefined) {
-        return configToHtml(key, spriteConfigs[key]);
-      }
-
-      return "<details><summary>" +
-        key +
-        "</summary>" +
-        convertToHtml(spriteConfigs[key], configToHtml) +
-        "</details>";
-    })
-    .join("");
-}
 
 function loadPropertiesList() {
   ALL_THING_PROPERTIES

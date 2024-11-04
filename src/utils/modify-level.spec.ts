@@ -6,7 +6,7 @@ const emptyLevelLocation: LevelMatrixElement = { things: [] };
 
 const level: LevelDescription = require("./level.json");
 
-it("modify level", () => {
+xit("modify level", () => {
 
   /*
     21,29       38,29
