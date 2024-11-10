@@ -3,11 +3,11 @@ import { TickResult } from "../Level";
 export class Ticker {
 
   private lastTickTime = 0;
-  private readonly tickInterval = 200;
 
   constructor(
     private readonly tickResultProvider: () => TickResult,
-    private readonly tickResultHandler: (result: TickResult) => void
+    private readonly tickResultHandler: (result: TickResult) => void,
+    readonly tickInterval = 400
   ) {
   }
 

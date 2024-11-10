@@ -14,10 +14,10 @@ import { VariantTiles } from "./VariantTiles";
 import { SceneId } from "../../../utils/scene-ids";
 import { BitmapFonts } from "../../../utils/BitmapFonts";
 import { talkingHeadConfigs } from "./talkingHeadConfigs";
-import Pointer = Phaser.Input.Pointer;
-import Sprite = Phaser.Physics.Arcade.Sprite;
 import { LevelLocation } from "../LevelMap";
 import { Ticker } from "./Ticker";
+import Pointer = Phaser.Input.Pointer;
+import Sprite = Phaser.Physics.Arcade.Sprite;
 
 const animation1 = "animation1";
 const animation2 = "animation2";
@@ -65,7 +65,7 @@ export default class LevelGui extends Phaser.Scene {
 
   private readonly ticker = new Ticker(
     () => this.level.tick(),
-    (result: TickResult)=> this.handleTickResult(result)
+    (result: TickResult) => this.handleTickResult(result)
   )
 
   constructor() {
@@ -862,8 +862,19 @@ export default class LevelGui extends Phaser.Scene {
 
       const pixelCoords = toPixelCoords(movedThing.at);
 
-      sprite.setX(pixelCoords.x);
-      sprite.setY(pixelCoords.y);
+      const oldX = sprite.x;
+      const oldY = sprite.y;
+
+      sprite.setX((oldX + pixelCoords.x) / 2);
+      sprite.setY((oldY + pixelCoords.y) / 2);
+
+      setTimeout(() => {
+          sprite.setX(pixelCoords.x);
+          sprite.setY(pixelCoords.y);
+        },
+        this.ticker.tickInterval / 2
+      );
+
     });
 
   }
