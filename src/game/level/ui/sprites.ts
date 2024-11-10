@@ -661,7 +661,10 @@ export const SPRITE_CONFIGS = {
     })
   },
   monsters: {
-    beetle: spriteAt(25, 0)
+    beetle: spriteConfig({
+      coords: { x: 25, y: 0 },
+      animation: { frameCount: 2 },
+    })
   },
   misc: {
     woodenDog: spriteAt(0, 9),

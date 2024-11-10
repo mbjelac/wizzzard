@@ -4,7 +4,7 @@ import { Direction } from "../Direction";
 import { TILE_SIZE, tileCenterOffset } from "../../../config";
 import { GAME } from "../../game";
 import { Coords, LevelDescription, TextContent, ThingDescription } from "../LevelDescription";
-import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION } from "./sprites";
+import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION, spriteAt } from "./sprites";
 import { clearLabelText, getLabelText } from "./editor-panel";
 import depths from "./depths";
 import { ButtonConfig, DialogBox } from "../../../utils/widgets/DialogBox";
@@ -479,8 +479,15 @@ export default class LevelGui extends Phaser.Scene {
 
     const playerPixelCoords = toPixelCoords(this.level.getPlayerCoords());
 
-    this.player.setX(playerPixelCoords.x);
-    this.player.setY(playerPixelCoords.y);
+    moveSmoothly(
+      {x: this.player.x, y: this.player.y},
+      playerPixelCoords,
+      (position: Coords) => this.player.setPosition(position.x, position.y),
+      100
+    );
+
+    // this.player.setX(playerPixelCoords.x);
+    // this.player.setY(playerPixelCoords.y);
 
     moveResult.pushed.forEach(pushedThing => {
 
@@ -860,21 +867,12 @@ export default class LevelGui extends Phaser.Scene {
         return;
       }
 
-      const pixelCoords = toPixelCoords(movedThing.at);
-
-      const oldX = sprite.x;
-      const oldY = sprite.y;
-
-      sprite.setX((oldX + pixelCoords.x) / 2);
-      sprite.setY((oldY + pixelCoords.y) / 2);
-
-      setTimeout(() => {
-          sprite.setX(pixelCoords.x);
-          sprite.setY(pixelCoords.y);
-        },
-        this.ticker.tickInterval / 2
+      moveSmoothly(
+        {x: sprite.x, y: sprite.y},
+        toPixelCoords(movedThing.at),
+        (position: Coords) => sprite.setPosition(position.x, position.y),
+        this.ticker.tickInterval
       );
-
     });
 
   }
@@ -911,3 +909,39 @@ export function getSpriteFrameIndex(tileCoords: Coords): number {
   const tileSetWidth = 40;
   return tileCoords.y * tileSetWidth + tileCoords.x;
 }
+
+function moveSmoothly(oldPosition: Coords, newPosition: Coords, positionHandler: (position: Coords) => void, moveDuration: number) {
+
+  const smoothness = 4;
+
+  let movesLeft = smoothness;
+
+  const delta: Coords = {
+    x: (newPosition.x - oldPosition.x) / smoothness,
+    y: (newPosition.y - oldPosition.y) / smoothness
+  }
+
+  let position: Coords = {
+    x: oldPosition.x,
+    y: oldPosition.y
+  };
+
+  const intervalId = setInterval(
+    ()=> {
+
+      position = {
+        x: position.x + delta.x,
+        y: position.y + delta.y
+      };
+
+      if (--movesLeft === 0) {
+        clearInterval(intervalId);
+        positionHandler(newPosition);
+      } else {
+        positionHandler(position);
+      }
+    },
+    moveDuration / smoothness - 5
+  );
+}
+
