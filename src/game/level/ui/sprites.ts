@@ -660,6 +660,9 @@ export const SPRITE_CONFIGS = {
       auxAnimation: { frameCount: 4, framesPerSecond: 3 }
     })
   },
+  monsters: {
+    beetle: spriteAt(25, 0)
+  },
   misc: {
     woodenDog: spriteAt(0, 9),
     seed: spriteAt(1, 9),

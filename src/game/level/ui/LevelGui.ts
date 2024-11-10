@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { Level } from "../Level";
+import { Level, TickResult } from "../Level";
 import { Direction } from "../Direction";
 import { TILE_SIZE, tileCenterOffset } from "../../../config";
 import { GAME } from "../../game";
@@ -17,6 +17,7 @@ import { talkingHeadConfigs } from "./talkingHeadConfigs";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
 import { LevelLocation } from "../LevelMap";
+import { Ticker } from "./Ticker";
 
 const animation1 = "animation1";
 const animation2 = "animation2";
@@ -61,6 +62,11 @@ export default class LevelGui extends Phaser.Scene {
   private readonly dialogBox = new DialogBox();
 
   private variantTiles!: VariantTiles;
+
+  private readonly ticker = new Ticker(
+    () => this.level.tick(),
+    (result: TickResult)=> this.handleTickResult(result)
+  )
 
   constructor() {
     super("level");
@@ -355,6 +361,7 @@ export default class LevelGui extends Phaser.Scene {
     );
   }
 
+
   update(time: number, delta: number) {
 
     const playerLocation = this.level.getPlayerCoords();
@@ -366,6 +373,8 @@ export default class LevelGui extends Phaser.Scene {
     disableKeyEventsOnEditorWidgets();
 
     this.level.collisionEnabled = (document.getElementById("editor-collisions")! as HTMLInputElement).checked;
+
+    this.ticker.tick(time);
   }
 
   private updateSidePanel(playerLocation: Coords) {
@@ -838,6 +847,24 @@ export default class LevelGui extends Phaser.Scene {
     addedThings.things.forEach(addedThing => {
       this.addThingSprite(addedThings.coords, levelLocation, addedThing);
     });
+  }
+
+  private handleTickResult(result: TickResult) {
+
+    result.movedThings.forEach(movedThing => {
+
+      const sprite = this.createdSpritesByThingId.get(movedThing.thing.id);
+
+      if (sprite === undefined) {
+        return;
+      }
+
+      const pixelCoords = toPixelCoords(movedThing.at);
+
+      sprite.setX(pixelCoords.x);
+      sprite.setY(pixelCoords.y);
+    });
+
   }
 }
 

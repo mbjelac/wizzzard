@@ -156,6 +156,12 @@ export class LevelMap {
 
   move(thingToMove: Thing, currentLocation: LevelLocation, nextCoords: Coords) {
     currentLocation.things = currentLocation.things.filter(thing => thing.id !== thingToMove.id);
-    this.getLocation(nextCoords)!.things.push(thingToMove);
+    const nextLocation = this.getLocation(nextCoords);
+
+    if (nextLocation === undefined) {
+      return;
+    }
+
+    nextLocation.things.push(thingToMove);
   }
 }

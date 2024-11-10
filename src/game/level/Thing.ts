@@ -36,7 +36,7 @@ export class Thing {
     return new Thing(
       {
         ...savedThing.description,
-        properties: [...savedThing.description.properties]
+        properties: [...savedThing.description.properties],
       },
       savedThing.id
     );
@@ -114,7 +114,8 @@ export class Thing {
     const spec = this.description.label?.split("|")[0];
 
     if (spec == undefined) {
-      throw Error("Failed to parse spec: " + JSON.stringify(this.description));
+      console.warn("Failed to parse spec: " + JSON.stringify(this.description));
+      return false;
     }
 
     const nextDirection = getDirection(spec, this.direction, surroundings)

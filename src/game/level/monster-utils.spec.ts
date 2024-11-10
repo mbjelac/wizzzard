@@ -24,7 +24,7 @@ describe("turnLeft", () => {
       [Direction.LEFT, Direction.DOWN],
       [Direction.DOWN, Direction.RIGHT],
       [Direction.RIGHT, Direction.UP],
-    ])("when going %s, turn %s", (currentDirection, nextDirection) =>{
+    ])("when going %s, turn %s", (currentDirection, nextDirection) => {
       expect(turnLeft(currentDirection, surroundings)).toEqual(nextDirection);
     });
   });
@@ -39,7 +39,30 @@ describe("turnLeft", () => {
       .set(Direction.DOWN, [])
     };
 
-    expect(turnLeft(Direction.UP, surroundings)).toBeUndefined();
+    expect(turnLeft(Direction.UP, surroundings)).toEqual(Direction.UP);
   });
 
+  it.each<Map<Direction, Thing[]>>([
+    new Map<Direction, Thing[]>()
+    .set(Direction.UP, [wall])
+    .set(Direction.LEFT, [wall])
+    .set(Direction.RIGHT, [])
+    .set(Direction.DOWN, []),
+    new Map<Direction, Thing[]>()
+    .set(Direction.LEFT, [wall])
+    .set(Direction.RIGHT, [])
+    .set(Direction.DOWN, []),
+    new Map<Direction, Thing[]>()
+    .set(Direction.UP, [wall])
+    .set(Direction.RIGHT, [])
+    .set(Direction.DOWN, []),
+    new Map<Direction, Thing[]>()
+    .set(Direction.RIGHT, [])
+    .set(Direction.DOWN, []),
+  ])("return nothing when neither straight nor left possible", (example) => {
+
+    const surroundings = { thingsInDirection: example };
+
+    expect(turnLeft(Direction.UP, surroundings)).toBeUndefined();
+  });
 });

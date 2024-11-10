@@ -10,8 +10,8 @@ loadEditorPanel();
 new Phaser.Game(
   Object.assign(config, {
     scene: [
-      SpellBookGui,
       MapGui,
+      SpellBookGui,
       LevelGui,
     ]
   })

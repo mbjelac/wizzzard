@@ -18,14 +18,23 @@ export function turnLeft(currentDirection: Direction, surroundings: Surroundings
 
   const directionToLeft = currentDirection.left()
 
-  const leftBlocked = surroundings
+  const leftFree = !!surroundings
   .thingsInDirection
   .get(directionToLeft)
-  ?.some(thing => thing.is("wall"));
+  ?.every(thing => !thing.is("wall"));
 
-  if (leftBlocked) {
-    return undefined;
-  } else {
+  const straightFree = !!surroundings
+  .thingsInDirection
+  .get(currentDirection)
+  ?.every(thing => !thing.is("wall"));
+
+  if (leftFree) {
     return directionToLeft;
   }
+
+  if (straightFree) {
+    return currentDirection;
+  }
+
+  return undefined;
 }
