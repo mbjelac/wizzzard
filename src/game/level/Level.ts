@@ -58,6 +58,7 @@ export class Level {
   private playerCoords: Coords;
 
   public collisionEnabled = true;
+  public tickingEnabled = true;
 
   private inventory: Thing[] = [];
   private doneReceivers: string[] = [];
@@ -438,6 +439,13 @@ export class Level {
   }
 
   tick(): TickResult {
+
+    if (!this.tickingEnabled) {
+      return {
+        died: false,
+        movedThings: []
+      };
+    }
 
     const movedMonsters: ThingAt[] = this
     .map

@@ -373,6 +373,7 @@ export default class LevelGui extends Phaser.Scene {
     disableKeyEventsOnEditorWidgets();
 
     this.level.collisionEnabled = (document.getElementById("editor-collisions")! as HTMLInputElement).checked;
+    this.level.tickingEnabled = (document.getElementById("editor-ticking")! as HTMLInputElement).checked;
 
     this.ticker.tick(time);
   }
