@@ -128,5 +128,9 @@ export class Thing {
 
     return true;
   }
+
+  getCurrentDirectionName(): string {
+    return this.direction.name;
+  }
 }
 

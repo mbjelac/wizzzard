@@ -1,5 +1,12 @@
 import { Coords } from "../LevelDescription";
 
+export interface DirectionCoords {
+  readonly up: Coords,
+  readonly down: Coords,
+  readonly left: Coords,
+  readonly right: Coords,
+}
+
 export interface SpriteConfig {
   tileCoords: Coords;
   animation?: AnimationConfig;
@@ -7,6 +14,7 @@ export interface SpriteConfig {
   variants: Coords[];
   soundEffect?: string;
   playerDeath?: PlayerDeath;
+  directions?: DirectionCoords;
 }
 
 export interface AnimationConfig {
@@ -24,6 +32,7 @@ function spriteConfig(
     variants?: Coords[];
     soundEffect?: string;
     playerDeath?: PlayerDeath;
+    directions?: DirectionCoords;
   }
 ): SpriteConfig {
   return {
@@ -32,7 +41,8 @@ function spriteConfig(
     auxAnimation: config.auxAnimation,
     variants: config.variants || [],
     soundEffect: config.soundEffect,
-    playerDeath: config.playerDeath
+    playerDeath: config.playerDeath,
+    directions: config.directions
   };
 }
 
@@ -661,10 +671,17 @@ export const SPRITE_CONFIGS = {
     })
   },
   monsters: {
-    beetle: spriteConfig({
-      coords: { x: 25, y: 0 },
-      animation: { frameCount: 2 },
-    })
+    beetle:
+      spriteConfig({
+        coords: { x: 25, y: 0 },
+        directions: {
+          down: { x: 25, y: 0 },
+          left: { x: 25, y: 1 },
+          right: { x: 25, y: 2 },
+          up: { x: 25, y: 3 },
+        },
+        animation: { frameCount: 2 },
+      })
   },
   misc: {
     woodenDog: spriteAt(0, 9),

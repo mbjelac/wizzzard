@@ -4,7 +4,7 @@ import { Direction } from "../Direction";
 import { TILE_SIZE, tileCenterOffset } from "../../../config";
 import { GAME } from "../../game";
 import { Coords, LevelDescription, TextContent, ThingDescription } from "../LevelDescription";
-import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION, spriteAt } from "./sprites";
+import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION } from "./sprites";
 import { clearLabelText, getLabelText } from "./editor-panel";
 import depths from "./depths";
 import { ButtonConfig, DialogBox } from "../../../utils/widgets/DialogBox";
@@ -480,7 +480,7 @@ export default class LevelGui extends Phaser.Scene {
     const playerPixelCoords = toPixelCoords(this.level.getPlayerCoords());
 
     moveSmoothly(
-      {x: this.player.x, y: this.player.y},
+      { x: this.player.x, y: this.player.y },
       playerPixelCoords,
       (position: Coords) => this.player.setPosition(position.x, position.y),
       100
@@ -637,7 +637,7 @@ export default class LevelGui extends Phaser.Scene {
       throw new Error("Could not find sprite config for " + name);
     }
 
-    const tileCoords = this.variantTiles.getTileCoords(spriteConfig, name, locationCoords);
+    const tileCoords = this.variantTiles.getTileCoords(spriteConfig, name, locationCoords)
     const frameIndex = getSpriteFrameIndex(tileCoords);
 
     const pixelCoords = toPixelCoords(locationCoords);
@@ -648,18 +648,30 @@ export default class LevelGui extends Phaser.Scene {
 
     if (spriteConfig.animation !== undefined) {
 
-      sprite.anims.create(this.getAnimation(animation1, spriteConfig.animation, frameIndex));
+      if (spriteConfig.directions === undefined) {
 
-      if (spriteConfig.auxAnimation !== undefined) {
-        sprite.anims.create(this.getAnimation(animation2, spriteConfig.auxAnimation, frameIndex + spriteConfig.animation.frameCount));
+        sprite.anims.create(this.getAnimation(animation1, spriteConfig.animation, frameIndex));
+
+        if (spriteConfig.auxAnimation !== undefined) {
+          sprite.anims.create(this.getAnimation(animation2, spriteConfig.auxAnimation, frameIndex + spriteConfig.animation.frameCount));
+        }
+
+        sprite.play({
+          key: animation1,
+          startFrame: spriteConfig.animation.uniformStartFrame
+            ? 0
+            : Math.floor(Math.random() * (spriteConfig.animation.frameCount - 1))
+        });
+
+      } else {
+
+        sprite.anims.create(this.getAnimation(Direction.UP.name, spriteConfig.animation, getSpriteFrameIndex(spriteConfig.directions.up)));
+        sprite.anims.create(this.getAnimation(Direction.LEFT.name, spriteConfig.animation, getSpriteFrameIndex(spriteConfig.directions.left)));
+        sprite.anims.create(this.getAnimation(Direction.RIGHT.name, spriteConfig.animation, getSpriteFrameIndex(spriteConfig.directions.right)));
+        sprite.anims.create(this.getAnimation(Direction.DOWN.name, spriteConfig.animation, getSpriteFrameIndex(spriteConfig.directions.down)));
+
+        sprite.play(Direction.DOWN.name);
       }
-
-      sprite.play({
-        key: animation1,
-        startFrame: spriteConfig.animation.uniformStartFrame
-          ? 0
-          : Math.floor(Math.random() * (spriteConfig.animation.frameCount - 1))
-      });
     }
 
     if (spriteConfig.soundEffect !== undefined) {
@@ -867,8 +879,10 @@ export default class LevelGui extends Phaser.Scene {
         return;
       }
 
+      sprite.play(movedThing.thing.getCurrentDirectionName());
+
       moveSmoothly(
-        {x: sprite.x, y: sprite.y},
+        { x: sprite.x, y: sprite.y },
         toPixelCoords(movedThing.at),
         (position: Coords) => sprite.setPosition(position.x, position.y),
         this.ticker.tickInterval
@@ -927,7 +941,7 @@ function moveSmoothly(oldPosition: Coords, newPosition: Coords, positionHandler:
   };
 
   const intervalId = setInterval(
-    ()=> {
+    () => {
 
       position = {
         x: position.x + delta.x,
