@@ -364,7 +364,7 @@ export default class LevelGui extends Phaser.Scene {
   }
 
 
-  async update(time: number, delta: number) {
+  update(time: number, delta: number) {
 
     const playerLocation = this.level.getPlayerCoords();
 
@@ -375,7 +375,7 @@ export default class LevelGui extends Phaser.Scene {
     disableKeyEventsOnEditorWidgets();
 
     this.level.collisionEnabled = (document.getElementById("editor-collisions")! as HTMLInputElement).checked;
-    this.level.tickingEnabled = (document.getElementById("editor-ticking")! as HTMLInputElement).checked;
+    this.level.tickingEnabled = !this.isDead && (document.getElementById("editor-ticking")! as HTMLInputElement).checked;
   }
 
   private updateSidePanel(playerLocation: Coords) {
