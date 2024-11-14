@@ -464,7 +464,9 @@ export class Level {
     );
 
     return {
-      died: false,
+      died: movedMonsters
+      .map(moved => moved.at)
+      .some(monsterCoords => monsterCoords.x === this.playerCoords.x && monsterCoords.y === this.playerCoords.y),
       movedThings: movedMonsters
     };
   }

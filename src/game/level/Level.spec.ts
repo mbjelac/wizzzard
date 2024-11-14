@@ -1825,6 +1825,24 @@ describe("monster", () => {
     ]);
   });
 
+  it("eats player", () => {
+
+    level = createLevel(
+      "    ",
+      "  ##",
+      "    ",
+      "    ",
+    );
+
+    const monster = addMonster("turnLeft|left", 3, 0);
+
+    expect(getTickResults(3).map(result => result.died)).toEqual<boolean[]>([
+      false,
+      false,
+      true
+    ]);
+  });
+
   function addMonster(label: string, x: number, y: number): Thing {
     return addThingWithProps({
       label: label,
