@@ -6,12 +6,12 @@ export class Ticker {
 
   constructor(
     private readonly tickResultProvider: () => TickResult,
-    private readonly tickResultHandler: (result: TickResult) => void,
+    private readonly tickResultHandler: (result: TickResult) => Promise<void>,
     readonly tickInterval = 400
   ) {
   }
 
-  tick(time: number) {
+  async tick(time: number) {
 
     if (time - this.lastTickTime < this.tickInterval) {
       return;
@@ -19,6 +19,6 @@ export class Ticker {
 
     this.lastTickTime = time;
 
-    this.tickResultHandler(this.tickResultProvider())
+    await this.tickResultHandler(this.tickResultProvider())
   }
 }

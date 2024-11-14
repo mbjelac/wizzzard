@@ -102,6 +102,7 @@ export default class LevelGui extends Phaser.Scene {
     this.events.on("create", async () => this.populateLevel());
     this.events.on("wake", async () => this.populateLevel());
     this.events.on("sleep", async () => this.clearLevel());
+    this.events.on("update", async (time: number) => this.ticker.tick(time))
   }
 
   private async populateLevel() {
@@ -205,6 +206,7 @@ export default class LevelGui extends Phaser.Scene {
     this.createdSpritesByThingId.clear();
 
     this.sound.stopAll();
+    this.isDead = false;
   }
 
   private addLocation(coords: Coords) {
@@ -362,7 +364,7 @@ export default class LevelGui extends Phaser.Scene {
   }
 
 
-  update(time: number, delta: number) {
+  async update(time: number, delta: number) {
 
     const playerLocation = this.level.getPlayerCoords();
 
@@ -374,8 +376,6 @@ export default class LevelGui extends Phaser.Scene {
 
     this.level.collisionEnabled = (document.getElementById("editor-collisions")! as HTMLInputElement).checked;
     this.level.tickingEnabled = (document.getElementById("editor-ticking")! as HTMLInputElement).checked;
-
-    this.ticker.tick(time);
   }
 
   private updateSidePanel(playerLocation: Coords) {
@@ -801,7 +801,15 @@ export default class LevelGui extends Phaser.Scene {
     this.playAmbientSound(ambientSoundThing?.description?.label);
   }
 
+  private isDead = false;
+
   private async playerDied() {
+
+    if (this.isDead) {
+      return;
+    }
+
+    this.isDead = true;
 
     this.inputEventsBlocked = true;
 
@@ -869,7 +877,7 @@ export default class LevelGui extends Phaser.Scene {
     });
   }
 
-  private handleTickResult(result: TickResult) {
+  private async handleTickResult(result: TickResult) {
 
     result.movedThings.forEach(movedThing => {
 
@@ -888,6 +896,10 @@ export default class LevelGui extends Phaser.Scene {
         this.ticker.tickInterval
       );
     });
+
+    if(result.died) {
+      await this.playerDied();
+    }
 
   }
 }
