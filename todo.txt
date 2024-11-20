@@ -1,7 +1,6 @@
 - forgetful druid description & marker placement
 - errand images (misplaced vial, wooden dog, forgetful druid)
 - strength spell transmuter
-- animate Lyra movement
 - animate Lyra spellcasting
 - automatic sprite decorations (water bank splashes, shadow from wall above, ...)
 - make level which uses Strength spell (old castle, push heavy wall blocks)
