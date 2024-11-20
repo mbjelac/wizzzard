@@ -18,7 +18,7 @@ it("return shifted to right for 2nd item", () => {
 });
 
 it("return shifted to more right for 3nd item", () => {
-  expect(getInventorySpriteCoords(1, offset)).toEqual<Coords>({
+  expect(getInventorySpriteCoords(2, offset)).toEqual<Coords>({
     x: offset.x + expectedOffsetPixels * 2,
     y: offset.y
   });

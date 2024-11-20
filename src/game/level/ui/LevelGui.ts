@@ -7,7 +7,6 @@ import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD,
 import { clearLabelText, getLabelText } from "./editor-panel";
 import depths from "./depths";
 import { ButtonConfig, DialogBox } from "../../../utils/widgets/DialogBox";
-import toPixelsFromMapLocation from "./toPixelsFromMapLocation";
 import { ALL_THING_PROPERTIES, Thing } from "../Thing";
 import { VariantTiles } from "./VariantTiles";
 import { SceneId } from "../../../utils/scene-ids";
@@ -17,9 +16,10 @@ import { LevelLocation } from "../LevelMap";
 import { Ticker } from "./Ticker";
 import { getDeathMessage } from "./get-death-message";
 import { getInventorySpriteCoords } from "./get-inventory-sprite-coords";
+import { TILE_SIZE, tileCenterOffset } from "../../../constants";
+import { toPixelsFromMapLocation } from "./toPixelsFromMapLocation";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
-import { TILE_SIZE, tileCenterOffset } from "../../../constants";
 
 const animation1 = "animation1";
 const animation2 = "animation2";
@@ -259,7 +259,7 @@ export default class LevelGui extends Phaser.Scene {
 
     const inventory = this.level.getInventory();
 
-    const offset: Coords = { x: 10, y: 20 };
+    const offset: Coords = { x: 229 * 4, y: 62 * 4 };
 
     Array(6).fill(0).forEach((_, index) => {
 
@@ -321,7 +321,7 @@ export default class LevelGui extends Phaser.Scene {
 
     const sidePanelWidth = 5 * TILE_SIZE;
 
-    const panelOffset: Coords = { x: 992, y: 416 };
+    const panelOffset: Coords = { x: 248 * 4, y: 104 * 4 };
 
     this.sideText = this.add
     .bitmapText(panelOffset.x - 4 * 32, panelOffset.y + 4 * 3, "blackRobotoMicro", "")
