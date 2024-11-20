@@ -1,14 +1,13 @@
 import Phaser from 'phaser';
 import { Level, TickResult } from "../Level";
 import { Direction } from "../Direction";
-import { TILE_SIZE, tileCenterOffset } from "../../../config";
 import { GAME } from "../../game";
 import { Coords, LevelDescription, TextContent, ThingDescription } from "../LevelDescription";
 import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION } from "./sprites";
 import { clearLabelText, getLabelText } from "./editor-panel";
 import depths from "./depths";
 import { ButtonConfig, DialogBox } from "../../../utils/widgets/DialogBox";
-import toPixelCoords from "./toPixelCoords";
+import toPixelsFromMapLocation from "./toPixelsFromMapLocation";
 import { ALL_THING_PROPERTIES, Thing } from "../Thing";
 import { VariantTiles } from "./VariantTiles";
 import { SceneId } from "../../../utils/scene-ids";
@@ -16,12 +15,16 @@ import { BitmapFonts } from "../../../utils/BitmapFonts";
 import { talkingHeadConfigs } from "./talkingHeadConfigs";
 import { LevelLocation } from "../LevelMap";
 import { Ticker } from "./Ticker";
+import { getDeathMessage } from "./get-death-message";
+import { getInventorySpriteCoords } from "./get-inventory-sprite-coords";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
+import { TILE_SIZE, tileCenterOffset } from "../../../constants";
 
 const animation1 = "animation1";
 const animation2 = "animation2";
 
+const playerMovementDuration = 100;
 
 interface AmbientSound {
   readonly name: string;
@@ -32,13 +35,8 @@ export default class LevelGui extends Phaser.Scene {
 
   private player!: Phaser.Physics.Arcade.Sprite;
 
-  private sidePanel!: Phaser.GameObjects.Sprite;
-
   private talkingHead!: Phaser.Physics.Arcade.Sprite;
-
   private sideText!: Phaser.GameObjects.BitmapText;
-
-  private sideTextContent: TextContent | undefined;
 
   // @ts-ignore undefined - has to be set before usage (fail fast)
   private level: Level;
@@ -130,6 +128,8 @@ export default class LevelGui extends Phaser.Scene {
 
   private createPlayerSprite(startCoords: Coords) {
     this.player = this.addSpriteFromTileset("wizard", startCoords).setDepth(depths.player);
+
+    this.updatePlayerLocation(toPixelsFromMapLocation(startCoords));
 
     this.createPlayerAnimation(
       "drowning",
@@ -259,6 +259,8 @@ export default class LevelGui extends Phaser.Scene {
 
     const inventory = this.level.getInventory();
 
+    const offset: Coords = { x: 10, y: 20 };
+
     Array(6).fill(0).forEach((_, index) => {
 
       const inventoryItem = inventory[index];
@@ -267,7 +269,13 @@ export default class LevelGui extends Phaser.Scene {
         return;
       }
 
-      const inventorySprite = this.addSpriteFromTileset(inventoryItem.description.sprite, { x: 0, y: 0 }).setDepth(depths.info);
+      const inventorySpriteCoords: Coords = getInventorySpriteCoords(index, offset);
+
+      const inventorySprite = this
+      .addSpriteFromTileset(inventoryItem.description.sprite, { x: 0, y: 0 })
+      .setDepth(depths.info)
+      .setScrollFactor(0)
+      .setPosition(inventorySpriteCoords.x, inventorySpriteCoords.y);
       this.inventorySprites.push(inventorySprite);
     });
   }
@@ -296,7 +304,7 @@ export default class LevelGui extends Phaser.Scene {
 
       if (event.code === "Escape") {
         this.dialogBox.show(
-          toPixelCoords(this.level.getPlayerCoords()),
+          toPixelsFromMapLocation(this.level.getPlayerCoords()),
           "",
           "Tired already, fellow traveller?",
           true,
@@ -313,23 +321,28 @@ export default class LevelGui extends Phaser.Scene {
 
     const sidePanelWidth = 5 * TILE_SIZE;
 
+    const panelOffset: Coords = { x: 992, y: 416 };
+
     this.sideText = this.add
-    .bitmapText(0, 0, "blackRobotoMicro", "")
+    .bitmapText(panelOffset.x - 4 * 32, panelOffset.y + 4 * 3, "blackRobotoMicro", "")
     .setMaxWidth(sidePanelWidth - 60)
     .setScale(4)
-    .setDepth(depths.info);
+    .setDepth(depths.info)
+    .setScrollFactor(0);
 
-    this.sidePanel = this
+    this
     .physics
     .add
-    .sprite(0, 0, "panel")
+    .sprite(panelOffset.x, panelOffset.y, "panel")
     .setDisplaySize(320, 832)
-    .setDepth(depths.infoBackground);
+    .setDepth(depths.infoBackground)
+    .setScrollFactor(0);
 
     this.talkingHead = this.physics.add
-    .sprite(0, 0, this.talkingHeads, 0)
+    .sprite(panelOffset.x - 4 * 28, panelOffset.y + 4 * 3, this.talkingHeads, 0)
     .setDepth(depths.info)
     .setDisplaySize(10 * 4, 10 * 4)
+    .setScrollFactor(0)
     .setVisible(false);
 
     talkingHeadConfigs.forEach(talkingHeadConfig => {
@@ -366,82 +379,32 @@ export default class LevelGui extends Phaser.Scene {
 
   update(time: number, delta: number) {
 
-    const playerLocation = this.level.getPlayerCoords();
-
-    this.updateSidePanel(playerLocation);
-    this.updateSideText(playerLocation);
-    this.updateInventory(playerLocation);
-
     disableKeyEventsOnEditorWidgets();
 
     this.level.collisionEnabled = (document.getElementById("editor-collisions")! as HTMLInputElement).checked;
     this.level.tickingEnabled = !this.isDead && (document.getElementById("editor-ticking")! as HTMLInputElement).checked;
   }
 
-  private updateSidePanel(playerLocation: Coords) {
-    const sidePanelPixelCoords = toPixelCoords({
-      x: playerLocation.x + 9,
-      y: playerLocation.y
-    });
+  private setSideText(content: TextContent | undefined) {
 
-    this.sidePanel.setX(sidePanelPixelCoords.x);
-    this.sidePanel.setY(sidePanelPixelCoords.y);
-  }
-
-  private updateSideText(playerLocation: Coords) {
-
-    if (this.sideTextContent === undefined) {
+    if (content === undefined) {
       this.sideText.setVisible(false);
       this.talkingHead.setVisible(false);
       return;
     }
 
-    const sideTextCoords: Coords = {
-      x: playerLocation.x + 7,
-      y: playerLocation.y,
-    };
+    this.sideText.setText(content.text);
+    this.sideText.setVisible(true);
 
-    const sideTextPixels = toPixelCoords(sideTextCoords);
-
-    this.sideText
-    .setPosition(
-      sideTextPixels.x - tileCenterOffset + 7 * 4,
-      sideTextPixels.y - tileCenterOffset + 10 * 4
-    )
-    .setText(this.sideTextContent.text)
-    .setVisible(true);
-
-    if (this.sideTextContent.head === undefined) {
+    if (content.head === undefined) {
       this.talkingHead.stop();
       this.talkingHead.setVisible(false);
       return;
     }
 
-    this.talkingHead.setPosition(
-      sideTextPixels.x + 4 * 4,
-      sideTextPixels.y + 3 * 4
-    )
-    .setVisible(true);
-  }
+    this.talkingHead.anims.play(content.head);
 
-  private updateInventory(playerLocation: Coords) {
-
-    const inventoryCoords: Coords = {
-      x: playerLocation.x + 8,
-      y: playerLocation.y - 1,
-    };
-
-    const inventoryPixels = toPixelCoords(inventoryCoords);
-
-    const xOffset = 5 * 4;
-    const yOffset = -17 * 4;
-    const margin = 3 * 4;
-    const tileOffset = TILE_SIZE + margin;
-
-    this.inventorySprites.forEach((inventorySprite, index) => {
-      inventorySprite.x = inventoryPixels.x - tileCenterOffset + xOffset + (index % 3) * tileOffset;
-      inventorySprite.y = inventoryPixels.y - tileCenterOffset + yOffset + Math.floor(index / 3) * tileOffset;
-    });
+    this.talkingHead.setVisible(true);
   }
 
   private async move(direction: Direction) {
@@ -456,7 +419,7 @@ export default class LevelGui extends Phaser.Scene {
 
     if (moveResult.levelComplete) {
       this.dialogBox.show(
-        toPixelCoords(this.level.getPlayerCoords()),
+        toPixelsFromMapLocation(this.level.getPlayerCoords()),
         "Congratulations!",
         "You have completed this errand.",
         false,
@@ -471,19 +434,15 @@ export default class LevelGui extends Phaser.Scene {
       );
     }
 
-    this.sideTextContent = this.getText(moveResult.text);
+    this.setSideText(this.getText(moveResult.text));
 
-    if (this.sideTextContent?.head !== undefined) {
-      this.talkingHead.anims.play(this.sideTextContent.head);
-    }
-
-    const playerPixelCoords = toPixelCoords(this.level.getPlayerCoords());
+    const playerPixelCoords = toPixelsFromMapLocation(this.level.getPlayerCoords());
 
     moveSmoothly(
       { x: this.player.x, y: this.player.y },
       playerPixelCoords,
-      (position: Coords) => this.player.setPosition(position.x, position.y),
-      100
+      (position: Coords) => this.updatePlayerLocation(position),
+      playerMovementDuration
     );
 
     // this.player.setX(playerPixelCoords.x);
@@ -497,10 +456,20 @@ export default class LevelGui extends Phaser.Scene {
         return;
       }
 
-      const pushedThingPixelCoords = toPixelCoords(direction.move(this.level.getPlayerCoords()));
+      const pushedThingPixelCoords = toPixelsFromMapLocation(direction.move(this.level.getPlayerCoords()));
 
-      thingSprite.setX(pushedThingPixelCoords.x);
-      thingSprite.setY(pushedThingPixelCoords.y);
+      moveSmoothly(
+        { x: thingSprite.x, y: thingSprite.y },
+        pushedThingPixelCoords,
+        (position) => {
+          thingSprite.setPosition(
+            position.x,
+            position.y
+          );
+        },
+        playerMovementDuration
+      );
+
       thingSprite.setDepth(this.level.getDepth(pushedThing));
 
       this.playSpriteSoundEffect(pushedThing.description.sprite);
@@ -517,6 +486,10 @@ export default class LevelGui extends Phaser.Scene {
     } else {
       this.displayInventory();
     }
+  }
+
+  private updatePlayerLocation(locationPixels: Coords) {
+    this.player.setPosition(locationPixels.x, locationPixels.y);
   }
 
   private removeSpritesOfRemovedThings(removedThings: Thing[]) {
@@ -640,7 +613,7 @@ export default class LevelGui extends Phaser.Scene {
     const tileCoords = this.variantTiles.getTileCoords(spriteConfig, name, locationCoords)
     const frameIndex = getSpriteFrameIndex(tileCoords);
 
-    const pixelCoords = toPixelCoords(locationCoords);
+    const pixelCoords = toPixelsFromMapLocation(locationCoords);
 
     const sprite = this.physics.add
     .sprite(pixelCoords.x, pixelCoords.y, this.tilesetName, frameIndex)
@@ -820,7 +793,7 @@ export default class LevelGui extends Phaser.Scene {
       .map(thing => SPRITE_CONFIGS_BY_LOCATION.get(thing.description.sprite))
       .find(spriteConfig => spriteConfig?.playerDeath !== undefined)
         ?.playerDeath
-      || "drowning";
+      || "unknown";
 
     this.player.anims.play(playerDeath);
 
@@ -829,18 +802,14 @@ export default class LevelGui extends Phaser.Scene {
         this.inputEventsBlocked = false;
         this.stopPlayingAmbientSound();
         this.dialogBox.show(
-          toPixelCoords(this.level.getPlayerCoords()),
+          toPixelsFromMapLocation(this.level.getPlayerCoords()),
           "",
-          playerDeath === "drowning"
-            ? "You have drowned."
-            : playerDeath === "burning"
-              ? "You have perished in the fire."
-              : "You have died.",
+          getDeathMessage(playerDeath),
           false,
           this.getTerminationButtons()
         );
       },
-      2000
+      600
     );
   }
 
@@ -891,13 +860,13 @@ export default class LevelGui extends Phaser.Scene {
 
       moveSmoothly(
         { x: sprite.x, y: sprite.y },
-        toPixelCoords(movedThing.at),
+        toPixelsFromMapLocation(movedThing.at),
         (position: Coords) => sprite.setPosition(position.x, position.y),
         this.ticker.tickInterval
       );
     });
 
-    if(result.died) {
+    if (result.died) {
       await this.playerDied();
     }
 

@@ -1,11 +1,5 @@
 import Phaser from 'phaser';
-import Zoom = Phaser.Scale.Zoom;
-import jestConfig from "../jest.config";
-import Pointer = Phaser.Input.Pointer;
-
-export const TILE_SIZE = 64;
-
-export const tileCenterOffset = TILE_SIZE / 2;
+import { TILE_SIZE } from "./constants";
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,

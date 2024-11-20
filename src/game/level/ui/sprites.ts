@@ -60,7 +60,7 @@ export const SPRITE_CONFIGS_BY_LOCATION: Map<string, SpriteConfig> = new Map();
 export const SPRITE_CONFIG_VOID = spriteAt(0, 7);
 export const SPRITE_CONFIG_WIZARD = spriteAt(0, 10);
 
-export type PlayerDeath = "drowning" | "burning" | "falling" | "eaten";
+export type PlayerDeath = "drowning" | "burning" | "falling" | "eaten" | "unknown";
 
 export const SPRITE_CONFIGS = {
   transparent: spriteAt(1, 7),
