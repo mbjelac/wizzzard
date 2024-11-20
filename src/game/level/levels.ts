@@ -41,7 +41,7 @@ const levels: LevelDescription[] = [
       description: "description...",
       type: "errand"
     },
-    levelDimensions: { width: 70, height: 70 },
+    levelDimensions: { width: 43, height: 55 },
     startCoords: { x: 7, y: 7 },
     matrix: [],
     completionCriteria: {

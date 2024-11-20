@@ -547,7 +547,9 @@ export default class LevelGui extends Phaser.Scene {
 
   private addThingSprite(locationCoords: Coords, levelLocation: LevelLocation, thing: Thing) {
 
-    const thingDepth = levelLocation.things.indexOf(thing);
+    const thingDepth = thing.is("monster")
+      ? depths.monsters
+      : levelLocation.things.indexOf(thing);
 
     const thingSprite = this.addSpriteFromTileset(thing.description.sprite, locationCoords)
     .setDepth(thingDepth)
