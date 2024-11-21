@@ -3,7 +3,7 @@ import { createThingProps, LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
 import { EditorTool } from "../editor/EditorTool";
 import { Coords, LevelDescription, ThingDescription } from "./LevelDescription";
-import { SavedThing, Thing, ThingProperty } from "./Thing";
+import { Thing, ThingProperty } from "./Thing";
 import { LevelLocation } from "./LevelMap";
 
 let level: Level;
@@ -1078,12 +1078,12 @@ describe("pushing", () => {
 
   it("pushable is relocated within level", () => {
     expect([
-      Direction.RIGHT,
-      Direction.DOWN,
-      Direction.RIGHT,
-      Direction.RIGHT,
-      Direction.UP,
-      Direction.LEFT,
+        Direction.RIGHT,
+        Direction.DOWN,
+        Direction.RIGHT,
+        Direction.RIGHT,
+        Direction.UP,
+        Direction.LEFT,
       ]
       .map(direction => level.tryToMove(direction).pushed)
     ).toEqual([
@@ -1862,6 +1862,59 @@ describe("monster", () => {
   }
 });
 
+describe("transmuter", () => {
+
+  let foo: Thing;
+  let bar: Thing;
+  let pop: Thing;
+  let bla: Thing;
+
+  beforeEach(() => {
+
+    level = createLevel(
+      "   ",
+      "   ",
+      "   ",
+    );
+
+    addThingWithProps({
+      x: 1,
+      y: 0,
+      label: "foo-0-2,bar-2-2:pop-2-0,bla-0-0",
+      properties: ["wall", "transmute"],
+      text: undefined,
+    });
+    pop = addPickup(1, 0, "pop");
+    bla = addPickup(1, 0, "bla");
+  });
+
+  function getActual() {
+    const things = getThingDescriptions();
+
+    return {
+      fooLocation: things[2][0],
+      barLocation: things[2][2],
+      popTarget: things[0][2],
+      blaTarget: things[0][2],
+    };
+  }
+
+  it("does nothing if some ingredients missing", () => {
+
+    foo = addLabelledThing(0, 2, "foo", "pickup");
+
+    level.tryToMove(Direction.UP)
+
+    const actual = getActual();
+
+    expect(actual).toEqual<typeof actual>({
+      fooLocation: [foo.description],
+      barLocation: [],
+      popTarget: [],
+      blaTarget: []
+    });
+  });
+});
 
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
   return addThingWithProps({
