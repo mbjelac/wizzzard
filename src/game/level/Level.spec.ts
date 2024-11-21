@@ -1896,6 +1896,7 @@ describe("transmuter", () => {
       barLocation: things[2][2],
       popTarget: things[0][2],
       blaTarget: things[0][2],
+      source: things[0][1].filter(description => description.properties.every(property => property !== "transmute"))
     };
   }
 
@@ -1911,7 +1912,26 @@ describe("transmuter", () => {
       fooLocation: [foo.description],
       barLocation: [],
       popTarget: [],
-      blaTarget: []
+      blaTarget: [],
+      source: [pop.description, bla.description]
+    });
+  });
+
+  it("transmutes if all ingredients there", () => {
+
+    foo = addLabelledThing(0, 2, "foo", "pickup");
+    bar = addLabelledThing(2, 2, "bar", "pickup");
+
+    level.tryToMove(Direction.UP)
+
+    const actual = getActual();
+
+    expect(actual).toEqual<typeof actual>({
+      fooLocation: [],
+      barLocation: [],
+      popTarget: [pop.description],
+      blaTarget: [bla.description],
+      source: []
     });
   });
 });
