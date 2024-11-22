@@ -1934,6 +1934,42 @@ describe("transmuter", () => {
       source: []
     });
   });
+
+  it("does nothing if ingredients in wrong place", () => {
+
+    foo = addLabelledThing(2, 2, "foo", "pickup");
+    bar = addLabelledThing(0, 2, "bar", "pickup");
+
+    level.tryToMove(Direction.UP)
+
+    const actual = getActual();
+
+    expect(actual).toEqual<typeof actual>({
+      fooLocation: [bar.description],
+      barLocation: [foo.description],
+      popTarget: [],
+      blaTarget: [],
+      source: [pop.description, bla.description]
+    });
+  });
+
+  it("does nothing if ingredients have wrong label", () => {
+
+    foo = addLabelledThing(0, 2, "fo", "pickup");
+    bar = addLabelledThing(2, 2, "bar", "pickup");
+
+    level.tryToMove(Direction.UP)
+
+    const actual = getActual();
+
+    expect(actual).toEqual<typeof actual>({
+      fooLocation: [foo.description],
+      barLocation: [bar.description],
+      popTarget: [],
+      blaTarget: [],
+      source: [pop.description, bla.description]
+    });
+  });
 });
 
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
