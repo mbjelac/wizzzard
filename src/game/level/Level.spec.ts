@@ -1908,7 +1908,7 @@ describe("transmuter", () => {
 
     foo = addLabelledThing(0, 2, "foo", "pickup");
 
-    level.tryToMove(Direction.UP)
+    level.tryToMove(Direction.UP);
 
     const actual = getActual();
 
@@ -1926,7 +1926,7 @@ describe("transmuter", () => {
     foo = addLabelledThing(0, 2, "foo", "pickup");
     bar = addLabelledThing(2, 2, "bar", "pickup");
 
-    level.tryToMove(Direction.UP)
+    level.tryToMove(Direction.UP);
 
     const actual = getActual();
 
@@ -1944,7 +1944,7 @@ describe("transmuter", () => {
     foo = addLabelledThing(2, 2, "foo", "pickup");
     bar = addLabelledThing(0, 2, "bar", "pickup");
 
-    level.tryToMove(Direction.UP)
+    level.tryToMove(Direction.UP);
 
     const actual = getActual();
 
@@ -1962,7 +1962,7 @@ describe("transmuter", () => {
     foo = addLabelledThing(0, 2, "fo", "pickup");
     bar = addLabelledThing(2, 2, "bar", "pickup");
 
-    level.tryToMove(Direction.UP)
+    level.tryToMove(Direction.UP);
 
     const actual = getActual();
 
@@ -1972,6 +1972,27 @@ describe("transmuter", () => {
       popTarget: [],
       blaTarget: [],
       source: [pop.description, bla.description]
+    });
+  });
+
+  it("transmuting reports changes", () => {
+
+    foo = addLabelledThing(0, 2, "foo", "pickup");
+    bar = addLabelledThing(2, 2, "bar", "pickup");
+
+    const moveResult = level.tryToMove(Direction.UP);
+
+    const actual = {
+      removed: moveResult.removedThings,
+      added: moveResult.addedThings
+    };
+
+    expect(actual).toEqual<typeof actual>({
+      removed: [foo, bar, pop, bla],
+      added: [
+        { thing: pop, at: { x: 2, y: 0 } },
+        { thing: bla, at: { x: 0, y: 0 } },
+      ]
     });
   });
 });

@@ -56,6 +56,11 @@ interface ChangedThings {
   readonly addedThings: ThingAt[]
 }
 
+const NO_THINGS_CHANGED: ChangedThings = {
+  removedThings: [],
+  addedThings: []
+};
+
 export class Level {
 
   public readonly editor = new LevelEditor();
@@ -174,11 +179,14 @@ export class Level {
         };
       }
 
-      const changedAfterSlotInteraction = this.interactWithSlot(nextLocation);
-      addedThings.push(...changedAfterSlotInteraction.addedThings);
-      thingsToRemove.push(...changedAfterSlotInteraction.removedThings);
-
-      this.transmute(nextLocation);
+      [
+        this.interactWithSlot(nextLocation),
+        this.transmute(nextLocation)
+      ]
+      .forEach(changes => {
+        addedThings.push(...changes.addedThings);
+        thingsToRemove.push(...changes.removedThings);
+      });
     }
 
     const pushedThings = canMove ? this.pushThings(nextLocation, direction) : [];
@@ -499,12 +507,12 @@ export class Level {
     return this.map.getLevelMatrix();
   }
 
-  private transmute(transmuterLocation: LevelLocation) {
+  private transmute(transmuterLocation: LevelLocation): ChangedThings {
 
     const transmuter = transmuterLocation.things.find(thing => thing.is("transmute"));
 
     if (transmuter === undefined) {
-      return;
+      return NO_THINGS_CHANGED;
     }
 
     const transmutation = parseTransmutation(transmuter.description.label!);
@@ -520,18 +528,26 @@ export class Level {
     });
 
     if (transmutation.destroy.length !== thingsToDestroy.length) {
-      return;
+      return NO_THINGS_CHANGED;
     }
 
-    thingsToDestroy.forEach(([location, thing]) => this.removeFromLocation(location, thing));
+    const addedThings: ThingAt[] = [];
 
     transmutation.create.forEach(create => {
       const location = this.map.getLocation(create.at);
       const thing = transmuterLocation?.things.find(thing => thing.description.label === create.label);
       if (location !== undefined && thing !== undefined) {
-        this.removeFromLocation(transmuterLocation, thing);
+        thingsToDestroy.push([transmuterLocation, thing]);
         location.things.push(thing);
+        addedThings.push({ thing: thing, at: location.coords });
       }
     });
+
+    thingsToDestroy.forEach(([location, thing]) => this.removeFromLocation(location, thing));
+
+    return {
+      removedThings: thingsToDestroy.map(([_, thing]) => thing),
+      addedThings: addedThings
+    };
   }
 }
