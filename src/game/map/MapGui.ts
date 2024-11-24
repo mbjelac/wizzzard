@@ -58,6 +58,7 @@ export default class MapGui extends Phaser.Scene {
 
     this.load.image("woodenDog", "assets/errand_images/woodenDog-transparent.png");
     this.load.image("forestLake", "assets/errand_images/forestLake.png");
+    this.load.image("misplacedVial", "assets/errand_images/misplacedVial.png");
 
 
     BitmapFonts.getInstance().loadFonts(this);
