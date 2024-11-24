@@ -35,7 +35,7 @@ const stayed: MoveResult = {
   removedThings: [],
   pushed: [],
   changedState: [],
-  addedThings: undefined
+  addedThings: []
 }
 
 const moved: MoveResult = {
@@ -1755,10 +1755,14 @@ describe("slot", () => {
     // move next to slot
     level.tryToMove(Direction.RIGHT);
 
-    expect(level.tryToMove(Direction.RIGHT).addedThings).toEqual<LevelLocation>({
-      coords: { x: 2, y: 1 },
-      things: [pickup]
-    });
+    expect(level.tryToMove(Direction.RIGHT).addedThings).toEqual<ThingAt[]>(
+      [
+        {
+          at: { x: 2, y: 1 },
+          thing: pickup
+        }
+      ]
+    );
   });
 
   it("pickup put is not added when not interacting with slot", () => {
@@ -1769,7 +1773,7 @@ describe("slot", () => {
     // pick up
     level.tryToMove(Direction.LEFT);
 
-    expect(level.tryToMove(Direction.RIGHT).addedThings).toEqual(undefined);
+    expect(level.tryToMove(Direction.RIGHT).addedThings).toEqual([]);
   });
 
   it("pickup from slot", () => {

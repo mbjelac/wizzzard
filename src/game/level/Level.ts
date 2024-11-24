@@ -13,7 +13,7 @@ export interface MoveResult {
   removedThings: Thing[];
   pushed: Thing[];
   changedState: Thing[];
-  addedThings: LevelLocation | undefined;
+  addedThings: ThingAt[];
 }
 
 export interface TickResult {
@@ -29,7 +29,7 @@ const doNothing: MoveResult = {
   removedThings: [],
   pushed: [],
   changedState: [],
-  addedThings: undefined
+  addedThings: []
 }
 
 export interface ThingAt {
@@ -48,6 +48,11 @@ interface SavedGame {
 export interface SavedLocation {
   readonly coords: Coords;
   readonly things: SavedThing[];
+}
+
+interface ChangedThings {
+  readonly removedThings: Thing[],
+  readonly addedThings: ThingAt[]
 }
 
 export class Level {
@@ -87,7 +92,7 @@ export class Level {
     const nextLocation = this.getMoveLocation(this.playerCoords, direction);
 
     const thingsToRemove: Thing[] = [];
-    let addedThings: LevelLocation | undefined = undefined;
+    const addedThings: ThingAt[] = [];
 
     if (nextLocation === undefined) {
       return doNothing;
@@ -168,28 +173,9 @@ export class Level {
         };
       }
 
-      const slotInteraction = interactWithSlot({
-        inventory: this.inventory,
-        thingsAtSlotLocation: nextLocation.things
-      });
-
-      slotInteraction.moveToInventory.forEach(thing => {
-        this.inventory.push(thing);
-        this.removeFromLocation(nextLocation, thing);
-        thingsToRemove.push(thing);
-      });
-
-      slotInteraction.moveToSlot.forEach(thing => {
-        this.inventory = this.inventory.filter(thingInInventory => !thingInInventory.equals(thing));
-        nextLocation.things.push(thing);
-      });
-
-      if (slotInteraction.moveToSlot.length > 0) {
-        addedThings = {
-          coords: nextLocation.coords,
-          things: slotInteraction.moveToSlot
-        }
-      }
+      const changedAfterSlotInteraction = this.interactWithSlot(nextLocation);
+      addedThings.push(...changedAfterSlotInteraction.addedThings);
+      thingsToRemove.push(...changedAfterSlotInteraction.removedThings);
     }
 
     const pushedThings = canMove ? this.pushThings(nextLocation, direction) : [];
@@ -247,6 +233,31 @@ export class Level {
   private disableReceiver(receiver: Thing) {
     receiver.removeProperty("receiver");
     this.doneReceivers.push(receiver.description.label!);
+  }
+
+  private interactWithSlot(slotLocation: LevelLocation): ChangedThings {
+
+    const slotInteraction = interactWithSlot({
+      inventory: this.inventory,
+      thingsAtSlotLocation: slotLocation.things
+    });
+
+    const removedThings = slotInteraction.moveToInventory.map(thing => {
+      this.inventory.push(thing);
+      this.removeFromLocation(slotLocation, thing);
+      return thing;
+    });
+
+    const addedThings = slotInteraction.moveToSlot.map(thing => {
+      this.inventory = this.inventory.filter(thingInInventory => !thingInInventory.equals(thing));
+      slotLocation.things.push(thing);
+      return {
+        thing: thing,
+        at: slotLocation.coords
+      };
+    });
+
+    return { removedThings, addedThings };
   }
 
   getPlayerCoords(): Coords {
@@ -453,13 +464,13 @@ export class Level {
     .flatMap(location =>
       location.things.filter(thing => thing.is("monster"))
       .map(thing => {
-        const nextCoords =  thing.move(location.coords, this.map.getSurroundings(location))
-        this.map.move(thing, location, nextCoords);
-        return {
-          thing: thing,
-          at: nextCoords
+          const nextCoords = thing.move(location.coords, this.map.getSurroundings(location))
+          this.map.move(thing, location, nextCoords);
+          return {
+            thing: thing,
+            at: nextCoords
+          }
         }
-      }
       )
     );
 

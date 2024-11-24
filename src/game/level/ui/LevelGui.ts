@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { Level, TickResult } from "../Level";
+import { Level, ThingAt, TickResult } from "../Level";
 import { Direction } from "../Direction";
 import { GAME } from "../../game";
 import { Coords, LevelDescription, TextContent, ThingDescription } from "../LevelDescription";
@@ -518,7 +518,7 @@ export default class LevelGui extends Phaser.Scene {
     }
   }
 
-  private async applyEditorTool(levelLocation: LevelLocation, locationPixelCoords: Coords) {
+  private async applyEditorTool(levelLocation: LevelLocation, location: Coords) {
 
     const description = this.getThingDescription();
 
@@ -532,7 +532,7 @@ export default class LevelGui extends Phaser.Scene {
       return;
     }
 
-    this.addThingSprite(locationPixelCoords, levelLocation, addResult.addedThing);
+    this.addThingSprite(location, levelLocation, addResult.addedThing);
 
     await this.saveLevelMatrix();
 
@@ -846,15 +846,10 @@ export default class LevelGui extends Phaser.Scene {
     this.playAmbientSound(this.level.getAmbientSound());
   }
 
-  private addSpritesOfAddedThings(addedThings: LevelLocation | undefined) {
-    if (addedThings === undefined) {
-      return;
-    }
-
-    const levelLocation = this.level.getLocation(addedThings.coords)!
-
-    addedThings.things.forEach(addedThing => {
-      this.addThingSprite(addedThings.coords, levelLocation, addedThing);
+  private addSpritesOfAddedThings(addedThings: ThingAt[]) {
+    addedThings.forEach(addedThing => {
+      const levelLocation = this.level.getLocation(addedThing.at)!
+      this.addThingSprite(levelLocation.coords, levelLocation, addedThing.thing);
     });
   }
 
