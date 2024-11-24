@@ -775,5 +775,12 @@ export const SPRITE_CONFIGS = {
       }
     })
   },
+  research: {
+    strength: spriteConfig({
+      coords: { x: 20, y: 8 },
+      animation: { frameCount: 4, framesPerSecond: 4 },
+
+    })
+  }
 }
 
