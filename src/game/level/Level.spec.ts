@@ -1899,7 +1899,7 @@ describe("transmuter", () => {
       fooLocation: things[2][0],
       barLocation: things[2][2],
       popTarget: things[0][2],
-      blaTarget: things[0][2],
+      blaTarget: things[0][0],
       source: things[0][1].filter(description => description.properties.every(property => property !== "transmute"))
     };
   }

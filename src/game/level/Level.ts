@@ -4,6 +4,7 @@ import { Coords, LevelDescription, LevelMatrix } from "./LevelDescription";
 import { SavedThing, Thing, ThingProperty } from "./Thing";
 import { interactWithSlot } from "./slot";
 import { LevelLocation, LevelMap } from "./LevelMap";
+import { parseTransmutation } from "./Transmutation";
 
 export interface MoveResult {
   moved: boolean,
@@ -176,6 +177,8 @@ export class Level {
       const changedAfterSlotInteraction = this.interactWithSlot(nextLocation);
       addedThings.push(...changedAfterSlotInteraction.addedThings);
       thingsToRemove.push(...changedAfterSlotInteraction.removedThings);
+
+      this.transmute(nextLocation);
     }
 
     const pushedThings = canMove ? this.pushThings(nextLocation, direction) : [];
@@ -494,5 +497,41 @@ export class Level {
 
   getLevelMatrix(): LevelMatrix {
     return this.map.getLevelMatrix();
+  }
+
+  private transmute(transmuterLocation: LevelLocation) {
+
+    const transmuter = transmuterLocation.things.find(thing => thing.is("transmute"));
+
+    if (transmuter === undefined) {
+      return;
+    }
+
+    const transmutation = parseTransmutation(transmuter.description.label!);
+
+    const thingsToDestroy: [LevelLocation, Thing][] = [];
+
+    transmutation.destroy.map(destroy => {
+      const location = this.map.getLocation(destroy.at);
+      const thing = location?.things.find(thing => thing.description.label === destroy.label);
+      if (location !== undefined && thing !== undefined) {
+        thingsToDestroy.push([location, thing]);
+      }
+    });
+
+    if (transmutation.destroy.length !== thingsToDestroy.length) {
+      return;
+    }
+
+    thingsToDestroy.forEach(([location, thing]) => this.removeFromLocation(location, thing));
+
+    transmutation.create.forEach(create => {
+      const location = this.map.getLocation(create.at);
+      const thing = transmuterLocation?.things.find(thing => thing.description.label === create.label);
+      if (location !== undefined && thing !== undefined) {
+        this.removeFromLocation(transmuterLocation, thing);
+        location.things.push(thing);
+      }
+    });
   }
 }
