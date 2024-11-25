@@ -158,6 +158,16 @@ export default class LevelGui extends Phaser.Scene {
       },
       14
     );
+    this.createPlayerAnimation(
+      "casting",
+      {
+        frameCount: 3,
+        framesPerSecond: 9,
+        uniformStartFrame: true
+      },
+      17
+    );
+
     this.cameras.main.startFollow(this.player).setFollowOffset(-3 * TILE_SIZE + tileCenterOffset, 0);
   }
 
@@ -453,9 +463,6 @@ export default class LevelGui extends Phaser.Scene {
       (position: Coords) => this.updatePlayerLocation(position),
       playerMovementDuration
     );
-
-    // this.player.setX(playerPixelCoords.x);
-    // this.player.setY(playerPixelCoords.y);
 
     moveResult.pushed.forEach(pushedThing => {
 
