@@ -129,7 +129,8 @@ export default class LevelGui extends Phaser.Scene {
   private createPlayerSprite(startCoords: Coords) {
     this.player = this.addSpriteFromTileset("wizard", startCoords).setDepth(depths.player);
 
-    this.updatePlayerLocation(toPixelsFromMapLocation(startCoords));
+    const initialPlayerPixels = toPixelsFromMapLocation(startCoords);
+    this.player.setPosition(initialPlayerPixels.x, initialPlayerPixels.y);
 
     this.createPlayerAnimation(
       "drowning",
@@ -460,7 +461,7 @@ export default class LevelGui extends Phaser.Scene {
     moveSmoothly(
       { x: this.player.x, y: this.player.y },
       playerPixelCoords,
-      (position: Coords) => this.updatePlayerLocation(position),
+      (position: Coords) => this.player.setPosition(position.x, position.y),
       playerMovementDuration
     );
 
@@ -503,10 +504,6 @@ export default class LevelGui extends Phaser.Scene {
     } else {
       this.displayInventory();
     }
-  }
-
-  private updatePlayerLocation(locationPixels: Coords) {
-    this.player.setPosition(locationPixels.x, locationPixels.y);
   }
 
   private removeSpritesOfRemovedThings(removedThings: Thing[]) {
