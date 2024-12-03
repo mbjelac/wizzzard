@@ -21,6 +21,7 @@ export interface AnimationConfig {
   frameCount: number;
   framesPerSecond?: number;
   uniformStartFrame?: boolean;
+  loop?: boolean;
 }
 
 
@@ -33,6 +34,7 @@ function spriteConfig(
     soundEffect?: string;
     playerDeath?: PlayerDeath;
     directions?: DirectionCoords;
+    loop?: boolean;
   }
 ): SpriteConfig {
   return {
@@ -42,7 +44,7 @@ function spriteConfig(
     variants: config.variants || [],
     soundEffect: config.soundEffect,
     playerDeath: config.playerDeath,
-    directions: config.directions
+    directions: config.directions,
   };
 }
 
@@ -776,10 +778,21 @@ export const SPRITE_CONFIGS = {
     })
   },
   research: {
+    flash: spriteConfig({
+      coords: { x: 20, y: 9 },
+      animation: {
+        frameCount: 5,
+        framesPerSecond: 4,
+        loop: false,
+        uniformStartFrame: true
+      },
+    }),
     strength: spriteConfig({
       coords: { x: 20, y: 8 },
-      animation: { frameCount: 4, framesPerSecond: 4 },
-
+      animation: {
+        frameCount: 4,
+        framesPerSecond: 4
+      },
     })
   }
 }

@@ -137,7 +137,8 @@ export default class LevelGui extends Phaser.Scene {
       {
         frameCount: 7,
         framesPerSecond: 10,
-        uniformStartFrame: true
+        uniformStartFrame: true,
+        loop: false
       },
       1
     );
@@ -146,7 +147,8 @@ export default class LevelGui extends Phaser.Scene {
       {
         frameCount: 7,
         framesPerSecond: 10,
-        uniformStartFrame: true
+        uniformStartFrame: true,
+        loop: false
       },
       8
     );
@@ -155,7 +157,8 @@ export default class LevelGui extends Phaser.Scene {
       {
         frameCount: 3,
         framesPerSecond: 9,
-        uniformStartFrame: true
+        uniformStartFrame: true,
+        loop: false
       },
       14
     );
@@ -166,20 +169,18 @@ export default class LevelGui extends Phaser.Scene {
         framesPerSecond: 6,
         uniformStartFrame: true
       },
-      17,
-      true
+      17
     );
 
     this.cameras.main.startFollow(this.player).setFollowOffset(-3 * TILE_SIZE + tileCenterOffset, 0);
   }
 
-  private createPlayerAnimation(name: string, animationConfig: AnimationConfig, playerTileOffset: number, loopForever: boolean = false) {
+  private createPlayerAnimation(name: string, animationConfig: AnimationConfig, playerTileOffset: number) {
     this.player.anims.create(
       this.getAnimation(
         name,
         animationConfig,
-        getSpriteFrameIndex(SPRITE_CONFIG_WIZARD.tileCoords) + playerTileOffset,
-        loopForever
+        getSpriteFrameIndex(SPRITE_CONFIG_WIZARD.tileCoords) + playerTileOffset
       )
     );
   }
@@ -371,7 +372,6 @@ export default class LevelGui extends Phaser.Scene {
         talkingHeadConfig.head,
         talkingHeadConfig.config,
         getSpriteFrameIndex(talkingHeadConfig.tileCoords),
-        true,
         this.talkingHeads
       ));
     });
@@ -684,7 +684,7 @@ export default class LevelGui extends Phaser.Scene {
     return sprite;
   }
 
-  private getAnimation(key: string, animationConfig: AnimationConfig, startIndex: number, loopsForever: boolean = true, tilesetName: string = this.tilesetName): Phaser.Types.Animations.Animation {
+  private getAnimation(key: string, animationConfig: AnimationConfig, startIndex: number, tilesetName: string = this.tilesetName): Phaser.Types.Animations.Animation {
     return {
       key: key,
       frameRate: animationConfig.framesPerSecond || 7,
@@ -695,7 +695,7 @@ export default class LevelGui extends Phaser.Scene {
           end: startIndex + animationConfig.frameCount - 1
         }
       ),
-      repeat: loopsForever ? -1 : 0,
+      repeat: animationConfig.loop === undefined || animationConfig.loop ? -1 : 0,
     };
   }
 
