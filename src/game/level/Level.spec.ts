@@ -35,7 +35,8 @@ const stayed: MoveResult = {
   removedThings: [],
   pushed: [],
   changedState: [],
-  addedThings: []
+  addedThings: [],
+  casting: false
 }
 
 const moved: MoveResult = {
@@ -1995,6 +1996,37 @@ describe("transmuter", () => {
       ]
     });
   });
+});
+
+describe("casting", () => {
+
+  beforeEach(() => {
+
+    level = createLevel(
+      "   ",
+      "   ",
+      "   ",
+    );
+
+    addThing(0, 0, "wall", "casting");
+  });
+
+  it("notifies about casting", () => {
+    expect(directionsToCasting(
+      Direction.LEFT,
+      Direction.UP,
+    ))
+    .toEqual([
+      false,
+      true
+    ]);
+  });
+
+  function directionsToCasting(...directions: Direction[]): boolean[] {
+    return directions
+    .map(direction => level.tryToMove(direction))
+    .map(result => result.casting);
+  }
 });
 
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {

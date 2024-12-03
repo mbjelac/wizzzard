@@ -163,22 +163,23 @@ export default class LevelGui extends Phaser.Scene {
       "casting",
       {
         frameCount: 3,
-        framesPerSecond: 9,
+        framesPerSecond: 6,
         uniformStartFrame: true
       },
-      17
+      17,
+      true
     );
 
     this.cameras.main.startFollow(this.player).setFollowOffset(-3 * TILE_SIZE + tileCenterOffset, 0);
   }
 
-  private createPlayerAnimation(name: string, animationConfig: AnimationConfig, playerTileOffset: number) {
+  private createPlayerAnimation(name: string, animationConfig: AnimationConfig, playerTileOffset: number, loopForever: boolean = false) {
     this.player.anims.create(
       this.getAnimation(
         name,
         animationConfig,
         getSpriteFrameIndex(SPRITE_CONFIG_WIZARD.tileCoords) + playerTileOffset,
-        false
+        loopForever
       )
     );
   }
@@ -495,6 +496,19 @@ export default class LevelGui extends Phaser.Scene {
     if (moveResult.moved) {
       this.playSoundEffectOfMovingOnFloor();
       this.player.play("walking", true);
+    }
+
+    if (moveResult.casting) {
+      this.player.play("casting");
+      setTimeout(() => {
+          if (this.player.anims.currentAnim.key === "casting") {
+            this.player.anims.stop();
+            this.player.setFrame(getSpriteFrameIndex(SPRITE_CONFIG_WIZARD.tileCoords));
+          }
+          this.setSideText(undefined);
+        },
+        2000
+      );
     }
 
     this.updateAmbientSound();

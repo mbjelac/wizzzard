@@ -15,6 +15,7 @@ export interface MoveResult {
   pushed: Thing[];
   changedState: Thing[];
   addedThings: ThingAt[];
+  casting: boolean;
 }
 
 export interface TickResult {
@@ -30,7 +31,8 @@ const doNothing: MoveResult = {
   removedThings: [],
   pushed: [],
   changedState: [],
-  addedThings: []
+  addedThings: [],
+  casting: false
 }
 
 export interface ThingAt {
@@ -203,6 +205,7 @@ export class Level {
     }
 
     return {
+      ...doNothing,
       moved: canMove,
       died: canMove && this.doesLocationHaveProperty(nextLocation, "death") && hasNotReceived,
       levelComplete: levelComplete,
@@ -210,7 +213,8 @@ export class Level {
       removedThings: thingsToRemove,
       pushed: pushedThings,
       changedState: changedStateThings,
-      addedThings: addedThings
+      addedThings: addedThings,
+      casting: nextLocation.things.some(thing => thing.is("casting"))
     };
   }
 

@@ -19,6 +19,7 @@ export const ALL_THING_PROPERTIES = [
   "slot",
   "monster",
   "transmute",
+  "casting"
 ] as const;
 export type ThingPropertyTuple = typeof ALL_THING_PROPERTIES;
 
