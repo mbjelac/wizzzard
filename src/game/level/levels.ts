@@ -1,4 +1,4 @@
-import { LevelDescription, LevelMetadata } from "./LevelDescription";
+import { LevelDescription, LevelMatrix, LevelMetadata } from "./LevelDescription";
 import { populateEmptyLevelMatrix } from "../game";
 
 const levels: LevelDescription[] = [
@@ -10,29 +10,72 @@ const levels: LevelDescription[] = [
       type: "errand"
     },
     levelDimensions: { width: 11, height: 11 },
-    startCoords: { x: 0, y: 0 },
-    matrix: [],
+    startCoords: { x: 4, y: 7 },
     completionCriteria: {
       inventory: ["vial"],
       receives: []
     },
-    texts: {}
+    texts: {
+      stairsDown: {
+        head: "lyra",
+        text: "I don't need anything from my chambers."
+      },
+      stairsUp: {
+        head: "lyra",
+        text: "I don't need anything from the laboratory."
+      },
+      stuff1: {
+        head: "lyra",
+        text: "Old books and knick-knacks."
+      },
+      stuff2: {
+        head: "lyra",
+        text: "Knick-knacks and old books."
+      },
+      stuff3: {
+        head: "lyra",
+        text: "Jars of ... stuff?"
+      }
+
+    }
   },
   {
     metadata: {
       id: "woodenDog",
       title: "The wooden dog",
-      description: "Wooden dog description...",
+      description: "Eva the herbalist said you can pick up a magical Speen-Aach plant in the forest shed behind the house. Don't mind Eva's daughter Kim, playing in the garden.",
       type: "errand"
     },
     levelDimensions: { width: 40, height: 30 },
-    startCoords: { x: 7, y: 7 },
-    matrix: [],
+    startCoords: { x: 6, y: 9 },
     completionCriteria: {
-      inventory: ["seed"],
+      inventory: ["speenAach"],
       receives: []
     },
-    texts: {}
+    texts: {
+      houseDoor: {
+        head: "lyra",
+        text: "I'm not leaving yet!"
+      },
+      kimPre: {
+        head: "kim",
+        text: "Please help me find my toy dog! I lost it in the Dark Forest, beyond the pumpkin patch, and I'm scared to go."
+      },
+      kimOn: {
+        head: "kim",
+        text: "Thank you so much! As a reward, here is a shiny thing I found in the grass. I wonder what does it open?"
+      },
+      kimPost: {
+        head: "kim",
+        text: "Thank you again for finding my dog!"
+      },
+      thingsUnderThings: {
+        head: "stoneCarving",
+        text: "Sometimes things are hidden under other things"
+      },
+    },
+    initialAmbientSound: "summerMeadow",
+
   },
   {
     metadata: {
@@ -42,13 +85,78 @@ const levels: LevelDescription[] = [
       type: "errand"
     },
     levelDimensions: { width: 43, height: 55 },
-    startCoords: { x: 7, y: 7 },
-    matrix: [],
+    startCoords: { x: 24, y: 48 },
+    initialAmbientSound: "forest",
     completionCriteria: {
-      inventory: ["book"],
+      inventory: ["speenAachBook"],
       receives: []
     },
-    texts: {}
+    texts: {
+      notLeavingYet: {
+        head: "lyra",
+        text: "I will leave the forest when I recover the druid's book."
+      },
+      druidPillarText1: {
+        head: "stoneCarving",
+        text: "Secret passages ..."
+      },
+      druidPillarText2: {
+        head: "stoneCarving",
+        text: "... may be ..."
+      },
+      druidPillarText3: {
+        head: "stoneCarving",
+        text: "... hidden well ..."
+      },
+      druidPillarText4: {
+        head: "stoneCarving",
+        text: "... in forest bushes."
+      },
+      emeraldKeyHidden: {
+        head: "book",
+        text: "Wednesday\n\nI have hidden the key to the library well. But I no longer remember where..."
+      },
+      basementShelves: {
+        head: "lyra",
+        text: "Nothing of interest."
+      },
+      monsterNote: {
+        head: "book",
+        text: "Monsters will eat you. Good thing some are very dumb."
+      },
+      shelves8: {
+        head: "lyra",
+        text: "Various concoctions."
+      },
+      shelves7: {
+        head: "lyra",
+        text: "Druidic mumbo-jumbo."
+      },
+      shelves6: {
+        head: "lyra",
+        text: "My shelves have more interesting stuff."
+      },
+      shelves5: {
+        head: "lyra",
+        text: "Smelly."
+      },
+      shelves4: {
+        head: "lyra",
+        text: "Druidic mumbo-jumbo."
+      },
+      shelves1: {
+        head: "lyra",
+        text: "Boring druid stuff."
+      },
+      shelves3: {
+        head: "book",
+        text: "The Affairs of the Planets"
+      },
+      shelves2: {
+        head: "book",
+        text: "The Moon is a Harsh Mistress"
+      }
+    }
   },
   {
     metadata: {
@@ -59,7 +167,6 @@ const levels: LevelDescription[] = [
     },
     levelDimensions: { width: 10, height: 10 },
     startCoords: { x: 5, y: 5 },
-    matrix: [],
     completionCriteria: {
       inventory: ["someLabel"],
       receives: []
@@ -73,14 +180,70 @@ const levels: LevelDescription[] = [
       description: "You feel you can push heavy stone blocks. It doesn't look like the feeling lasts long.",
       type: "ritual"
     },
+    initialAmbientSound: "laboratory",
     levelDimensions: { width: 11, height: 11 },
-    texts: {},
+    texts: {
+      stairsDown: {
+        head: "lyra",
+        text: "I don't need anything from downstairs."
+      },
+      bzzt: {
+        head: "lyra",
+        text: "Bzzt, bzzt"
+      },
+      alchemy: {
+        head: "lyra",
+        text: "Oooh, bubbles!"
+      },
+      jars: {
+        head: "lyra",
+        text: "Various specimens and a jar of apple jam ... but which one is it?"
+      },
+      incantations: {
+        head: "lyra",
+        text: "Vacuus primae! Baridio phenophera! Zuuuul!"
+      },
+      infoPlant: {
+        head: "book",
+        text: "Plants are combined with Earth"
+      },
+      infoCrystal: {
+        head: "book",
+        text: "Crystals are used for Flow"
+      },
+      infoWater: {
+        head: "book",
+        text: "Water brings clarity of Vision"
+      }
+    },
     completionCriteria: {
-      inventory: ["vialOfStrength"],
+      inventory: ["strength"],
       receives: []
     },
-    matrix: [],
-    startCoords: { x: 0, y: 0 }
+    startCoords: { x: 4, y: 3 },
+    initialInventory: [
+      {
+        sprite: "0-30",
+        properties: [
+          "pickup"
+        ],
+        label: "crystal"
+      },
+      {
+        sprite: "2-29",
+        properties: [
+          "pickup"
+        ],
+        label: "plant"
+      },
+      {
+        sprite: "3-19",
+        properties: [
+          "pickup"
+        ],
+        label: "vial"
+      }
+    ],
   },
   {
     metadata: {
@@ -95,8 +258,7 @@ const levels: LevelDescription[] = [
       inventory: [],
       receives: []
     },
-    matrix: [],
-    startCoords: { x: 0, y: 0 }
+    startCoords: { x: 4, y: 3 },
   },
   {
     metadata: {
@@ -105,45 +267,44 @@ const levels: LevelDescription[] = [
       description: "There is a rumour that a Life Crystal can be found on a tiny island in the middle of Misty Lake in Dark Forest. However, I can't swim...",
       type: "errand"
     },
-    levelDimensions: { width: 27, height: 42 },
-    texts: {},
+    levelDimensions: { width: 29, height: 42 },
+    texts: {
+      "notLeavingYet": {
+        "head": "lyra",
+        "text": "The Crystal is in there, not out here!"
+      },
+      "logsAdvice": {
+        "head": "stoneCarving",
+        "text": "Logs float on water."
+      }
+    },
     completionCriteria: {
       inventory: ["lifeCrystal"],
       receives: []
     },
-    matrix: [],
-    startCoords: { x: 0, y: 0 }
+    startCoords: {
+      x: 7,
+      y: 35
+    },
+    initialAmbientSound: "summerMeadow",
   }
 ];
 
-export async function getLevelDescription(levelId: string): Promise<LevelDescription> {
-  const levelFromStorage = getLevelFromLocalStorage(levelId);
-
-  if (levelFromStorage !== undefined) {
-    return Promise.resolve(levelFromStorage);
+export function getLevelDescription(id: string): LevelDescription {
+  const description = levels.find(description => description.metadata.id === id);
+  if (description === undefined) {
+    throw Error(`Level '${id}' description not found!`);
   }
-
-  const levelFromCode = levels.find(level => level.metadata.id === levelId);
-
-  if (levelFromCode === undefined) {
-    return Promise.reject(`Level not found for id: ${levelId}`);
-  }
-
-  let levelWithFilledMap = levelFromCode;
-
-  if (levelWithFilledMap.matrix.length === 0) {
-    levelWithFilledMap = {
-      ...levelWithFilledMap,
-      matrix: populateEmptyLevelMatrix(levelWithFilledMap.levelDimensions)
-    }
-  }
-
-  await storeLevel(levelWithFilledMap);
-
-  return Promise.resolve(levelWithFilledMap);
+  return description;
 }
 
-function getLevelFromLocalStorage(levelId: string): LevelDescription | undefined {
+export function getLevelMatrix(levelDescription: LevelDescription): LevelMatrix {
+  const levelMatrixFromStorage = getLevelMatrixFromLocalStorage(levelDescription.metadata.id);
+
+  return levelMatrixFromStorage || populateEmptyLevelMatrix(levelDescription.levelDimensions);
+}
+
+function getLevelMatrixFromLocalStorage(levelId: string): LevelMatrix | undefined {
 
   const levelString = localStorage.getItem(levelId);
 
@@ -160,10 +321,10 @@ function getLevelFromLocalStorage(levelId: string): LevelDescription | undefined
   }
 }
 
-export async function storeLevel(level: LevelDescription) {
-  localStorage.setItem(level.metadata.id, JSON.stringify(level));
+export function storeLevel(levelId: string, matrix: LevelMatrix) {
+  localStorage.setItem(levelId, JSON.stringify(matrix));
 }
 
-export async function getLevelMetadata(): Promise<LevelMetadata[]> {
-  return Promise.resolve(levels.map(level => level.metadata));
+export function getLevelMetadata(): LevelMetadata[] {
+  return levels.map(level => level.metadata);
 }

@@ -1,6 +1,6 @@
-import { LevelDescription, LevelDimensions, LevelMatrix, LevelMetadata } from "./level/LevelDescription";
+import { LevelDimensions, LevelMatrix, LevelMetadata } from "./level/LevelDescription";
 import { Level } from "./level/Level";
-import { getLevelDescription, getLevelMetadata, storeLevel } from "./level/levels";
+import { getLevelDescription, getLevelMatrix, getLevelMetadata } from "./level/levels";
 import { SpellBook } from "./spell/SpellBook";
 import { Inventory } from "./Inventory";
 
@@ -13,10 +13,6 @@ export class Game {
 
   readonly spellBook = new SpellBook(this.items, this.spells);
 
-  async getLevelMetadata(): Promise<LevelMetadata[]> {
-    return await getLevelMetadata()
-  }
-
   setCurrentLevel(levelId: string) {
     this.currentLevelId = levelId;
   }
@@ -27,26 +23,19 @@ export class Game {
       throw Error("Current level not set!");
     }
 
-    const levelDescription = await getLevelDescription(this.currentLevelId);
+    const description = getLevelDescription(this.currentLevelId);
 
     return new Level(
-      levelDescription,
+      description,
+      getLevelMatrix(description),
       (items: string[]) => items.forEach(item =>
         (
-          levelDescription.metadata.type === "errand"
+          description.metadata.type === "errand"
             ? this.items
             : this.spells
         )
         .add(item))
     );
-  }
-
-  async setLevel(levelDescription: LevelDescription) {
-    await storeLevel(levelDescription);
-  }
-
-  async getSelectedLevelDescription(): Promise<LevelDescription | undefined> {
-    return this.currentLevelId ? await getLevelDescription(this.currentLevelId) : undefined;
   }
 }
 

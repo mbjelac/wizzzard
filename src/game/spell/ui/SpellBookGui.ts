@@ -8,6 +8,7 @@ import { Coords, LevelMetadata } from "../../level/LevelDescription";
 import { BitmapFonts } from "../../../utils/BitmapFonts";
 import { spellRequirementsBySpellId } from "../spell-requirements";
 import { getSpriteFrameIndex } from "../../level/ui/LevelGui";
+import { getLevelMetadata } from "../../level/levels";
 import Rectangle = Phaser.Geom.Rectangle;
 import Sprite = Phaser.GameObjects.Sprite;
 
@@ -49,7 +50,7 @@ export default class SpellBookGui extends Phaser.Scene {
     BitmapFonts.getInstance().loadFonts(this);
 
     this.events.on("create", async () => this.displayContent());
-    this.events.on("wake", async () => await this.displayContent());
+    this.events.on("wake", async () => this.displayContent());
 
     this.researchButton.preload(this);
   }
@@ -139,10 +140,10 @@ export default class SpellBookGui extends Phaser.Scene {
     .setVisible(true)
   }
 
-  private async displayContent() {
+  private displayContent() {
     this.clearContent();
 
-    this.addSpellNames(await GAME.getLevelMetadata());
+    this.addSpellNames(getLevelMetadata());
   }
 
   private clearContent() {
@@ -221,10 +222,10 @@ export default class SpellBookGui extends Phaser.Scene {
     const status = GAME.spellBook.getSpellStatus(metadata.id);
 
     // if (status === "ALL_REQUIREMENTS_COLLECTED") {
-      this.researchButton.show({ x: 210 * 4, y: 180 * 4 }, "Research", () => {
-        GAME.setCurrentLevel(metadata.id);
-        this.scene.switch(SceneId.LEVEL);
-      });
+    this.researchButton.show({ x: 210 * 4, y: 180 * 4 }, "Research", () => {
+      GAME.setCurrentLevel(metadata.id);
+      this.scene.switch(SceneId.LEVEL);
+    });
     // }
   }
 }

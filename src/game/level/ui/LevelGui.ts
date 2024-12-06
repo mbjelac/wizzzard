@@ -20,6 +20,7 @@ import { TILE_SIZE, tileCenterOffset } from "../../../constants";
 import { toPixelsFromMapLocation } from "./toPixelsFromMapLocation";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
+import { storeLevel } from "../levels";
 
 const animation1 = "animation1";
 const animation2 = "animation2";
@@ -303,8 +304,6 @@ export default class LevelGui extends Phaser.Scene {
   }
 
   create() {
-    console.log("Level create");
-
     this.dialogBox.create(this);
 
     this.input.keyboard.on('keydown', async (event: KeyboardEvent) => {
@@ -700,13 +699,7 @@ export default class LevelGui extends Phaser.Scene {
   }
 
   private async saveLevelMatrix() {
-
-    const levelDescription: LevelDescription = {
-      ...this.level.levelDescription,
-      matrix: this.level.getLevelMatrix()
-    }
-
-    await GAME.setLevel(levelDescription);
+    storeLevel(this.level.levelDescription.metadata.id, this.level.getLevelMatrix());
   }
 
   private activeRememberingStoneSprite: Sprite | undefined;

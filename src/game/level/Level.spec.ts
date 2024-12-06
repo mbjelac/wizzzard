@@ -19,7 +19,6 @@ const dummyLevel: LevelDescription = {
   },
   texts: {},
   levelDimensions: { width: 3, height: 3 },
-  matrix: factory.fromMatrix(" "),
   startCoords: { x: 0, y: 0 },
   completionCriteria: {
     inventory: [],
@@ -67,13 +66,13 @@ function createLevel(...rows: string[]): Level {
       },
       texts: {},
       levelDimensions: { width: rows[0].length, height: rows.length },
-      matrix: factory.fromMatrix(...rows),
       startCoords: startCoords,
       completionCriteria: {
         inventory: ["any"],
         receives: []
       }
     },
+    factory.fromMatrix(...rows),
     addToGameInventoryFake
   );
 }
@@ -873,17 +872,17 @@ describe("completing level", () => {
       {
         ...dummyLevel,
         levelDimensions: { width: 3, height: 3 },
-        matrix: factory.fromMatrix(
-          "   ",
-          "   ",
-          "   "
-        ),
         startCoords: { x: 1, y: 1 },
         completionCriteria: {
           inventory: ["label1"],
           receives: ["label2"]
         }
       },
+      factory.fromMatrix(
+        "   ",
+        "   ",
+        "   "
+      ),
       addToGameInventoryFake
     );
 
@@ -917,17 +916,17 @@ describe("completing level", () => {
       {
         ...dummyLevel,
         levelDimensions: { width: 3, height: 3 },
-        matrix: factory.fromMatrix(
-          "   ",
-          "   ",
-          "   "
-        ),
         startCoords: { x: 1, y: 1 },
         completionCriteria: {
           inventory: requiredInventory,
           receives: []
         }
       },
+      factory.fromMatrix(
+        "   ",
+        "   ",
+        "   "
+      ),
       addToGameInventoryFake
     );
   }
@@ -937,17 +936,17 @@ describe("completing level", () => {
       {
         ...dummyLevel,
         levelDimensions: { width: 3, height: 3 },
-        matrix: factory.fromMatrix(
-          "   ",
-          "   ",
-          "   "
-        ),
         startCoords: { x: 1, y: 1 },
         completionCriteria: {
           inventory: [],
           receives: requiredReceives
         }
       },
+      factory.fromMatrix(
+        "   ",
+        "   ",
+        "   "
+      ),
       addToGameInventoryFake
     );
   }
@@ -1708,6 +1707,7 @@ describe("initial inventory", () => {
         ...dummyLevel,
         initialInventory: initialThingDescriptions
       },
+      factory.fromMatrix(),
       addToGameInventoryFake
     );
 

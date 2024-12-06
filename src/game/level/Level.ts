@@ -84,10 +84,11 @@ export class Level {
 
   constructor(
     public readonly levelDescription: LevelDescription,
+    levelMatrix: LevelMatrix,
     private readonly addToGameInventory: (items: string[]) => void
   ) {
     this.playerCoords = { ...levelDescription.startCoords };
-    this.map = LevelMap.fromLevelMatrix(this.levelDescription.matrix);
+    this.map = LevelMap.fromLevelMatrix(levelMatrix);
 
     (levelDescription.initialInventory || [])
     .forEach(initialThingDescription => {

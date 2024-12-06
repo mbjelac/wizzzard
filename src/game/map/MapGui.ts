@@ -10,6 +10,7 @@ import depths from "../level/ui/depths";
 import { getMapPlaceDescriptionAt } from "./place-descriptions";
 import { SceneId } from "../../utils/scene-ids";
 import { BitmapFonts } from "../../utils/BitmapFonts";
+import { getLevelMetadata } from "../level/levels";
 import Sprite = Phaser.Physics.Arcade.Sprite;
 
 const stretchCoefficient = 4;
@@ -44,12 +45,9 @@ export default class MapGui extends Phaser.Scene {
 
   constructor() {
     super('errands');
-    console.log("Errands constructor")
   }
 
   preload() {
-
-    console.log("Errands preload")
 
     this.load.image("errandMarker", "assets/map_errand_marker.png");
     this.load.image("spellBook", "assets/spellbook-on-map.png");
@@ -72,7 +70,7 @@ export default class MapGui extends Phaser.Scene {
 
   private async sceneActive() {
 
-    const levelMetadata = await GAME.getLevelMetadata();
+    const levelMetadata = getLevelMetadata();
 
     this.clearErrandMarkers();
     this.addErrandMarkers(levelMetadata);
@@ -94,8 +92,6 @@ export default class MapGui extends Phaser.Scene {
   }
 
   create() {
-    console.log("Errands create")
-
     this.dialogBox.create(this);
 
     const screenWidth = config.scale!.width! as number;

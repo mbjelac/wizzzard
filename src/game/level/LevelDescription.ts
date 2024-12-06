@@ -17,7 +17,6 @@ export interface ThingDescription {
 }
 
 export interface LevelMatrixElement {
-
   things: ThingDescription[]
 }
 
@@ -46,7 +45,6 @@ export interface LevelDescription {
 
   readonly metadata: LevelMetadata,
   readonly levelDimensions: LevelDimensions,
-  readonly matrix: LevelMatrix,
   readonly startCoords: Coords
   readonly completionCriteria: CompletionCriteria
   readonly texts: {[key: string]: TextContent}
