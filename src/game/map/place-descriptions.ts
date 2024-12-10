@@ -1,8 +1,8 @@
 import { Coords, locationsSame } from "../level/LevelDescription";
 
 const mapPlaceDescriptions: [Coords[], string][] = [
-  [[{ x: 14, y: 5 }], "Eva the herbalist's house"],
-  [[{ x: 18, y: 6 }], "Druid's house"],
+  [[{ x: 14, y: 5 }], "Eva the herbalist"],
+  [[{ x: 18, y: 6 }], "Faarg the druid"],
   [[{ x: 13, y: 7 }], "Town of Bolek"],
   [
     [
@@ -24,8 +24,8 @@ const mapPlaceDescriptions: [Coords[], string][] = [
   ],
   [[{ x: 16, y: 7 },], "Misty Lake"],
   [[{ x: 13, y: 10 },], "Lyra's tower"],
-  [[{ x: 11, y: 7 },], "Taas Bridge"],
-  [[{ x: 12, y: 6 },], "Polok Ruins"],
+  [[{ x: 11, y: 7 },], "Taas bridge"],
+  [[{ x: 12, y: 6 },], "Polok ruins"],
 ];
 
 export function getMapPlaceDescriptionAt(location: Coords): string | undefined {
