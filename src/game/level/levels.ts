@@ -287,7 +287,23 @@ const levels: LevelDescription[] = [
       y: 35
     },
     initialAmbientSound: "summerMeadow",
-  }
+  },
+
+  {
+    metadata: {
+      id: "brokenBridge",
+      title: "The Broken Bridge",
+      description: "The Taas bridge crossing the river Bo has collapsed in a storm several months ago. The townsfolk of Bolek asked me to try and get to the other side of the river and let Ewyn the bridge-builder know that they need her help.",
+      type: "errand"
+    },
+    levelDimensions: { width: 35, height: 35 },
+    startCoords: { x: 28, y: 5 },
+    completionCriteria: {
+      inventory: [],
+      receives: []
+    },
+    texts: {}
+  },
 ];
 
 export function getLevelDescription(id: string): LevelDescription {

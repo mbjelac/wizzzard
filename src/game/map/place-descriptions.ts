@@ -34,6 +34,12 @@ const mapPlaceDescriptions: [Coords[], string][] = [
     ],
     "Lyra's tower"
   ],
+  [
+    [
+      { x: 11, y: 7 },
+    ],
+    "Taas Bridge"
+  ],
 ];
 
 export function getMapPlaceDescriptionAt(location: Coords): string | undefined {

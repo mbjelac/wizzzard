@@ -19,7 +19,8 @@ const tileSizePixels = stretchCoefficient * coordinateSystemCoefficient;
 
 interface ErrandMarker {
   description: LevelMetadata,
-  sprite: Phaser.GameObjects.Sprite
+  sprite: Phaser.GameObjects.Sprite,
+  selectionSprite: Phaser.GameObjects.Sprite,
 }
 
 export default class MapGui extends Phaser.Scene {
@@ -30,7 +31,7 @@ export default class MapGui extends Phaser.Scene {
   // @ts-ignore
   private errandMarkers: ErrandMarker[] = [];
 
-  private errandSelectionFrame!: Phaser.GameObjects.Sprite;
+  private selectedErrandMarkerSelectionSprite: Phaser.GameObjects.Sprite | undefined;
 
   private readonly dialogBox = new DialogBox();
 
@@ -77,7 +78,11 @@ export default class MapGui extends Phaser.Scene {
   }
 
   private clearErrandMarkers() {
-    this.errandMarkers.forEach(marker => marker.sprite.destroy(true));
+    this.errandMarkers.forEach(marker => {
+        marker.sprite.destroy(true);
+        marker.selectionSprite.destroy(true);
+      }
+    );
     this.errandMarkers.length = 0;
   }
 
@@ -137,19 +142,6 @@ export default class MapGui extends Phaser.Scene {
 
     this.errandDescriptionWidget.goButton.preload(this);
     this.errandDescriptionWidget.goButton.create(this);
-
-    this.errandSelectionFrame = this.physics.add
-    .sprite(0, 0, this.tilesetName, 6)
-    .setDisplaySize(tileSizePixels, tileSizePixels)
-    .setVisible(false);
-
-    this.errandSelectionFrame.anims.create(this.getAnimation({
-      frameIndex: 6,
-      animation: {
-        frameCount: 14,
-        framesPerSecond: 12
-      },
-    }));
 
     this.placeDescriptionText = this.add
     .bitmapText(200, 780, "blackRobotoMicro", "")
@@ -221,24 +213,51 @@ export default class MapGui extends Phaser.Scene {
       return undefined;
     }
 
+    const selectionSprite = this.addMapTile(
+      {
+        frameIndex: 8,
+        animation: {
+          frameCount: 1,
+          framesPerSecond: 1
+        }
+      },
+      errandMarkerConfig.location
+    )!;
+
+    selectionSprite.anims.create({
+      key: "selected",
+      frameRate: 2,
+      frames: this.anims.generateFrameNumbers(
+        this.tilesetName,
+        {
+          start: 6,
+          end: 7
+        }
+      ),
+      repeat: -1,
+    });
+
     const sprite = this.addMapTile(errandMarkerConfig.mapTile, errandMarkerConfig.location)!;
 
     sprite
     .setInteractive()
     .on('pointerup', () => {
-      const locationPixels = this.getMapPixelCoords(errandMarkerConfig.location);
-      this.errandSelectionFrame.setX(locationPixels.x);
-      this.errandSelectionFrame.setY(locationPixels.y);
-      this.errandSelectionFrame.anims.play(this.animationKey);
-      this.errandSelectionFrame.setVisible(true);
       this.displayErrandDescription(errandDescription);
+
+      if (this.selectedErrandMarkerSelectionSprite !== undefined) {
+        this.selectedErrandMarkerSelectionSprite.anims.play(this.animationKey);
+      }
+
+      this.selectedErrandMarkerSelectionSprite = selectionSprite;
+      this.selectedErrandMarkerSelectionSprite.anims.play("selected");
 
       GAME.setCurrentLevel(errandDescription.id);
     })
 
     return {
       description: errandDescription,
-      sprite: sprite
+      sprite: sprite,
+      selectionSprite: selectionSprite
     };
   }
 
