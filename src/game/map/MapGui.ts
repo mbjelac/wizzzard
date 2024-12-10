@@ -78,6 +78,7 @@ export default class MapGui extends Phaser.Scene {
   }
 
   private clearErrandMarkers() {
+    this.selectedErrandMarkerSelectionSprite = undefined;
     this.errandMarkers.forEach(marker => {
         marker.sprite.destroy(true);
         marker.selectionSprite.destroy(true);
