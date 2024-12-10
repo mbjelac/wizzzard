@@ -297,12 +297,17 @@ const levels: LevelDescription[] = [
       type: "errand"
     },
     levelDimensions: { width: 35, height: 35 },
-    startCoords: { x: 28, y: 5 },
+    startCoords: { x: 28, y: 17 },
     completionCriteria: {
       inventory: [],
-      receives: []
+      receives: ["meetWithEwyn"]
     },
-    texts: {}
+    texts: {
+      notLeaving: {
+        head: "lyra",
+        text: "I'm not going back to Bolek until I reach Ewyn!"
+      }
+    }
   },
 ];
 
