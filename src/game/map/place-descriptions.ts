@@ -40,6 +40,12 @@ const mapPlaceDescriptions: [Coords[], string][] = [
     ],
     "Taas Bridge"
   ],
+  [
+    [
+      { x: 12, y: 6 },
+    ],
+    "Polok Ruins"
+  ],
 ];
 
 export function getMapPlaceDescriptionAt(location: Coords): string | undefined {

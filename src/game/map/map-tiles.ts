@@ -148,6 +148,10 @@ function createMapTile(symbol: string, location: Coords): MapTile {
     case "f":
       return {
         frameIndex: tileLocationToFrameIndex(getConnectedTileLocation(symbol, location, zoneNeighbourhood), { x: 0, y: 1 })
+      };
+    case "R":
+      return {
+        frameIndex: tileLocationToFrameIndex({ x: 3, y: 16 })
       }
     case "w":
       return {

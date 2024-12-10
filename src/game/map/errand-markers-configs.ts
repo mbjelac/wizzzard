@@ -73,10 +73,10 @@ export const errandMarkersConfigs = new Map<string, ErrandMarkerConfig>()
     "brokenBridge",
     {
       mapTile: {
-        frameIndex: tileLocationToFrameIndex({ x: 4, y: 7 }),
+        frameIndex: tileLocationToFrameIndex({ x: 4, y: 8 }),
         animation: {
-          frameCount: 10,
-          framesPerSecond: 4
+          frameCount: 1,
+          framesPerSecond: 1
         }
       },
       location: { x: 11, y: 7 }

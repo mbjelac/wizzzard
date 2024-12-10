@@ -5,7 +5,7 @@ export const map = [
   "  H  MMMrrMM  ppfff f    ",
   "    MMHMMr H ppfffff  ff ",
   " ffH HHH rHH phffffff ff ",
-  "ffff f H rrrhpffffhff    ",
+  "ffff f H rrrRpffffhff    ",
   "        ppprpv fwffff    ",
   "          rrhpffffff     ",
   "          r  pppppppppp  ",
