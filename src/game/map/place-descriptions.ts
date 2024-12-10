@@ -22,30 +22,10 @@ const mapPlaceDescriptions: [Coords[], string][] = [
     ],
     "Dark Forest"
   ],
-  [
-    [
-      { x: 16, y: 7 },
-    ],
-    "Misty Lake"
-  ],
-  [
-    [
-      { x: 13, y: 10 },
-    ],
-    "Lyra's tower"
-  ],
-  [
-    [
-      { x: 11, y: 7 },
-    ],
-    "Taas Bridge"
-  ],
-  [
-    [
-      { x: 12, y: 6 },
-    ],
-    "Polok Ruins"
-  ],
+  [[{ x: 16, y: 7 },], "Misty Lake"],
+  [[{ x: 13, y: 10 },], "Lyra's tower"],
+  [[{ x: 11, y: 7 },], "Taas Bridge"],
+  [[{ x: 12, y: 6 },], "Polok Ruins"],
 ];
 
 export function getMapPlaceDescriptionAt(location: Coords): string | undefined {
