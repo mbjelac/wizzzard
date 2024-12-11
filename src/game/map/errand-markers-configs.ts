@@ -14,8 +14,8 @@ export const errandMarkersConfigs = new Map<string, ErrandMarkerConfig>()
       mapTile: {
         frameIndex: tileLocationToFrameIndex({ x: 4, y: 4 }),
         animation: {
-          frameCount: 2,
-          framesPerSecond: 3
+          frameCount: 1,
+          framesPerSecond: 1
         }
       },
       location: { x: 14, y: 5 }
@@ -25,11 +25,7 @@ export const errandMarkersConfigs = new Map<string, ErrandMarkerConfig>()
     "forgetfulDruid",
     {
       mapTile: {
-        frameIndex: tileLocationToFrameIndex({ x: 4, y: 5 }),
-        animation: {
-          frameCount: 20,
-          framesPerSecond: 4
-        }
+        frameIndex: tileLocationToFrameIndex({ x: 3, y: 0 }),
       },
       location: { x: 16, y: 9 }
     }
@@ -60,11 +56,7 @@ export const errandMarkersConfigs = new Map<string, ErrandMarkerConfig>()
     "misplacedVial",
     {
       mapTile: {
-        frameIndex: tileLocationToFrameIndex({ x: 4, y: 7 }),
-        animation: {
-          frameCount: 10,
-          framesPerSecond: 4
-        }
+        frameIndex: tileLocationToFrameIndex({ x: 3, y: 0 }),
       },
       location: { x: 13, y: 10 }
     }

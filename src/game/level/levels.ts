@@ -6,7 +6,7 @@ const levels: LevelDescription[] = [
     metadata: {
       id: "misplacedVial",
       title: "A misplaced vial",
-      description: "I have misplaced a vial of Splendid Water somewhere in my storage room. It's on the 2nd level of my tower. I must find it!",
+      description: "I have misplaced a vial of Splendid Water somewhere in the storage room of my tower. I must find it to research my first spell!",
       type: "errand"
     },
     levelDimensions: { width: 11, height: 11 },
