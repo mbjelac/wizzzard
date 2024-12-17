@@ -49,10 +49,17 @@ export interface LevelDescription {
   readonly completionCriteria: CompletionCriteria
   readonly texts: {[key: string]: TextContent}
   readonly initialAmbientSound?: string;
-  readonly initialInventory?: ThingDescription[]
+  readonly initialInventory?: ThingDescription[];
+  readonly spells?: Spell[];
 }
 
 export interface TextContent {
   readonly text: string
   readonly head: string | undefined
+}
+
+export interface Spell {
+  readonly id: string;
+  readonly name: string;
+  readonly charges: number;
 }

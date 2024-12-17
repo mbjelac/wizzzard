@@ -171,7 +171,24 @@ const levels: LevelDescription[] = [
       inventory: ["someLabel"],
       receives: []
     },
-    texts: {}
+    texts: {},
+    spells: [
+      {
+        id: "strength",
+        name: "Strength",
+        charges: 10
+      },
+      {
+        id: "waterbreathing",
+        name: "Waterbreathing",
+        charges: 3
+      },
+      {
+        id: "jump",
+        name: "Jump",
+        charges: 6
+      },
+    ]
   },
   {
     metadata: {
@@ -305,7 +322,7 @@ const levels: LevelDescription[] = [
     texts: {
       notLeaving: {
         head: "lyra",
-        text: "I'm not going back to Bolek until I reach Ewyn!"
+        text: "I'm not going back to Bolek until I reach Ewyn!\n\nWaterbreathing\n13\nStrength"
       }
     }
   },

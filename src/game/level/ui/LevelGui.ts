@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { Level, ThingAt, TickResult } from "../Level";
 import { Direction } from "../Direction";
 import { GAME } from "../../game";
-import { Coords, LevelDescription, TextContent, ThingDescription } from "../LevelDescription";
+import { Coords, TextContent, ThingDescription } from "../LevelDescription";
 import { AnimationConfig, PlayerDeath, SPRITE_CONFIG_VOID, SPRITE_CONFIG_WIZARD, SPRITE_CONFIGS_BY_LOCATION } from "./sprites";
 import { clearLabelText, getLabelText } from "./editor-panel";
 import depths from "./depths";
@@ -18,9 +18,9 @@ import { getDeathMessage } from "./get-death-message";
 import { getInventorySpriteCoords } from "./get-inventory-sprite-coords";
 import { TILE_SIZE, tileCenterOffset } from "../../../constants";
 import { toPixelsFromMapLocation } from "./toPixelsFromMapLocation";
+import { storeLevel } from "../levels";
 import Pointer = Phaser.Input.Pointer;
 import Sprite = Phaser.Physics.Arcade.Sprite;
-import { storeLevel } from "../levels";
 
 const animation1 = "animation1";
 const animation2 = "animation2";
@@ -31,6 +31,40 @@ interface AmbientSound {
   readonly name: string;
   readonly sound: Phaser.Sound.BaseSound;
 }
+
+interface SpellBox {
+  readonly icon: Phaser.GameObjects.Sprite;
+  readonly name: Phaser.GameObjects.BitmapText;
+  readonly charges: Phaser.GameObjects.Sprite;
+}
+
+function clearSpellBox(spellBox: SpellBox) {
+  spellBox.name.setText("");
+  spellBox.icon.setVisible(false);
+  spellBox.charges.setVisible(false);
+}
+
+const spellBoxParams = {
+  offset: { x: 213, y: 7 },
+  spacing: 15,
+  icon: {
+    size: 6,
+    selectedOffset: 6,
+    colorOffset: 7,
+  },
+  chargeGauge: {
+    xOffset: 13,
+    yOffset: 2,
+    height: 2,
+    pointWidth: 3
+  }
+};
+
+const spellColorOrder: string[] = [
+  "strength",
+  "waterbreathing",
+  "jump"
+]
 
 export default class LevelGui extends Phaser.Scene {
 
@@ -67,6 +101,8 @@ export default class LevelGui extends Phaser.Scene {
     (result: TickResult) => this.handleTickResult(result)
   )
 
+  private spellBoxes!: SpellBox[];
+
   constructor() {
     super("level");
   }
@@ -81,6 +117,9 @@ export default class LevelGui extends Phaser.Scene {
     this.load.spritesheet(this.talkingHeads, "assets/talking_heads.png", { frameWidth: 10, frameHeight: 10 });
 
     this.load.image("panel", "assets/panel.png");
+
+    this.load.image("spellIndicators", 'assets/spell_indicators.png'); // Load your image here
+
 
     this.load.bitmapFont('blackRobotoMicro', 'assets/fonts/roboto-micro.png', 'assets/fonts/roboto-micro.xml');
 
@@ -123,6 +162,7 @@ export default class LevelGui extends Phaser.Scene {
     this.createPlayerSprite(startCoords);
 
     this.displayInventory();
+    this.displaySpells();
 
     this.playAmbientSound(this.level.levelDescription.initialAmbientSound);
   }
@@ -374,6 +414,36 @@ export default class LevelGui extends Phaser.Scene {
         this.talkingHeads
       ));
     });
+
+    const createSpellBox: (index: number) => SpellBox = (index) => ({
+      name: this.add
+      .bitmapText(spellBoxParams.offset.x * 4 + spellBoxParams.icon.size * 4 + 1 * 4, spellBoxParams.offset.y * 4 + spellBoxParams.spacing * index * 4, "blackRobotoMicro", "")
+      .setScale(4)
+      .setDepth(depths.info)
+      .setScrollFactor(0),
+
+      icon: this.add
+      .sprite(0, 0, "spellIndicators")
+      .setScale(4)
+      .setDepth(depths.info)
+      .setVisible(false)
+      .setOrigin(0)
+      .setScrollFactor(0),
+
+      charges: this.add
+      .sprite(0, 0, "spellIndicators")
+      .setScale(4)
+      .setDepth(depths.info)
+      .setVisible(false)
+      .setOrigin(0)
+      .setScrollFactor(0),
+    });
+
+    this.spellBoxes = [
+      createSpellBox(0),
+      createSpellBox(1),
+      createSpellBox(2),
+    ];
   }
 
   private getTerminationButtons(): ButtonConfig[] {
@@ -888,6 +958,49 @@ export default class LevelGui extends Phaser.Scene {
       await this.playerDied();
     }
 
+  }
+
+  private displaySpells() {
+
+    const spells = this.level.getPreparedSpells();
+
+    this.spellBoxes.forEach((spellBox, index) => {
+
+      const spell = spells[index];
+
+      if (spell == undefined) {
+        clearSpellBox(spellBox);
+      } else {
+
+        const spellColorOffset = spellColorOrder.indexOf(spell.id) * spellBoxParams.icon.colorOffset;
+
+        spellBox.name.setText(spell.name);
+        spellBox.icon
+        .setVisible(true)
+        .setPosition(
+          spellBoxParams.offset.x * 4,
+          spellBoxParams.offset.y * 4 + spellBoxParams.spacing * index * 4 - spellColorOffset * 4
+        )
+        .setCrop(
+          spell.isSelected ? spellBoxParams.icon.selectedOffset : 0,
+          spellColorOffset,
+          spellBoxParams.icon.size,
+          spellBoxParams.icon.size
+        );
+        spellBox.charges
+        .setVisible(true)
+        .setPosition(
+          spellBoxParams.offset.x * 4 - spellBoxParams.chargeGauge.xOffset * 4 + spellBoxParams.icon.size * 4 + 1 * 4,
+          spellBoxParams.offset.y * 4 + spellBoxParams.spacing * index * 4 - spellColorOffset * 4 + 6 * 4
+        )
+        .setCrop(
+          spellBoxParams.chargeGauge.xOffset,
+          spellColorOffset + spellBoxParams.chargeGauge.yOffset,
+          spellBoxParams.chargeGauge.pointWidth * spell.charges,
+          spellBoxParams.chargeGauge.height
+        );
+      }
+    });
   }
 }
 

@@ -5,6 +5,7 @@ import { SavedThing, Thing, ThingProperty } from "./Thing";
 import { interactWithSlot } from "./slot";
 import { LevelLocation, LevelMap } from "./LevelMap";
 import { parseTransmutation } from "./Transmutation";
+import { PreparedSpell, PreparedSpells } from "./PreparedSpells";
 
 export interface MoveResult {
   moved: boolean,
@@ -82,6 +83,8 @@ export class Level {
 
   private thingsThatChangedState: Thing[] = [];
 
+  private readonly preparedSpells: PreparedSpells;
+
   constructor(
     public readonly levelDescription: LevelDescription,
     levelMatrix: LevelMatrix,
@@ -94,6 +97,8 @@ export class Level {
     .forEach(initialThingDescription => {
       this.inventory.push(Thing.create(initialThingDescription))
     });
+
+    this.preparedSpells = new PreparedSpells(levelDescription.spells || []);
   }
 
   public tryToMove(direction: Direction): MoveResult {
@@ -554,5 +559,14 @@ export class Level {
       removedThings: thingsToDestroy.map(([_, thing]) => thing),
       addedThings: addedThings
     };
+  }
+
+  getPreparedSpells(): PreparedSpell[] {
+    return this.preparedSpells.getPreparedSpells();
+  }
+
+  changeSelectedSpell(): PreparedSpell[] {
+    this.preparedSpells.changeSelectedSpell();
+    return this.getPreparedSpells();
   }
 }

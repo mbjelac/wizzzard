@@ -6,7 +6,7 @@ import { Inventory } from "./Inventory";
 
 export class Game {
 
-  private currentLevelId?: string;
+  private currentLevelId?: string = "void";
 
   readonly items = new Inventory("items");
   readonly spells = new Inventory("spells");

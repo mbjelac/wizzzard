@@ -14,8 +14,8 @@ export const errandMarkersConfigs = new Map<string, ErrandMarkerConfig>()
       mapTile: {
         frameIndex: tileLocationToFrameIndex({ x: 4, y: 4 }),
         animation: {
-          frameCount: 1,
-          framesPerSecond: 1
+          frameCount: 2,
+          framesPerSecond: 2
         }
       },
       location: { x: 14, y: 5 }
@@ -27,7 +27,7 @@ export const errandMarkersConfigs = new Map<string, ErrandMarkerConfig>()
       mapTile: {
         frameIndex: tileLocationToFrameIndex({ x: 3, y: 0 }),
       },
-      location: { x: 16, y: 9 }
+      location: { x: 18, y: 6 }
     }
   )
   .set(

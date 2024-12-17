@@ -467,6 +467,7 @@ export const SPRITE_CONFIGS = {
         { x: 6, y: 15 },
       ]
     }),
+    stoneBlock: spriteAt(7, 19)
   },
   forest: {
     tree: spriteConfig({
