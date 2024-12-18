@@ -122,6 +122,8 @@ export default class LevelGui extends Phaser.Scene {
 
 
     this.load.bitmapFont('blackRobotoMicro', 'assets/fonts/roboto-micro.png', 'assets/fonts/roboto-micro.xml');
+    this.load.bitmapFont('whiteRobotoMicro', 'assets/fonts/roboto-micro-white.png', 'assets/fonts/roboto-micro.xml');
+    this.load.bitmapFont('whiteTransparentRobotoMicro', 'assets/fonts/roboto-micro-white-transparent-30.png', 'assets/fonts/roboto-micro.xml');
 
 
     this.load.audio("summerMeadow", "assets/sounds/ambient/summer-meadow.mp3");
@@ -417,7 +419,12 @@ export default class LevelGui extends Phaser.Scene {
 
     const createSpellBox: (index: number) => SpellBox = (index) => ({
       name: this.add
-      .bitmapText(spellBoxParams.offset.x * 4 + spellBoxParams.icon.size * 4 + 1 * 4, spellBoxParams.offset.y * 4 + spellBoxParams.spacing * index * 4, "blackRobotoMicro", "")
+      .bitmapText(
+        spellBoxParams.offset.x * 4 + spellBoxParams.icon.size * 4 + 1 * 4,
+        spellBoxParams.offset.y * 4 + spellBoxParams.spacing * index * 4,
+        "whiteTransparentRobotoMicro",
+        ""
+      )
       .setScale(4)
       .setDepth(depths.info)
       .setScrollFactor(0),
