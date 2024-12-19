@@ -375,6 +375,11 @@ export default class LevelGui extends Phaser.Scene {
         );
         return;
       }
+
+      if(event.code.startsWith("Shift")) {
+        this.level.changeSelectedSpell();
+        this.displaySpells();
+      }
     });
 
 
@@ -985,7 +990,7 @@ export default class LevelGui extends Phaser.Scene {
         spellBox.icon
         .setVisible(true)
         .setPosition(
-          spellBoxParams.offset.x * 4,
+          spellBoxParams.offset.x * 4 - (spell.isSelected ? spellBoxParams.icon.selectedOffset * 4 : 0),
           spellBoxParams.offset.y * 4 + spellBoxParams.spacing * index * 4 - spellColorOffset * 4
         )
         .setCrop(

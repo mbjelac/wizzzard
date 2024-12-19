@@ -2,9 +2,10 @@ import { Level, MoveResult, ThingAt, TickResult } from "./Level";
 import { createThingProps, LevelFactory } from "./LevelFactory";
 import { Direction } from "./Direction";
 import { EditorTool } from "../editor/EditorTool";
-import { Coords, LevelDescription, ThingDescription } from "./LevelDescription";
+import { Coords, LevelDescription, Spell, ThingDescription } from "./LevelDescription";
 import { Thing, ThingProperty } from "./Thing";
 import { LevelLocation } from "./LevelMap";
+import { PreparedSpell } from "./PreparedSpells";
 
 let level: Level;
 
@@ -2027,6 +2028,53 @@ describe("casting", () => {
     .map(direction => level.tryToMove(direction))
     .map(result => result.casting);
   }
+});
+
+describe("spell selection", () => {
+
+  function givenLevelWithSpells(...spells: Spell[]) {
+    level = new Level(
+      { ...dummyLevel, spells: spells },
+      factory.fromMatrix(),
+      addToGameInventoryFake
+    );
+  }
+
+  it("no spells", () => {
+
+    givenLevelWithSpells();
+
+    expect(level.getPreparedSpells()).toEqual([]);
+  });
+
+  it("selecting empty spells does nothing", () => {
+
+    givenLevelWithSpells();
+
+    expect([
+      level.changeSelectedSpell(),
+      level.changeSelectedSpell(),
+      level.changeSelectedSpell(),
+      level.getPreparedSpells()
+    ]).toEqual([
+      [],
+      [],
+      [],
+      [],
+    ]);
+  });
+
+  it("selecting spell returns updated prepared spells list", () => {
+    givenLevelWithSpells({ id: "someSpell", name: "Some Spell", charges: 13 });
+
+    expect([
+      level.changeSelectedSpell(),
+      level.changeSelectedSpell()
+    ]).toEqual<PreparedSpell[][]>([
+      [{id: "someSpell", name: "Some Spell", charges: 13, isSelected: true}],
+      [{id: "someSpell", name: "Some Spell", charges: 13, isSelected: false}],
+    ]);
+  });
 });
 
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
