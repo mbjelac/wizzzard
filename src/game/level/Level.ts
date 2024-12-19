@@ -17,6 +17,7 @@ export interface MoveResult {
   changedState: Thing[];
   addedThings: ThingAt[];
   casting: boolean;
+  spellCharges: number[];
 }
 
 export interface TickResult {
@@ -33,7 +34,8 @@ const doNothing: MoveResult = {
   pushed: [],
   changedState: [],
   addedThings: [],
-  casting: false
+  casting: false,
+  spellCharges: []
 }
 
 export interface ThingAt {
@@ -150,8 +152,8 @@ export class Level {
       (
         !this.doesLocationHaveProperty(nextLocation, "wall")
         || (
-          this.preparedSpells.getSelectedSpellId() === "strength"
-          && this.doesLocationHaveProperty(nextLocation, "pushable")
+          this.doesLocationHaveProperty(nextLocation, "pushable")
+          && this.preparedSpells.castSpell("strength")
         )
       )
       && this.pushableCanBePushed(nextLocation, direction)
@@ -226,7 +228,8 @@ export class Level {
       pushed: pushedThings,
       changedState: changedStateThings,
       addedThings: addedThings,
-      casting: nextLocation.things.some(thing => thing.is("casting"))
+      casting: nextLocation.things.some(thing => thing.is("casting")),
+      spellCharges: this.preparedSpells.getSpellCharges()
     };
   }
 

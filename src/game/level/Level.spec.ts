@@ -37,7 +37,7 @@ const stayed: MoveResult = {
   changedState: [],
   addedThings: [],
   casting: false,
-  // spellCharges: []
+  spellCharges: []
 }
 
 const moved: MoveResult = {
@@ -2135,7 +2135,7 @@ describe("casting", () => {
       });
     });
 
-    xit("can not push after expending all charges", () => {
+    it("can not push after expending all charges", () => {
 
       level.changeSelectedSpell();
 
@@ -2149,7 +2149,7 @@ describe("casting", () => {
             {
               moved: result.moved,
               pushed: result.pushed,
-              // charges: result.spellCharges
+              charges: result.spellCharges
             }
           )
         )
