@@ -175,7 +175,7 @@ it("returns initial spell charges in spell order", () => {
     { id: "b", name: "B", charges: 3 },
   ]);
 
-  expect(spells.getSpellCharges()).toEqual([2, 3]);
+  expect(getSpellCharges(spells)).toEqual([2, 3]);
 });
 
 it("returns actual spell charges in spell order", () => {
@@ -189,5 +189,9 @@ it("returns actual spell charges in spell order", () => {
 
   spells.castSpell("a");
 
-  expect(spells.getSpellCharges()).toEqual([1, 3]);
+  expect(getSpellCharges(spells)).toEqual([1, 3]);
 });
+
+function getSpellCharges(spells: PreparedSpells): number[] {
+  return spells.getPreparedSpells().map(spell => spell.charges);
+}

@@ -36,7 +36,7 @@ export class PreparedSpells {
       id: spell.id,
       name: spell.name,
       isSelected: spell.id == this.selectedSpellId,
-      charges: spell.charges
+      charges: this.charges.get(spell.id)!
     }));
   }
 
@@ -55,10 +55,6 @@ export class PreparedSpells {
     this.charges.set(spellId, charges - 1);
 
     return true;
-  }
-
-  getSpellCharges(): number[] {
-    return this.spells.map(spell => this.charges.get(spell.id)!);
   }
 }
 
