@@ -347,7 +347,14 @@ const levels: LevelDescription[] = [
         head: "lyra",
         text: "I'm not going back to Bolek until I reach Ewyn!\n\nWaterbreathing\n13\nStrength"
       }
-    }
+    },
+    spells: [
+      {
+        id: "strength",
+        name: "Strength",
+        charges: 5
+      }
+    ]
   },
 ];
 

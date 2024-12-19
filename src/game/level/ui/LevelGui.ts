@@ -376,7 +376,7 @@ export default class LevelGui extends Phaser.Scene {
         return;
       }
 
-      if(event.code.startsWith("Shift")) {
+      if (event.code.startsWith("Shift")) {
         this.level.changeSelectedSpell();
         this.displaySpells();
       }
@@ -598,6 +598,7 @@ export default class LevelGui extends Phaser.Scene {
       await this.playerDied();
     } else {
       this.displayInventory();
+      this.updateSpellCharges();
     }
   }
 
@@ -1005,6 +1006,30 @@ export default class LevelGui extends Phaser.Scene {
           spellBoxParams.offset.x * 4 - spellBoxParams.chargeGauge.xOffset * 4 + spellBoxParams.icon.size * 4 + 1 * 4,
           spellBoxParams.offset.y * 4 + spellBoxParams.spacing * index * 4 - spellColorOffset * 4 + 6 * 4
         )
+        .setCrop(
+          spellBoxParams.chargeGauge.xOffset,
+          spellColorOffset + spellBoxParams.chargeGauge.yOffset,
+          spellBoxParams.chargeGauge.pointWidth * spell.charges,
+          spellBoxParams.chargeGauge.height
+        );
+      }
+    });
+  }
+
+  private updateSpellCharges() {
+
+    const spells = this.level.getPreparedSpells();
+
+    this.spellBoxes.forEach((spellBox, index) => {
+
+      const spell = spells[index];
+
+      if (spell !== undefined) {
+
+        const spellColorOffset = spellColorOrder.indexOf(spell.id) * spellBoxParams.icon.colorOffset;
+
+        spellBox.charges
+        .setVisible(true)
         .setCrop(
           spellBoxParams.chargeGauge.xOffset,
           spellColorOffset + spellBoxParams.chargeGauge.yOffset,
