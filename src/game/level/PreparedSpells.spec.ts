@@ -167,3 +167,27 @@ it("casting spends charges for that spell only", () => {
     false
   ]);
 });
+
+it("returns initial spell charges in spell order", () => {
+
+  const spells = new PreparedSpells([
+    { id: "a", name: "A", charges: 2 },
+    { id: "b", name: "B", charges: 3 },
+  ]);
+
+  expect(spells.getSpellCharges()).toEqual([2, 3]);
+});
+
+it("returns actual spell charges in spell order", () => {
+
+  const spells = new PreparedSpells([
+    { id: "a", name: "A", charges: 2 },
+    { id: "b", name: "B", charges: 3 },
+  ]);
+
+  spells.changeSelectedSpell();
+
+  spells.castSpell("a");
+
+  expect(spells.getSpellCharges()).toEqual([1, 3]);
+});

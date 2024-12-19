@@ -56,6 +56,10 @@ export class PreparedSpells {
 
     return true;
   }
+
+  getSpellCharges(): number[] {
+    return this.spells.map(spell => this.charges.get(spell.id)!);
+  }
 }
 
 export interface PreparedSpell {
