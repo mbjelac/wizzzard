@@ -2089,6 +2089,7 @@ describe("casting", () => {
       },
       factory.fromMatrix(
         "      ",
+        "      ",
       ),
       addToGameInventoryFake
     );
@@ -2157,6 +2158,85 @@ describe("casting", () => {
         { moved: true, pushed: [pushableWall], charges: [1] },
         { moved: true, pushed: [pushableWall], charges: [0] },
         { moved: false, pushed: [], charges: [0] },
+      ]);
+    });
+
+    it("does not cast if not pushing pushable wall", () => {
+
+      level.changeSelectedSpell();
+
+      expect(
+        [
+          level.tryToMove(Direction.DOWN),
+          level.tryToMove(Direction.RIGHT),
+          level.tryToMove(Direction.RIGHT),
+        ]
+        .map(result => (
+            {
+              moved: result.moved,
+              pushed: result.pushed,
+              charges: result.spellCharges
+            }
+          )
+        )
+      ).toEqual([
+        { moved: true, pushed: [], charges: [2] },
+        { moved: true, pushed: [], charges: [2] },
+        { moved: true, pushed: [], charges: [2] },
+      ]);
+    });
+
+    it("does not cast if pushing regular pushable", () => {
+
+      const pushable = addThing(1, 1, "pushable");
+
+      level.changeSelectedSpell();
+
+      expect(
+        [
+          level.tryToMove(Direction.DOWN),
+          level.tryToMove(Direction.RIGHT),
+          level.tryToMove(Direction.RIGHT),
+        ]
+        .map(result => (
+            {
+              moved: result.moved,
+              pushed: result.pushed,
+              charges: result.spellCharges
+            }
+          )
+        )
+      ).toEqual([
+        { moved: true, pushed: [], charges: [2] },
+        { moved: true, pushed: [pushable], charges: [2] },
+        { moved: true, pushed: [pushable], charges: [2] },
+      ]);
+    });
+
+    it("does not cast if pushing regular wall", () => {
+
+      addThing(1, 1, "wall");
+
+      level.changeSelectedSpell();
+
+      expect(
+        [
+          level.tryToMove(Direction.DOWN),
+          level.tryToMove(Direction.RIGHT),
+          level.tryToMove(Direction.RIGHT),
+        ]
+        .map(result => (
+            {
+              moved: result.moved,
+              pushed: result.pushed,
+              charges: result.spellCharges
+            }
+          )
+        )
+      ).toEqual([
+        { moved: true, pushed: [], charges: [2] },
+        { moved: false, pushed: [], charges: [2] },
+        { moved: false, pushed: [], charges: [2] },
       ]);
     });
   });
