@@ -4,7 +4,10 @@ export class PreparedSpells {
 
   private selectedSpellId: string | undefined;
 
+  private readonly charges = new Map<string, number>();
+
   constructor(private readonly spells: Spell[]) {
+    spells.forEach(spell => this.charges.set(spell.id, spell.charges));
   }
 
   changeSelectedSpell() {
@@ -20,7 +23,7 @@ export class PreparedSpells {
       return;
     }
 
-    if(indexOfCurrentlySelectedSpell === this.spells.length - 1) {
+    if (indexOfCurrentlySelectedSpell === this.spells.length - 1) {
       this.selectedSpellId = undefined;
       return;
     }
@@ -37,8 +40,21 @@ export class PreparedSpells {
     }));
   }
 
-  getSelectedSpellId(): string | undefined {
-    return this.selectedSpellId;
+  castSpell(spellId: string): boolean {
+
+    if (this.selectedSpellId !== spellId) {
+      return false;
+    }
+
+    const charges = this.charges.get(spellId);
+
+    if (charges === undefined || charges === 0) {
+      return false;
+    }
+
+    this.charges.set(spellId, charges - 1);
+
+    return true;
   }
 }
 
