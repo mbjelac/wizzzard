@@ -17,7 +17,6 @@ export interface MoveResult {
   changedState: Thing[];
   addedThings: ThingAt[];
   casting: boolean;
-  spellCharges: number[];
 }
 
 export interface TickResult {
@@ -34,8 +33,7 @@ const doNothing: MoveResult = {
   pushed: [],
   changedState: [],
   addedThings: [],
-  casting: false,
-  spellCharges: []
+  casting: false
 }
 
 export interface ThingAt {
@@ -228,8 +226,7 @@ export class Level {
       pushed: pushedThings,
       changedState: changedStateThings,
       addedThings: addedThings,
-      casting: nextLocation.things.some(thing => thing.is("casting")),
-      spellCharges: this.preparedSpells.getSpellCharges()
+      casting: nextLocation.things.some(thing => thing.is("casting"))
     };
   }
 

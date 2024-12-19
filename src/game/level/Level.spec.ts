@@ -36,8 +36,7 @@ const stayed: MoveResult = {
   pushed: [],
   changedState: [],
   addedThings: [],
-  casting: false,
-  spellCharges: []
+  casting: false
 }
 
 const moved: MoveResult = {
@@ -2140,20 +2139,13 @@ describe("casting", () => {
 
       level.changeSelectedSpell();
 
+
       expect(
         [
-          level.tryToMove(Direction.RIGHT),
-          level.tryToMove(Direction.RIGHT),
-          level.tryToMove(Direction.RIGHT),
+          move(Direction.RIGHT),
+          move(Direction.RIGHT),
+          move(Direction.RIGHT),
         ]
-        .map(result => (
-            {
-              moved: result.moved,
-              pushed: result.pushed,
-              charges: result.spellCharges
-            }
-          )
-        )
       ).toEqual([
         { moved: true, pushed: [pushableWall], charges: [1] },
         { moved: true, pushed: [pushableWall], charges: [0] },
@@ -2167,18 +2159,10 @@ describe("casting", () => {
 
       expect(
         [
-          level.tryToMove(Direction.DOWN),
-          level.tryToMove(Direction.RIGHT),
-          level.tryToMove(Direction.RIGHT),
+          move(Direction.DOWN),
+          move(Direction.RIGHT),
+          move(Direction.RIGHT),
         ]
-        .map(result => (
-            {
-              moved: result.moved,
-              pushed: result.pushed,
-              charges: result.spellCharges
-            }
-          )
-        )
       ).toEqual([
         { moved: true, pushed: [], charges: [2] },
         { moved: true, pushed: [], charges: [2] },
@@ -2194,18 +2178,10 @@ describe("casting", () => {
 
       expect(
         [
-          level.tryToMove(Direction.DOWN),
-          level.tryToMove(Direction.RIGHT),
-          level.tryToMove(Direction.RIGHT),
+          move(Direction.DOWN),
+          move(Direction.RIGHT),
+          move(Direction.RIGHT),
         ]
-        .map(result => (
-            {
-              moved: result.moved,
-              pushed: result.pushed,
-              charges: result.spellCharges
-            }
-          )
-        )
       ).toEqual([
         { moved: true, pushed: [], charges: [2] },
         { moved: true, pushed: [pushable], charges: [2] },
@@ -2221,18 +2197,10 @@ describe("casting", () => {
 
       expect(
         [
-          level.tryToMove(Direction.DOWN),
-          level.tryToMove(Direction.RIGHT),
-          level.tryToMove(Direction.RIGHT),
+          move(Direction.DOWN),
+          move(Direction.RIGHT),
+          move(Direction.RIGHT),
         ]
-        .map(result => (
-            {
-              moved: result.moved,
-              pushed: result.pushed,
-              charges: result.spellCharges
-            }
-          )
-        )
       ).toEqual([
         { moved: true, pushed: [], charges: [2] },
         { moved: false, pushed: [], charges: [2] },
@@ -2240,6 +2208,16 @@ describe("casting", () => {
       ]);
     });
   });
+
+  function move(direction: Direction): { moved: boolean, pushed: Thing[], charges: number[] } {
+    const result = level.tryToMove(direction);
+    return {
+      moved: result.moved,
+      pushed: result.pushed,
+      charges: level.getPreparedSpells().map(spell => spell.charges)
+    }
+  }
+
 });
 
 function addThing(x: number, y: number, ...properties: ThingProperty[]): Thing {
