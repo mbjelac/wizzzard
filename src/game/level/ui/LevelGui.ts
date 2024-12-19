@@ -45,8 +45,8 @@ function clearSpellBox(spellBox: SpellBox) {
 }
 
 const spellBoxParams = {
-  offset: { x: 213, y: 7 },
-  spacing: 15,
+  offset: { x: 215, y: 12 },
+  spacing: 13,
   icon: {
     size: 6,
     selectedOffset: 6,
@@ -324,7 +324,7 @@ export default class LevelGui extends Phaser.Scene {
 
     const inventory = this.level.getInventory();
 
-    const offset: Coords = { x: 229 * 4, y: 62 * 4 };
+    const offset: Coords = { x: 229 * 4, y: 66 * 4 };
 
     Array(6).fill(0).forEach((_, index) => {
 
@@ -422,7 +422,7 @@ export default class LevelGui extends Phaser.Scene {
       .bitmapText(
         spellBoxParams.offset.x * 4 + spellBoxParams.icon.size * 4 + 1 * 4,
         spellBoxParams.offset.y * 4 + spellBoxParams.spacing * index * 4,
-        "whiteTransparentRobotoMicro",
+        "blackRobotoMicro",
         ""
       )
       .setScale(4)

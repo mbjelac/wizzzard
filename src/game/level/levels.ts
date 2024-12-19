@@ -188,7 +188,30 @@ const levels: LevelDescription[] = [
         name: "Jump",
         charges: 6
       },
-    ]
+    ],
+    initialInventory: [
+      {
+        sprite: "0-30",
+        properties: [
+          "pickup"
+        ],
+        label: "crystal"
+      },
+      {
+        sprite: "2-29",
+        properties: [
+          "pickup"
+        ],
+        label: "plant"
+      },
+      {
+        sprite: "3-19",
+        properties: [
+          "pickup"
+        ],
+        label: "vial"
+      }
+    ],
   },
   {
     metadata: {
