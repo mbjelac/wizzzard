@@ -36,6 +36,10 @@ export class PreparedSpells {
       charges: spell.charges
     }));
   }
+
+  getSelectedSpellId(): string | undefined {
+    return this.selectedSpellId;
+  }
 }
 
 export interface PreparedSpell {

@@ -147,9 +147,15 @@ export class Level {
     const hasNotReceivedOrReceiverOpen = hasNotReceived || receiver.is("open");
 
     const canMove =
-      !this.doesLocationHaveProperty(nextLocation, "wall") &&
-      this.pushableCanBePushed(nextLocation, direction) &&
-      hasNotReceivedOrReceiverOpen;
+      (
+        !this.doesLocationHaveProperty(nextLocation, "wall")
+        || (
+          this.preparedSpells.getSelectedSpellId() === "strength"
+          && this.doesLocationHaveProperty(nextLocation, "pushable")
+        )
+      )
+      && this.pushableCanBePushed(nextLocation, direction)
+      && hasNotReceivedOrReceiverOpen;
 
     let interactionText = this.getTextsFrom(nextLocation);
 

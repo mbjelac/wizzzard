@@ -36,7 +36,8 @@ const stayed: MoveResult = {
   pushed: [],
   changedState: [],
   addedThings: [],
-  casting: false
+  casting: false,
+  // spellCharges: []
 }
 
 const moved: MoveResult = {
@@ -2071,9 +2072,93 @@ describe("spell selection", () => {
       level.changeSelectedSpell(),
       level.changeSelectedSpell()
     ]).toEqual<PreparedSpell[][]>([
-      [{id: "someSpell", name: "Some Spell", charges: 13, isSelected: true}],
-      [{id: "someSpell", name: "Some Spell", charges: 13, isSelected: false}],
+      [{ id: "someSpell", name: "Some Spell", charges: 13, isSelected: true }],
+      [{ id: "someSpell", name: "Some Spell", charges: 13, isSelected: false }],
     ]);
+  });
+});
+
+describe("casting", () => {
+
+  function givenEmptyLevelWithSpells(...spells: Spell[]) {
+    level = new Level(
+      {
+        ...dummyLevel,
+        spells: spells,
+        startCoords: { x: 0, y: 0 }
+      },
+      factory.fromMatrix(
+        "      ",
+      ),
+      addToGameInventoryFake
+    );
+  }
+
+  describe("strength", () => {
+
+    let pushableWall: Thing;
+
+    beforeEach(() => {
+      givenEmptyLevelWithSpells({ id: "strength", name: "Strength", charges: 2 });
+      pushableWall = addThing(1, 0, "wall", "pushable");
+    });
+
+    it("can not push pushable wall without selecting spell", () => {
+
+      const moveResult = level.tryToMove(Direction.RIGHT);
+
+      const actual = {
+        moved: moveResult.moved,
+        pushed: moveResult.pushed
+      }
+
+      expect(actual).toEqual<typeof actual>({
+        moved: false,
+        pushed: []
+      });
+    });
+
+    it("can push pushable wall when selecting spell", () => {
+
+      level.changeSelectedSpell();
+
+      const moveResult = level.tryToMove(Direction.RIGHT);
+
+      const actual = {
+        moved: moveResult.moved,
+        pushed: moveResult.pushed
+      }
+
+      expect(actual).toEqual<typeof actual>({
+        moved: true,
+        pushed: [pushableWall]
+      });
+    });
+
+    xit("can not push after expending all charges", () => {
+
+      level.changeSelectedSpell();
+
+      expect(
+        [
+          level.tryToMove(Direction.RIGHT),
+          level.tryToMove(Direction.RIGHT),
+          level.tryToMove(Direction.RIGHT),
+        ]
+        .map(result => (
+            {
+              moved: result.moved,
+              pushed: result.pushed,
+              // charges: result.spellCharges
+            }
+          )
+        )
+      ).toEqual([
+        { moved: true, pushed: [pushableWall], charges: [1] },
+        { moved: true, pushed: [pushableWall], charges: [0] },
+        { moved: false, pushed: [], charges: [0] },
+      ]);
+    });
   });
 });
 
